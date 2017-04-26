@@ -33,6 +33,7 @@
             android:id="@+id/et_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minWidth="40dp"
             android:inputType="number"/>
     </LinearLayout>
 
