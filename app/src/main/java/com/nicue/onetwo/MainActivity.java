@@ -2,16 +2,25 @@ package com.nicue.onetwo;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -21,159 +30,142 @@ import java.util.ArrayList;
 import com.nicue.onetwo.db.TaskContract;
 import com.nicue.onetwo.db.TaskDbHelper;
 
-public class MainActivity extends AppCompatActivity implements ListAdapter.ListAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private DrawerLayout mDrawer;
+    private Toolbar toolbar;
+    private NavigationView nvDrawer;
+    private Fragment firstFragment;
 
-    private RecyclerView mRecyclerView;
-    private TaskDbHelper mHelper;
-    private ListAdapter mListAdapter;
-
-    private ArrayList<String> mObjects = new ArrayList<String>();
-    private ArrayList<Integer> mObjectsNumbers = new ArrayList<Integer>();
-    private int cuenta;
+    // Make sure to be using android.support.v7.app.ActionBarDrawerToggle version.
+    // The android.support.v4.app.ActionBarDrawerToggle has been deprecated.
+    private ActionBarDrawerToggle drawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mHelper = new TaskDbHelper(this);
         setContentView(R.layout.activity_main);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_counters);
+        // Set a Toolbar to replace the ActionBar.
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        LinearLayoutManager layoutManager
-                = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        // Find our drawer view
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        mRecyclerView.setLayoutManager(layoutManager);
+        nvDrawer = (NavigationView) findViewById(R.id.nvView);
+        // Setup drawer view
+        setupDrawerContent(nvDrawer);
 
-        DividerItemDecoration mDivider = new DividerItemDecoration(mRecyclerView.getContext(),
-                layoutManager.getOrientation());
-        mRecyclerView.addItemDecoration(mDivider);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        /*
-         * Use this setting to improve performance if you know that changes in content do not
-         * change the child layout size in the RecyclerView
-         */
-        mRecyclerView.setHasFixedSize(true);
+        // Find our drawer view
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerToggle = setupDrawerToggle();
 
-        mListAdapter = new ListAdapter(this);
+        // Tie DrawerLayout events to the ActionBarToggle
+        mDrawer.addDrawerListener(drawerToggle);
 
-        /* Setting the adapter attaches it to the RecyclerView in our layout. */
-        mRecyclerView.setAdapter(mListAdapter);
+        firstFragment = new CounterFragment();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.m_content, firstFragment).commit();
 
-        updateUI();
 
 
     }
 
     @Override
-    public void onClick(String object) {
-        return;
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        drawerToggle.syncState();
     }
 
     @Override
-    public void onValueChanged(String obj, int num) {
-        SQLiteDatabase db = mHelper.getWritableDatabase();
-        db.execSQL("UPDATE " + TaskContract.TaskEntry.TABLE
-                + " SET " +TaskContract.TaskEntry.COL_NUM_TITLE +" = "+ String.valueOf(num) +
-                " WHERE "+ TaskContract.TaskEntry.COL_TASK_TITLE + " = '" + obj + "';" );
-        db.close();
-        SQLiteDatabase db_2 = mHelper.getWritableDatabase();
-        Cursor reading = db_2.rawQuery("SELECT * FROM Objects;", null);
-
-        updateUI();
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggles
+        drawerToggle.onConfigurationChanged(newConfig);
     }
 
-    public void fabClick(View view) {
+    private ActionBarDrawerToggle setupDrawerToggle() {
+        // NOTE: Make sure you pass in a valid toolbar reference.  ActionBarDrawToggle() does not require it
+        // and will not render the hamburger icon without it.
+        return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open,  R.string.drawer_close);
+    }
 
-        LayoutInflater inflater = getLayoutInflater();
-        View alertView = inflater.inflate(R.layout.activity_alert_dialog, null);
-
-        final EditText etToCount = (EditText) alertView.findViewById(R.id.et_to_count);
-        final EditText etNumber = (EditText) alertView.findViewById(R.id.et_number);
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setView(alertView)
-                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String object_dirty = etToCount.getText().toString();
-                        String object = object_dirty.replaceAll("'","\"");
-                        Log.d("Se ingresa", object);
-
-                        int number;
-                        try {
-                            number = Integer.parseInt(etNumber.getText().toString());
-                        }catch (Exception e){
-                            number = 0;
-                        }
-
-                        //mObjects.add(object);
-                        //mObjectsNumbers.add(number);
-
-                        //mListAdapter.setData(mObjects, mObjectsNumbers);
-
-                        Log.d("Tag Lista",mObjects.toString());
-
-
-                        SQLiteDatabase db = mHelper.getWritableDatabase();
-                        //Cursor temp_cursor = db.rawQuery("SELECT MAX("+ TaskContract.TaskEntry._ID+ ") FROM "
-                        //        + TaskContract.TaskEntry.TABLE, null);
-
-
-                        ContentValues values = new ContentValues();
-                        values.put(TaskContract.TaskEntry.COL_TASK_TITLE, object);
-                        values.put(TaskContract.TaskEntry.COL_NUM_TITLE, number);
-                        db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
-                                null,
-                                values,
-                                SQLiteDatabase.CONFLICT_REPLACE);
-                        db.close();
-                        updateUI();
-
-                        dialog.dismiss();
-
-                        //Intent intent = new Intent(getBaseContext() , MainActivity.class);
-                        //startActivity(intent);
-
-
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        selectDrawerItem(menuItem);
+                        return true;
                     }
-                })
-                .setNegativeButton("Cancel", null)
-                .create();
-
-        dialog.show();
+                });
     }
 
-    public void deleteObj(View view) {
-        View parent = (View) view.getParent();
-        TextView taskTextView = (TextView) parent.findViewById(R.id.tv_object_data);
-        String task = String.valueOf(taskTextView.getText());
-        SQLiteDatabase db = mHelper.getWritableDatabase();
-        db.delete(TaskContract.TaskEntry.TABLE,
-                TaskContract.TaskEntry.COL_TASK_TITLE + " = ?",
-                new String[]{task});
-        db.close();
-        updateUI();
+    @Override
+    public void onClick(View v) {
+        if (findViewById(R.id.remove_button).equals(v.getId())){
+            //CounterFragment.deleteObj(v);
+        }
     }
 
-    private void updateUI() {
-        ArrayList<String> objList = new ArrayList<>();
-        ArrayList<Integer> numList = new ArrayList<>();
-        SQLiteDatabase db = mHelper.getReadableDatabase();
-        Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
-                new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE, TaskContract.TaskEntry.COL_NUM_TITLE},
-                null, null, null, null, null);
-        while (cursor.moveToNext()) {
-            int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
-            int idx_num = cursor.getColumnIndex(TaskContract.TaskEntry.COL_NUM_TITLE);
-            objList.add(cursor.getString(idx));
-            numList.add(cursor.getInt(idx_num));
-            Log.d("Lista: ", String.valueOf(objList));
+    public void selectDrawerItem(MenuItem menuItem) {
+        // Create a new fragment and specify the fragment to show based on nav item clicked
+        Fragment fragment = null;
+        Class fragmentClass;
+        switch(menuItem.getItemId()) {
+            case R.id.nav_first_fragment:
+                fragmentClass = CounterFragment.class;
+                Log.d("Fragment", "One, Counter");
+                break;
+            case R.id.nav_second_fragment:
+                fragmentClass = DiceFragment.class;
+                Log.d("Fragment", "Two, Dice");
+                break;
+            default:
+                fragmentClass = CounterFragment.class;
         }
 
-        mListAdapter.setData(objList, numList);
-        cursor.close();
-        db.close();
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.m_content, fragment).commit();
+
+        // Highlight the selected item has been done by NavigationView
+        menuItem.setChecked(true);
+        // Set action bar title
+        setTitle(menuItem.getTitle());
+        // Close the navigation drawer
+        mDrawer.closeDrawers();
     }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void deleteObj(View view){
+        Fragment tempFragment = getSupportFragmentManager().findFragmentById(R.id.m_content);
+
+        if (tempFragment instanceof CounterFragment){
+            ((CounterFragment) tempFragment).deleteObj(view);
+        }
+    }
+
+
 }
 
 
