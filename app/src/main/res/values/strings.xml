@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">OneTwo</string>
+    <string name="instruction">Press button to add counter</string>
+    <string name="add_counter">Add counter</string>
+    <string name="alert_tv_object">Who\'s Playing?</string>
+    <string name="alert_tv_number">Lives/Score: </string>
+    <string name="menu_counter">Counter</string>
+    <string name="menu_dice">Dices</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+</resources>
