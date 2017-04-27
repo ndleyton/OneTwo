@@ -68,9 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         firstFragment = new CounterFragment();
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.m_content, firstFragment).commit();
-
-
+                .replace(R.id.m_content, firstFragment).commit();
 
     }
 

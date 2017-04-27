@@ -116,9 +116,6 @@ public class CounterFragment extends android.support.v4.app.Fragment implements 
                             number = 0;
                         }
 
-                        //mObjects.add(object);
-                        //mObjectsNumbers.add(number);
-
                         //mListAdapter.setData(mObjects, mObjectsNumbers);
 
                         Log.d("Tag Lista",mObjects.toString());
