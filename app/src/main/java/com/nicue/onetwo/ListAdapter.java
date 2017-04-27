@@ -73,6 +73,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListAdapterVie
             numberPicker.setMinValue(0);
             numberPicker.setOnScrollListener(this);
             numberPicker.setOnValueChangedListener(this);
+            numberPicker.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    return true;
+                }
+            });
             view.setOnClickListener(this);
         }
 
