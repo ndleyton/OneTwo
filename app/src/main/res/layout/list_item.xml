@@ -3,13 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="100dp"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:paddingStart="16dp"
+    android:paddingEnd="8dp">
+
+
 
     <NumberPicker
         android:id="@+id/number_picker"
-        android:layout_width="wrap_content"
+        android:layout_width="54dp"
+        android:minWidth="48dp"
         android:layout_height="match_parent"
-        android:layout_weight="1" />
+        android:layout_weight="0.3" />
 
     <TextView
         android:id="@+id/tv_object_data"
@@ -28,13 +32,14 @@
 
     <Button
         android:id="@+id/remove_button"
-        android:layout_width="40dp"
+        android:layout_width="34dp"
+        android:minWidth="34dp"
         android:layout_height="40dp"
         android:layout_gravity="center_vertical|end"
+        android:layout_weight="0.3"
         android:background="@android:drawable/ic_menu_delete"
         android:gravity="end"
-        android:onClick="deleteObj"
-        android:layout_weight="0.3"/>
+        android:onClick="deleteObj" />
 
 
 

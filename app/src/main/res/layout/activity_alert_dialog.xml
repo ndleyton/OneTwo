@@ -20,7 +20,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="8dp">
 
         <TextView
             android:id="@+id/tv_numbre_alert"
@@ -33,7 +34,7 @@
             android:id="@+id/et_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:minWidth="40dp"
+            android:minWidth="60dp"
             android:inputType="number"/>
     </LinearLayout>
 

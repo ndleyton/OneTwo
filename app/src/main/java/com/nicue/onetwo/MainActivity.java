@@ -1,34 +1,18 @@
 package com.nicue.onetwo;
 
-import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.res.Configuration;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 
-import java.util.ArrayList;
-
-import com.nicue.onetwo.db.TaskContract;
-import com.nicue.onetwo.db.TaskDbHelper;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private DrawerLayout mDrawer;
@@ -36,8 +20,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private NavigationView nvDrawer;
     private Fragment firstFragment;
 
-    // Make sure to be using android.support.v7.app.ActionBarDrawerToggle version.
-    // The android.support.v4.app.ActionBarDrawerToggle has been deprecated.
     private ActionBarDrawerToggle drawerToggle;
 
     @Override
@@ -66,9 +48,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Tie DrawerLayout events to the ActionBarToggle
         mDrawer.addDrawerListener(drawerToggle);
 
-        firstFragment = new CounterFragment();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.m_content, firstFragment).commit();
+
+        if (getSupportFragmentManager().findFragmentById(R.id.m_content) == null){
+            firstFragment = new CounterFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.m_content, firstFragment).commit();
+        }
+
 
     }
 
@@ -87,8 +73,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private ActionBarDrawerToggle setupDrawerToggle() {
-        // NOTE: Make sure you pass in a valid toolbar reference.  ActionBarDrawToggle() does not require it
-        // and will not render the hamburger icon without it.
         return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open,  R.string.drawer_close);
     }
 
@@ -146,7 +130,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item)) {
@@ -162,7 +145,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ((CounterFragment) tempFragment).deleteObj(view);
         }
     }
+    /*
+    public void rollDice(View view){
+        Fragment tempFragment = getSupportFragmentManager().findFragmentById(R.id.m_content);
 
+        if (tempFragment instanceof DiceFragment){
+            ((DiceFragment) tempFragment).rollDice(view);
+        }
+    }
+    */
 
 }
 

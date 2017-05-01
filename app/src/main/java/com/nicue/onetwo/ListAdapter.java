@@ -89,26 +89,19 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListAdapterVie
                 int actual_value = view.getValue();
                 int adapterPosition = getAdapterPosition();
                 String obj = mObjectsToCount.get(adapterPosition);
-                Log.d("Cambiando: ",obj);
                 mClickHandler.onValueChanged(obj, actual_value);
 
             }
-            d("Scroooll", String.valueOf(this.scrollState_p));
         }
 
         @Override
         public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-            d("Trying_to_change",String.valueOf(this.scrollState_p));
             if (this.scrollState_p == 0) {
                 int adapterPosition = getAdapterPosition();
                 String obj = mObjectsToCount.get(adapterPosition);
-                Log.d("Cambiando: ",obj);
                 mClickHandler.onValueChanged(obj, newVal);
             }
         }
-
-        // Heeey ''gh'' dkf
-        // Heeey ''gh'' dkf
 
         /**
          * This gets called by the child views during a click.

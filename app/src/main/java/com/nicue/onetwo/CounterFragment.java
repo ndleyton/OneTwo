@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -66,6 +67,7 @@ public class CounterFragment extends android.support.v4.app.Fragment implements 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(this);
 
+
         updateUI();
 
         return view;
@@ -73,7 +75,12 @@ public class CounterFragment extends android.support.v4.app.Fragment implements 
 
     @Override
     public void onClick(View v) {
-        fabClick(v);
+        int id = v.getId();
+        switch (id){
+            case R.id.fab:
+                fabClick(v);
+        }
+
     }
 
     @Override
@@ -88,8 +95,6 @@ public class CounterFragment extends android.support.v4.app.Fragment implements 
                 + " SET " +TaskContract.TaskEntry.COL_NUM_TITLE +" = "+ String.valueOf(num) +
                 " WHERE "+ TaskContract.TaskEntry.COL_TASK_TITLE + " = '" + obj + "';" );
         db.close();
-        SQLiteDatabase db_2 = mHelper.getWritableDatabase();
-        Cursor reading = db_2.rawQuery("SELECT * FROM Objects;", null);
 
         updateUI();
     }
@@ -116,10 +121,6 @@ public class CounterFragment extends android.support.v4.app.Fragment implements 
                             number = 0;
                         }
 
-                        //mListAdapter.setData(mObjects, mObjectsNumbers);
-
-                        Log.d("Tag Lista",mObjects.toString());
-
 
                         SQLiteDatabase db = mHelper.getWritableDatabase();
                         //Cursor temp_cursor = db.rawQuery("SELECT MAX("+ TaskContract.TaskEntry._ID+ ") FROM "
@@ -135,6 +136,7 @@ public class CounterFragment extends android.support.v4.app.Fragment implements 
                                 SQLiteDatabase.CONFLICT_REPLACE);
                         db.close();
                         updateUI();
+                        mRecyclerView.smoothScrollToPosition(mListAdapter.getItemCount()-1);
 
                         dialog.dismiss();
 
@@ -146,7 +148,8 @@ public class CounterFragment extends android.support.v4.app.Fragment implements 
                 })
                 .setNegativeButton("Cancel", null)
                 .create();
-
+        dialog.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         dialog.show();
     }
 
@@ -174,7 +177,6 @@ public class CounterFragment extends android.support.v4.app.Fragment implements 
             int idx_num = cursor.getColumnIndex(TaskContract.TaskEntry.COL_NUM_TITLE);
             objList.add(cursor.getString(idx));
             numList.add(cursor.getInt(idx_num));
-            Log.d("Lista: ", String.valueOf(objList));
         }
 
         mListAdapter.setData(objList, numList);
