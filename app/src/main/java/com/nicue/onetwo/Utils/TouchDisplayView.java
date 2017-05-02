@@ -21,12 +21,16 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.nicue.onetwo.Utils.Pools.SimplePool;
+
+import java.util.Random;
 
 /**
  * View that shows touch events and their history. This view demonstrates the
@@ -34,6 +38,36 @@ import com.nicue.onetwo.Utils.Pools.SimplePool;
  * track of touch pointers across events.
  */
 public class TouchDisplayView extends View {
+
+    //private long startTime = 0L;
+    private boolean fingersDown = false;
+    private boolean alreadyChosen = false;
+    private int fingers = 0;
+    private Random random = new Random();
+    private int chosenColor = 0;
+
+    private final int[] COLORS = {
+            0xFF03A9F4, 0xFF009688, 0xFF8BC34A, 0xFFFEB3B, 0xFFFF9800,
+            0xFFFF5722, 0xFF795548, 0xFFF44336, 0xFFE91E63, 0xFF9C27B0};
+
+
+    //A Handler to check if all fingers have been pressed down for x time
+    private final Handler handler = new Handler();
+    private final Runnable runnable = new Runnable() {
+        public void run() {
+            checkGlobalVariable();
+        }
+    };
+
+    public void checkGlobalVariable(){
+        if (fingersDown){
+            alreadyChosen = true;
+            chosenColor = COLORS[random.nextInt(mTouches.size()) % COLORS.length];
+            Log.d("Checking fingers", "Done");
+            invalidate();
+        }
+    }
+
 
     // Hold data for active touch pointer IDs
     private SparseArray<TouchHistory> mTouches;
@@ -50,7 +84,7 @@ public class TouchDisplayView extends View {
     static final class TouchHistory {
 
         // number of historical points to store
-        public static final int HISTORY_COUNT = 1;
+        //public static final int HISTORY_COUNT = 1;
 
         public float x;
         public float y;
@@ -89,7 +123,7 @@ public class TouchDisplayView extends View {
         public void setTouch(float x, float y, float pressure) {
             this.x = x;
             this.y = y;
-            this.pressure = pressure;
+            this.pressure = Math.min(pressure, 1f);
         }
 
         public void recycle() {
@@ -142,6 +176,7 @@ public class TouchDisplayView extends View {
         switch (action & MotionEvent.ACTION_MASK) {
 
             case MotionEvent.ACTION_DOWN: {
+                fingers = 1;
                 // first pressed gesture has started
 
                 /*
@@ -168,6 +203,10 @@ public class TouchDisplayView extends View {
             }
 
             case MotionEvent.ACTION_POINTER_DOWN: {
+
+                fingersDown = true;
+                fingers ++ ;
+
                 /*
                  * A non-primary pointer has gone down, after an event for the
                  * primary pointer (ACTION_DOWN) has already been received.
@@ -192,11 +231,13 @@ public class TouchDisplayView extends View {
                  * active gesture.
                  */
                 mTouches.put(id, data);
+                handler.postDelayed(runnable, 1500);
 
                 break;
             }
 
             case MotionEvent.ACTION_UP: {
+                fingers = 0;
                 /*
                  * Final pointer has gone up and has ended the last pressed
                  * gesture.
@@ -218,6 +259,10 @@ public class TouchDisplayView extends View {
             }
 
             case MotionEvent.ACTION_POINTER_UP: {
+                fingersDown = false;
+                alreadyChosen = false;
+                fingers --;
+                handler.removeCallbacks(runnable);
                 /*
                  * A non-primary pointer has gone up and other pointers are
                  * still active.
@@ -291,10 +336,11 @@ public class TouchDisplayView extends View {
         // Canvas background color depends on whether there is an active touch
         if (mHasTouch) {
             canvas.drawColor(BACKGROUND_ACTIVE);
-        } else {
-            // draw inactive border
-            //canvas.drawRect(mBorderWidth, mBorderWidth, getWidth() - mBorderWidth, getHeight()
-            //        - mBorderWidth, mBorderPaint);
+            if (alreadyChosen){
+                canvas.drawColor(chosenColor);
+            }
+        }else{
+            alreadyChosen = false;
         }
 
         // loop through all active touches and draw them
@@ -333,10 +379,7 @@ public class TouchDisplayView extends View {
     private Paint mBorderPaint = new Paint();
     private float mBorderWidth;
 
-    public final int[] COLORS = {
-            0xFF33B5E5, 0xFFAA66CC, 0xFF99CC00, 0xFFFFBB33, 0xFFFF4444,
-            0xFF0099CC, 0xFF9933CC, 0xFF669900, 0xFFFF8800, 0xFFCC0000
-    };
+    ;
 
     /**
      * Sets up the required {@link android.graphics.Paint} objects for the screen density of this
@@ -382,11 +425,14 @@ public class TouchDisplayView extends View {
          * 1.0 max to ensure proper drawing. (Reported pressure values can
          * exceed 1.0, depending on the calibration of the touch screen).
          */
-        float pressure = Math.min(data.pressure, 1f);
-        float radius = pressure * mCircleRadius;
+
+        // if presssure acts weird, erase comment
+        //float pressure = Math.min(data.pressure, 1f);
+        float radius = data.pressure * mCircleRadius;
+        float half_r = radius / 2f;
 
 
-        canvas.drawCircle(data.x, (data.y) - (radius / 2f), radius,
+        canvas.drawCircle(data.x, (data.y) - half_r, radius,
                 mCirclePaint);
 
         // draw all historical points with a lower alpha value
@@ -394,7 +440,7 @@ public class TouchDisplayView extends View {
         // esto es de historia
 
         mCirclePaint.setAlpha(125);
-        canvas.drawCircle(data.x, (data.y) - (radius / 2f), radius*2,
+        canvas.drawCircle(data.x, (data.y) - half_r, radius*2f,
                 mCirclePaint);
         /*
         for (int j = 0; j < data.history.length && j < data.historyCount; j++) {
