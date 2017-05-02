@@ -33,6 +33,7 @@
                     android:id="@+id/imageView_dice"
                     android:background="@drawable/hexa" />
 
+
                 <FrameLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

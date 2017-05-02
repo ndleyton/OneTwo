@@ -1,4 +1,4 @@
-package com.nicue.onetwo;
+package com.nicue.onetwo.fragments;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -7,9 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,14 +15,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.TextView;
+
+import com.nicue.onetwo.R;
+import com.nicue.onetwo.adapters.DiceListAdapter;
 
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class DiceFragment extends android.support.v4.app.Fragment implements View.OnClickListener, DiceListAdapter.DiceAdapterOnClickHandler {
     private ArrayList<String> mItems = new ArrayList<>();

@@ -1,4 +1,4 @@
-package com.nicue.onetwo;
+package com.nicue.onetwo.fragments;
 
 // Counter Fragment, set by default
 
@@ -21,6 +21,8 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.nicue.onetwo.R;
+import com.nicue.onetwo.adapters.ListAdapter;
 import com.nicue.onetwo.db.TaskContract;
 import com.nicue.onetwo.db.TaskDbHelper;
 

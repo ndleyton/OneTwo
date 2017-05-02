@@ -22,6 +22,6 @@
         android:layout_margin="16dp"
         android:src="@drawable/ic_plus_white_24dp"
         app:fabSize="normal"
-        app:layout_behavior="com.nicue.onetwo.ScrollAwareFABBehavior" />
+        app:layout_behavior="com.nicue.onetwo.Utils.ScrollAwareFABBehavior" />
 
 </android.support.design.widget.CoordinatorLayout>

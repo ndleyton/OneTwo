@@ -13,6 +13,10 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.nicue.onetwo.fragments.ChooserFragment;
+import com.nicue.onetwo.fragments.CounterFragment;
+import com.nicue.onetwo.fragments.DiceFragment;
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private DrawerLayout mDrawer;
@@ -106,6 +110,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.nav_second_fragment:
                 fragmentClass = DiceFragment.class;
                 Log.d("Fragment", "Two, Dice");
+                break;
+            case R.id.nav_third_fragment:
+                fragmentClass = ChooserFragment.class;
+                Log.d("Fragment", "Third, Chooser");
                 break;
             default:
                 fragmentClass = CounterFragment.class;

@@ -11,6 +11,11 @@
             android:icon="@drawable/dice_multiple"
             android:title="@string/menu_dice" />
 
+        <item
+            android:id="@+id/nav_third_fragment"
+            android:icon="@drawable/fingerprint"
+            android:title="@string/menu_chooser" />
+
     </group>
 
 </menu>

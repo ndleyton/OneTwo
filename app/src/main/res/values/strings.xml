@@ -10,4 +10,6 @@
     <string name="drawer_close">Close navigation drawer</string>
     <string name="nav_header">OneTwo</string>
     <string name="dice_title">Dice\'s faces</string>
+    <string name="menu_chooser">Choose</string>
+    <string name="touch_me">Put a finger each to choose among you</string>
 </resources>
