@@ -1,5 +1,8 @@
 package com.nicue.onetwo.adapters;
 
+import android.content.Context;
+import android.os.Handler;
+import android.os.Vibrator;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,15 +19,39 @@ import java.util.Random;
 
 public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHolder> {
 
+    private final Handler handler = new Handler();
+
+    public class RollingRunnable implements Runnable{
+        private int mPosition;
+        private int mMaxDice;
+
+        public RollingRunnable (int position, int maxDice){
+            mPosition = position;
+            mMaxDice = maxDice;
+        }
+        @Override
+        public void run() {
+            realRun(mPosition, mMaxDice);
+        }
+
+        public void realRun(int pos, int maxDice){
+            int new_num = random.nextInt(maxDice) + 1;
+            mData.set(pos, String.valueOf(new_num));
+            notifyDataSetChanged();
+        }
+    }
+
     private ArrayList<String> mFaces = new ArrayList<>();
     private ArrayList<String> mData = new ArrayList<>();
     private LayoutInflater mInflater;
-    //private ItemClickListener mClickListener;
+    private ItemClickListener mClickListener;
     private final DiceAdapterOnClickHandler mClickHandler;
+    private Random random = new Random();
 
 
-    public DiceListAdapter(DiceAdapterOnClickHandler clickHandler) {
+    public DiceListAdapter(DiceAdapterOnClickHandler clickHandler, ItemClickListener clickListener ) {
         mClickHandler = clickHandler;
+        mClickListener = clickListener;
     }
 
     public interface DiceAdapterOnClickHandler {
@@ -58,7 +85,7 @@ public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHo
 
 
     // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         public TextView mTextView;
         public ImageView mImageView;
         public TextView facesTextView;
@@ -72,17 +99,33 @@ public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHo
             rollButton = (Button) itemView.findViewById(R.id.throw_button);
             rollButton.setOnClickListener(this);
             //itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
+            Vibrator vibrator = (Vibrator) view.getContext().getSystemService(Context.VIBRATOR_SERVICE);
+            long[] pattern = {0,15,10,15,10,15};
+            vibrator.vibrate(pattern,-1);
             int pos = getAdapterPosition();
             int max_dice = Integer.parseInt(mFaces.get(pos));
-            Random r = new Random();
-            int new_num = r.nextInt(max_dice) + 1;
+            int new_num = random.nextInt(max_dice) + 1;
             mData.set(pos, String.valueOf(new_num));
             //mClickHandler.onClick(view, pos);
             notifyDataSetChanged();
+            RollingRunnable rollingRunnable = new RollingRunnable(pos, max_dice);
+            handler.postDelayed(rollingRunnable, 50);
+            handler.postDelayed(rollingRunnable, 90);
+            handler.postDelayed(rollingRunnable, 150);
+            handler.postDelayed(rollingRunnable, 220);
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            int pos = getAdapterPosition();
+            mClickListener.onItemLongClick(v,pos);
+            return true;
+
         }
     }
     /*
@@ -91,21 +134,25 @@ public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHo
     public String getItem(int id) {
         return mData.get(id);
     }
+    */
 
     // allows clicks events to be caught
     public void setClickListener(ItemClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
     }
 
+
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
-        void onItemClick(View view, int position);
+        void onItemLongClick(View view, int position);
     }
-    */
+
 
     public void setmData(ArrayList<String> diceData, ArrayList<String> facesData){
         mData = diceData;
         mFaces = facesData;
         notifyDataSetChanged();
     }
+
+    public void keepRollingDice(){}
 }

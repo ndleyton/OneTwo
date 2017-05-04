@@ -27,6 +27,7 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
+import android.os.Vibrator;
 
 import com.nicue.onetwo.Utils.Pools.SimplePool;
 
@@ -42,13 +43,14 @@ public class TouchDisplayView extends View {
     //private long startTime = 0L;
     private boolean fingersDown = false;
     private boolean alreadyChosen = false;
-    private int fingers = 0;
+    //private int fingers = 0;
     private Random random = new Random();
     private int chosenColor = 0;
+    private int chosenId = -1;
 
     private final int[] COLORS = {
-            0xFF03A9F4, 0xFF009688, 0xFF8BC34A, 0xFFFEB3B, 0xFFFF9800,
-            0xFFFF5722, 0xFF795548, 0xFFF44336, 0xFFE91E63, 0xFF9C27B0};
+            0xFF03A9F4, 0xFF009688, 0xFF8BC34A, 0xFFF44336, 0xFFFF9800,
+            0xFFFF5722, 0xFF795548, 0xFFAFB3A0, 0xFFE91E63, 0xFF9C27B0};
 
 
     //A Handler to check if all fingers have been pressed down for x time
@@ -61,10 +63,16 @@ public class TouchDisplayView extends View {
 
     public void checkGlobalVariable(){
         if (fingersDown){
-            alreadyChosen = true;
-            chosenColor = COLORS[random.nextInt(mTouches.size()) % COLORS.length];
-            Log.d("Checking fingers", "Done");
-            invalidate();
+            if (!alreadyChosen) {
+                alreadyChosen = true;
+                chosenId = random.nextInt(mTouches.size());
+                chosenColor = COLORS[chosenId % COLORS.length];
+                //Log.d("Checking fingers", "Done");
+                Vibrator v = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
+                long[] pattern = {0,20,10,50};
+                v.vibrate(pattern, -1);
+                invalidate();
+            }
         }
     }
 
@@ -123,7 +131,8 @@ public class TouchDisplayView extends View {
         public void setTouch(float x, float y, float pressure) {
             this.x = x;
             this.y = y;
-            this.pressure = Math.min(pressure, 1f);
+            this.pressure = (this.pressure + pressure)/2f;
+            //this.pressure = Math.min(pressure, 1f);
         }
 
         public void recycle() {
@@ -176,7 +185,7 @@ public class TouchDisplayView extends View {
         switch (action & MotionEvent.ACTION_MASK) {
 
             case MotionEvent.ACTION_DOWN: {
-                fingers = 1;
+                //fingers = 1;
                 // first pressed gesture has started
 
                 /*
@@ -188,7 +197,7 @@ public class TouchDisplayView extends View {
 
                 TouchHistory data = TouchHistory.obtain(event.getX(0), event.getY(0),
                         event.getPressure(0));
-                data.label = "id: " + 0;
+                //data.label = "id: " + 0;
 
                 /*
                  * Store the data under its pointer identifier. The pointer
@@ -196,6 +205,9 @@ public class TouchDisplayView extends View {
                  * accounting for other pointers going up or down.
                  */
                 mTouches.put(id, data);
+
+                Vibrator v = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
+                v.vibrate(20);
 
                 mHasTouch = true;
 
@@ -205,7 +217,7 @@ public class TouchDisplayView extends View {
             case MotionEvent.ACTION_POINTER_DOWN: {
 
                 fingersDown = true;
-                fingers ++ ;
+                //fingers ++ ;
 
                 /*
                  * A non-primary pointer has gone down, after an event for the
@@ -222,7 +234,10 @@ public class TouchDisplayView extends View {
 
                 TouchHistory data = TouchHistory.obtain(event.getX(index), event.getY(index),
                         event.getPressure(index));
-                data.label = "id: " + id;
+                //data.label = "id: " + id;
+
+                Vibrator v = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
+                v.vibrate(20);
 
                 /*
                  * Store the data under its pointer identifier. The index of
@@ -237,7 +252,7 @@ public class TouchDisplayView extends View {
             }
 
             case MotionEvent.ACTION_UP: {
-                fingers = 0;
+                //fingers = 0;
                 /*
                  * Final pointer has gone up and has ended the last pressed
                  * gesture.
@@ -261,7 +276,7 @@ public class TouchDisplayView extends View {
             case MotionEvent.ACTION_POINTER_UP: {
                 fingersDown = false;
                 alreadyChosen = false;
-                fingers --;
+                //fingers --;
                 handler.removeCallbacks(runnable);
                 /*
                  * A non-primary pointer has gone up and other pointers are

@@ -1,8 +1,10 @@
 package com.nicue.onetwo.fragments;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -25,7 +27,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class DiceFragment extends android.support.v4.app.Fragment implements View.OnClickListener, DiceListAdapter.DiceAdapterOnClickHandler {
+public class DiceFragment extends android.support.v4.app.Fragment implements View.OnClickListener,
+        DiceListAdapter.DiceAdapterOnClickHandler,DiceListAdapter.ItemClickListener {
     private ArrayList<String> mItems = new ArrayList<>();
     private ArrayList<String> mFaces = new ArrayList<>();
     private RecyclerView mRecyclerView;
@@ -46,7 +49,7 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
 
         mRecyclerView.setLayoutManager(layoutManager);
 
-        mListAdapter = new DiceListAdapter(this);
+        mListAdapter = new DiceListAdapter(this,this);
 
         /* Setting the adapter attaches it to the RecyclerView in our layout. */
         mRecyclerView.setAdapter(mListAdapter);
@@ -75,8 +78,17 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
         Log.d("Clicked", "onFragment");
         switch (id) {
             case R.id.throw_button:
-                return;
+                //
         }
+    }
+
+    @Override
+    public void onItemLongClick(View view, int position) {
+        mFaces.remove(position);
+        mItems.remove(position);
+        writeItems();
+        mListAdapter.setmData(mFaces,mItems);
+        mListAdapter.notifyDataSetChanged();
     }
     /*
     public void rollDice(View v) {
@@ -117,8 +129,8 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
                 })
                 .setNegativeButton("Cancel", null)
                 .create();
-        dialog.getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        //dialog.getWindow().setSoftInputMode(
+        //        WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         dialog.show();
     }
 
