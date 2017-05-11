@@ -16,6 +16,11 @@
             android:icon="@drawable/fingerprint"
             android:title="@string/menu_chooser" />
 
+        <item
+            android:id="@+id/nav_fourth_fragment"
+            android:icon="@drawable/timer_sand"
+            android:title="@string/menu_timer" />
+
     </group>
 
 </menu>

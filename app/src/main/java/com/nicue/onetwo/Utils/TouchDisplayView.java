@@ -103,7 +103,7 @@ public class TouchDisplayView extends View {
         public int historyIndex = 0;
         public int historyCount = 0;
 
-        // arrray of pointer position history
+        // arrray of pointer position history, in case i want to add History
         //public PointF[] history = new PointF[HISTORY_COUNT];
 
         private static final int MAX_POOL_SIZE = 10;
@@ -131,8 +131,9 @@ public class TouchDisplayView extends View {
         public void setTouch(float x, float y, float pressure) {
             this.x = x;
             this.y = y;
-            this.pressure = (this.pressure + pressure)/2f;
-            //this.pressure = Math.min(pressure, 1f);
+            //this.pressure = pressure;
+            this.pressure = Math.max(0.25f,(this.pressure + pressure)/2f);
+            this.pressure = Math.min(pressure, 0.5f);
         }
 
         public void recycle() {
@@ -299,23 +300,7 @@ public class TouchDisplayView extends View {
             }
 
             case MotionEvent.ACTION_MOVE: {
-                /*
-                 * A change event happened during a pressed gesture. (Between
-                 * ACTION_DOWN and ACTION_UP or ACTION_POINTER_DOWN and
-                 * ACTION_POINTER_UP)
-                 */
 
-                /*
-                 * Loop through all active pointers contained within this event.
-                 * Data for each pointer is stored in a MotionEvent at an index
-                 * (starting from 0 up to the number of active pointers). This
-                 * loop goes through each of these active pointers, extracts its
-                 * data (position and pressure) and updates its stored data. A
-                 * pointer is identified by its pointer number which stays
-                 * constant across touch events as long as it remains active.
-                 * This identifier is used to keep track of a pointer across
-                 * events.
-                 */
                 for (int index = 0; index < event.getPointerCount(); index++) {
                     // get pointer id for data stored at this index
                     int id = event.getPointerId(index);

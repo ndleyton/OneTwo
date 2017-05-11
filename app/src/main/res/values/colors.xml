@@ -4,6 +4,8 @@
     <color name="colorPrimaryDark">#001839</color>
     <color name="colorAccent">#f3bb21</color>
     <color name="secondAccent">#bd2430</color>
+    <color name="secondAccentLight">#f65b59</color>
+    <color name="secondAccentDark">#850009</color>
 
 
 </resources>

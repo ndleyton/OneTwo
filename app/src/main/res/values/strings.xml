@@ -11,5 +11,8 @@
     <string name="nav_header">OneTwo</string>
     <string name="dice_title">Dice\'s faces</string>
     <string name="menu_chooser">Choose</string>
-    <string name="touch_me">Put a finger each to choose among you</string>
+    <string name="touch_me">Place a finger each to choose among you</string>
+    <string name="menu_timer">Timer</string>
+    <string name="edit">Edit</string>
+
 </resources>

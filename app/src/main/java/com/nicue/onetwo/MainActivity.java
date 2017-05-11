@@ -16,6 +16,7 @@ import android.view.View;
 import com.nicue.onetwo.fragments.ChooserFragment;
 import com.nicue.onetwo.fragments.CounterFragment;
 import com.nicue.onetwo.fragments.DiceFragment;
+import com.nicue.onetwo.fragments.TimerFragment;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -105,15 +106,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch(menuItem.getItemId()) {
             case R.id.nav_first_fragment:
                 fragmentClass = CounterFragment.class;
-                Log.d("Fragment", "One, Counter");
                 break;
             case R.id.nav_second_fragment:
                 fragmentClass = DiceFragment.class;
-                Log.d("Fragment", "Two, Dice");
                 break;
             case R.id.nav_third_fragment:
                 fragmentClass = ChooserFragment.class;
-                Log.d("Fragment", "Third, Chooser");
+                break;
+            case R.id.nav_fourth_fragment:
+                fragmentClass = TimerFragment.class;
+                Log.d("Fragment", "Fourth, Timer");
                 break;
             default:
                 fragmentClass = CounterFragment.class;

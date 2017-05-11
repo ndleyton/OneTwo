@@ -58,7 +58,7 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
         fab_dice.setOnClickListener(this);
         mRecyclerView = (RecyclerView) diceView.findViewById(R.id.recyclerview_dice);
         readItems();
-        mListAdapter.setmData(mFaces,mItems);
+        mListAdapter.setmData(mItems, mFaces);
         mListAdapter.notifyDataSetChanged();
         return diceView;
     }
@@ -87,7 +87,7 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
         mFaces.remove(position);
         mItems.remove(position);
         writeItems();
-        mListAdapter.setmData(mFaces,mItems);
+        mListAdapter.setmData(mItems, mFaces);
         mListAdapter.notifyDataSetChanged();
     }
     /*
@@ -120,7 +120,7 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
                         mFaces.add(faces);
                         mItems.add(faces);
                         Log.d("Items", String.valueOf(mItems));
-                        mListAdapter.setmData(mFaces, mItems);
+                        mListAdapter.setmData(mItems,mFaces);
                         writeItems();
 
                         dialog.dismiss();

@@ -115,9 +115,12 @@ public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHo
             notifyDataSetChanged();
             RollingRunnable rollingRunnable = new RollingRunnable(pos, max_dice);
             handler.postDelayed(rollingRunnable, 50);
-            handler.postDelayed(rollingRunnable, 90);
-            handler.postDelayed(rollingRunnable, 150);
-            handler.postDelayed(rollingRunnable, 220);
+            handler.postDelayed(rollingRunnable, 110);
+            handler.postDelayed(rollingRunnable, 190);
+            handler.postDelayed(rollingRunnable, 280);
+            if (random.nextBoolean()){
+                handler.postDelayed(rollingRunnable, 500);
+            }
         }
 
         @Override

@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         card_view:cardCornerRadius="4dp"
+        card_view:cardElevation="6dp"
         android:layout_margin="4dp"
         android:id="@+id/dice_cv">
 
