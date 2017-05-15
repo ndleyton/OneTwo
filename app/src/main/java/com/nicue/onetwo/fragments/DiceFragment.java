@@ -2,6 +2,7 @@ package com.nicue.onetwo.fragments;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -21,10 +22,8 @@ import android.widget.EditText;
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.adapters.DiceListAdapter;
 
-import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class DiceFragment extends android.support.v4.app.Fragment implements View.OnClickListener,
@@ -134,53 +133,33 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
         dialog.show();
     }
 
-    /*
-    private Runnable runnable = new Runnable() {
-    @Override
-    public void run() {
-        final Random random = new Random();
-        int i = random.nextInt(2 - 0 + 1) + 0;
-        random_note.setImageResource(image[i]);
-        if(started) {
-            start();
-            }
-        }
-    };
-
-    public void stop() {
-        started = false;
-        handler.removeCallbacks(runnable);
-    }
-
-    public void start() {
-        started = true;
-        handler.postDelayed(runnable, 2000);
-    }
-    */
 
 
     private void readItems() {
-        File filesDir = getActivity().getFilesDir();
-        File todoFile = new File(filesDir, "dices.txt");
+        SharedPreferences prefs = getActivity().getSharedPreferences("SHARED_PREFS_FILE",   Context.MODE_PRIVATE);
+        String myJSONArrayString = prefs.getString("DICES", "");
         try {
-            mFaces = new ArrayList<String>(FileUtils.readLines(todoFile));
-        } catch (IOException e) {
+            JSONArray jsonArray = new JSONArray(myJSONArrayString);
+            mFaces = new ArrayList<String>();
+            for (int i=0;i<jsonArray.length();i++){
+                mFaces.add(jsonArray.get(i).toString());
+            }
+        }catch (org.json.JSONException e){
             mFaces = new ArrayList<String>();
         }
         mItems.clear();
         for (int i = 0 ; i<mFaces.size(); i++)
         {mItems.add(mFaces.get(i));
         }
+
     }
 
     private void writeItems() {
-        File filesDir = getActivity().getFilesDir();
-        File todoFile = new File(filesDir, "dices.txt");
-        try {
-            FileUtils.writeLines(todoFile, mFaces);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        JSONArray mJSONArray = new JSONArray(mFaces);
+        SharedPreferences prefs = getActivity().getSharedPreferences("SHARED_PREFS_FILE", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("DICES", mJSONArray.toString());
+        editor.apply();
     }
 }
 

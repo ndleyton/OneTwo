@@ -91,20 +91,11 @@ public class TouchDisplayView extends View {
      */
     static final class TouchHistory {
 
-        // number of historical points to store
-        //public static final int HISTORY_COUNT = 1;
 
         public float x;
         public float y;
         public float pressure = 0f;
         public String label = null;
-
-        // current position in history array
-        public int historyIndex = 0;
-        public int historyCount = 0;
-
-        // arrray of pointer position history, in case i want to add History
-        //public PointF[] history = new PointF[HISTORY_COUNT];
 
         private static final int MAX_POOL_SIZE = 10;
         private static final SimplePool<TouchHistory> sPool =
@@ -131,35 +122,15 @@ public class TouchDisplayView extends View {
         public void setTouch(float x, float y, float pressure) {
             this.x = x;
             this.y = y;
-            //this.pressure = pressure;
-            this.pressure = Math.max(0.25f,(this.pressure + pressure)/2f);
-            this.pressure = Math.min(pressure, 0.5f);
+            this.pressure = (this.pressure + pressure)/2f;
+            this.pressure = Math.max(0.25f,this.pressure); // low limit
+            this.pressure = Math.min(this.pressure, 0.5f);  //high limit
         }
 
         public void recycle() {
-            this.historyIndex = 0;
-            this.historyCount = 0;
             sPool.release(this);
         }
 
-        /*
-         * Add a point to its history. Overwrites oldest point if the maximum
-         * number of historical points is already stored.
-         *
-         */
-        /*
-        public void addHistory(float x, float y) {
-            PointF p = history[historyIndex];
-            p.x = x;
-            p.y = y;
-
-            historyIndex = (historyIndex + 1) % history.length;
-
-            if (historyCount < HISTORY_COUNT) {
-                historyCount++;
-            }
-        }
-        */
 
     }
 
@@ -224,12 +195,6 @@ public class TouchDisplayView extends View {
                  * A non-primary pointer has gone down, after an event for the
                  * primary pointer (ACTION_DOWN) has already been received.
                  */
-
-                /*
-                 * The MotionEvent object contains multiple pointers. Need to
-                 * extract the index at which the data for this particular event
-                 * is stored.
-                 */
                 int index = event.getActionIndex();
                 int id = event.getPointerId(index);
 
@@ -259,11 +224,6 @@ public class TouchDisplayView extends View {
                  * gesture.
                  */
 
-                /*
-                 * Extract the pointer identifier for the only event stored in
-                 * the MotionEvent object and remove it from the list of active
-                 * touches.
-                 */
                 int id = event.getPointerId(0);
                 TouchHistory data = mTouches.get(id);
                 mTouches.remove(id);
@@ -284,11 +244,6 @@ public class TouchDisplayView extends View {
                  * still active.
                  */
 
-                /*
-                 * The MotionEvent object contains multiple pointers. Need to
-                 * extract the index at which the data for this particular event
-                 * is stored.
-                 */
                 int index = event.getActionIndex();
                 int id = event.getPointerId(index);
 
@@ -381,13 +336,9 @@ public class TouchDisplayView extends View {
 
     ;
 
-    /**
-     * Sets up the required {@link android.graphics.Paint} objects for the screen density of this
-     * device.
-     */
     private void initialisePaint() {
 
-        // Calculate radiuses in px from dp based on screen density
+        // Calculate radiuses i n px from dp based on screen density
         float density = getResources().getDisplayMetrics().density;
         mCircleRadius = CIRCLE_RADIUS_DP * density;
         //mCircleHistoricalRadius = CIRCLE_HISTORICAL_RADIUS_DP * density;
@@ -404,30 +355,12 @@ public class TouchDisplayView extends View {
 
     }
 
-    /**
-     * Draws the data encapsulated by a {@link TouchDisplayView.TouchHistory} object to a canvas.
-     * A large circle indicates the current position held by the
-     * {@link TouchDisplayView.TouchHistory} object, while a smaller circle is drawn for each
-     * entry in its history. The size of the large circle is scaled depending on
-     * its pressure, clamped to a maximum of <code>1.0</code>.
-     *
-     * @param canvas
-     * @param id
-     * @param data
-     */
     protected void drawCircle(Canvas canvas, int id, TouchHistory data) {
         // select the color based on the id
         int color = COLORS[id % COLORS.length];
         mCirclePaint.setColor(color);
 
-        /*
-         * Draw the circle, size scaled to its pressure. Pressure is clamped to
-         * 1.0 max to ensure proper drawing. (Reported pressure values can
-         * exceed 1.0, depending on the calibration of the touch screen).
-         */
 
-        // if presssure acts weird, erase comment
-        //float pressure = Math.min(data.pressure, 1f);
         float radius = data.pressure * mCircleRadius;
         float half_r = radius / 2f;
 
@@ -435,25 +368,12 @@ public class TouchDisplayView extends View {
         canvas.drawCircle(data.x, (data.y) - half_r, radius,
                 mCirclePaint);
 
-        // draw all historical points with a lower alpha value
 
-        // esto es de historia
 
         mCirclePaint.setAlpha(125);
         canvas.drawCircle(data.x, (data.y) - half_r, radius*2f,
                 mCirclePaint);
-        /*
-        for (int j = 0; j < data.history.length && j < data.historyCount; j++) {
-            PointF p = data.history[j];
-            canvas.drawCircle(p.x, p.y, radius, mCirclePaint);
-        }
-        */
 
-        // draw its label next to the main circle
-        /*
-        canvas.drawText(data.label, data.x + radius, data.y
-                - radius, mTextPaint);
-        */
     }
 
 }

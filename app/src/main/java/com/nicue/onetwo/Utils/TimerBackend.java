@@ -19,7 +19,7 @@ public class TimerBackend {
     private boolean isPaused = true;
 
     public TimerBackend(View v){
-        int defaulTime = 1000000;
+        int defaulTime = 300000;
         mView = v;
         mCardView = (CardView) v.findViewById(R.id.cv_timer);
         mButton = (Button) mView.findViewById(R.id.chrono);
@@ -29,7 +29,7 @@ public class TimerBackend {
                 pausedTime = millisUntilFinished/1000;
                 long min = pausedTime/60;
                 long dim_secs = pausedTime%60;
-                String min_sec = String.format("%d:%d",min,dim_secs);
+                String min_sec = String.format("%d:%02d",min,dim_secs);
 
                 mButton.setText(min_sec);
             }
@@ -42,7 +42,7 @@ public class TimerBackend {
         pausedTime = defaulTime/1000;
         long min = pausedTime/60;
         long dim_secs = pausedTime%60;
-        String min_sec = String.format("%d:%d",min,dim_secs);
+        String min_sec = String.format("%d:%02d",min,dim_secs);
 
         mButton.setText(min_sec);
         setNonClickable();
@@ -58,7 +58,7 @@ public class TimerBackend {
                 pausedTime = millisUntilFinished/1000;
                 long min = pausedTime/60;
                 long dim_secs = pausedTime%60;
-                String min_sec = String.format("%d:%d",min,dim_secs);
+                String min_sec = String.format("%d:%02d",min,dim_secs);
 
                 mButton.setText(min_sec);
             }
@@ -72,34 +72,40 @@ public class TimerBackend {
         pausedTime = seconds*1000/1000;
         long min = pausedTime/60;
         long dim_secs = pausedTime%60;
-        String min_sec = String.format("%d:%d",min,dim_secs);
+        String min_sec = String.format("%d:%02d",min,dim_secs);
+        mButton.setText(min_sec);
     }
     public void startTimer(){
-        timer.start();
-        isPaused = false;
-        setClickable();
+        if (isPaused) {
+            timer.start();
+            setClickable();
+            isPaused = false;
+        }
     }
 
-    public void pauseTimer(){
-        setNonClickable();
-        timer.cancel();
-        timer = new CountDownTimer(pausedTime*1000,1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                pausedTime = millisUntilFinished/1000;
-                long min = pausedTime/60;
-                long dim_secs = pausedTime%60;
-                String min_sec = String.format("%d:%d",min,dim_secs);
+    public void pauseTimer() {
+        if (!isPaused) {
+            setNonClickable();
+            timer.cancel();
+            timer = new CountDownTimer(pausedTime * 1000, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    pausedTime = millisUntilFinished / 1000;
+                    long min = pausedTime / 60;
+                    long dim_secs = pausedTime % 60;
+                    String min_sec = String.format("%d:%02d", min, dim_secs);
 
-                mButton.setText(min_sec);
-            }
+                    mButton.setText(min_sec);
+                }
 
-            @Override
-            public void onFinish() {
+                @Override
+                public void onFinish() {
 
-            }
-        };
-        isPaused = true;
+                }
+            };
+            isPaused = true;
+            Log.d("PausingTimer", "pauseTimer");
+        }
     }
 
 
@@ -113,21 +119,23 @@ public class TimerBackend {
         mView.setClickable(true);
         mButton.setClickable(true);
         mButton.setEnabled(true);
-        mButton.setBackgroundColor(0xfff65b59);
+        mButton.setBackgroundColor(0xffbd2430);
+        //Animation
         ObjectAnimator animator = ObjectAnimator.ofFloat(mCardView, "cardElevation", 2, 30);
         animator.setInterpolator(new DecelerateInterpolator());
-        animator.setDuration(500);
+        animator.setDuration(200);
         animator.start();
     }
     public void setNonClickable(){
-        Log.i("Clickable: ", "NO");
+        Log.d("Clickable: ", "NO");
         mView.setClickable(false);
         mButton.setClickable(false);
         mButton.setEnabled(false);
-        mButton.setBackgroundColor(0xffbd2430);
+        mButton.setBackgroundColor(0xff850009);
+        //Animation
         ObjectAnimator animator = ObjectAnimator.ofFloat(mCardView, "cardElevation", 30, 2);
         animator.setInterpolator(new DecelerateInterpolator());
-        animator.setDuration(500);
+        animator.setDuration(200);
         animator.start();
     }
     public boolean getisPaused(){

@@ -5,5 +5,42 @@
     android:id="@+id/timer_r_layout"
     android:gravity="center">
 
+    <RelativeLayout
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+    <Button
+        android:id="@+id/play_button"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:text="Play"
+        android:textSize="24sp"
+         />
+
+        <Button
+            android:id="@+id/edit_button"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="Edit"
+            android:textSize="24sp"
+            android:textColor="@color/colorPrimary" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_timers"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="9"
+        android:gravity="center">
+
+    </LinearLayout>
+
 
 </LinearLayout>
