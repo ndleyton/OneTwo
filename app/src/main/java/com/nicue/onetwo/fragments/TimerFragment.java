@@ -103,7 +103,7 @@ public class TimerFragment extends Fragment implements View.OnClickListener {
         if (isPaused) {
             mTimers.get(runningTimer).startTimer();
         } else {
-            //mTimers.get(runningTimer).pauseTimer();
+            mTimers.get(runningTimer).pauseTimer();
             /*
             for (TimerBackend tb: mTimers
                  ) {
@@ -114,7 +114,7 @@ public class TimerFragment extends Fragment implements View.OnClickListener {
             }
             */
         }
-        //isPaused = !isPaused;
+        isPaused = !isPaused;
     }
 
     public void clickedEdit() {
