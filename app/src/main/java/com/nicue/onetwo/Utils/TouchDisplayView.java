@@ -32,6 +32,8 @@ import android.os.Vibrator;
 
 import com.nicue.onetwo.Utils.Pools.SimplePool;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
 
 /**
@@ -44,10 +46,12 @@ public class TouchDisplayView extends View {
     //private long startTime = 0L;
     private boolean fingersDown = false;
     private boolean alreadyChosen = false;
+    private boolean choosingOrder = false;
     //private int fingers = 0;
     private Random random = new Random();
     private int chosenColor = 0;
     private int chosenId = -1;
+    private int[] randomArray = {};
 
     private final int[] COLORS = {
             0xFF03A9F4, 0xFF009688, 0xFF8BC34A, 0xFFF44336, 0xFFFF9800,
@@ -66,7 +70,9 @@ public class TouchDisplayView extends View {
         if (fingersDown){
             if (!alreadyChosen) {
                 alreadyChosen = true;
-                chosenId = random.nextInt(mTouches.size());
+                randomArray = intArrayToN(mTouches.size());
+                shuffleArray(randomArray);
+                chosenId = randomArray[0];
                 chosenColor = COLORS[chosenId % COLORS.length];
                 //Log.d("Checking fingers", "Done");
                 Vibrator v = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
@@ -76,6 +82,30 @@ public class TouchDisplayView extends View {
             }
         }
     }
+
+    public int[] intArrayToN(int n) {
+        int[] a = new int[n];
+        for (int i = 0; i < n; ++i) {
+            a[i] = i;
+        }
+        return a;
+    }
+    private static void shuffleArray(int[] array)
+    {
+        int index;
+        Random random = new Random();
+        for (int i = array.length - 1; i > 0; i--)
+        {
+            index = random.nextInt(i + 1);
+            if (index != i)
+            {
+                array[index] ^= array[i];
+                array[i] ^= array[index];
+                array[index] ^= array[i];
+            }
+        }
+    }
+
 
 
     // Hold data for active touch pointer IDs
@@ -96,7 +126,6 @@ public class TouchDisplayView extends View {
         public float x;
         public float y;
         public float pressure = 0f;
-        public String label = null;
 
         private static final int MAX_POOL_SIZE = 10;
         private static final SimplePool<TouchHistory> sPool =
@@ -114,10 +143,7 @@ public class TouchDisplayView extends View {
         }
 
         public TouchHistory() {
-            // initialise history array
-            //for (int i = 0; i < HISTORY_COUNT; i++) {
-            //   history[i] = new PointF();
-            //}
+
         }
 
         public void setTouch(float x, float y, float pressure) {
@@ -238,6 +264,7 @@ public class TouchDisplayView extends View {
             case MotionEvent.ACTION_POINTER_UP: {
                 fingersDown = false;
                 alreadyChosen = false;
+                randomArray = new int[0];
                 //fingers --;
                 handler.removeCallbacks(runnable);
                 /*
@@ -297,6 +324,7 @@ public class TouchDisplayView extends View {
             }
         }else{
             alreadyChosen = false;
+            randomArray = new int[0];
         }
 
         // loop through all active touches and draw them
@@ -362,12 +390,19 @@ public class TouchDisplayView extends View {
 
 
         if(alreadyChosen){
+            int place = indexInArray(randomArray, id) +1;
             if (chosenId == id){
                 canvas.drawText("Chosen", data.x + radius, data.y
                         - radius, mTextPaint);
                 canvas.drawCircle(data.x, (data.y) - half_r, radius + 5,
                         mTextPaint);
                 drawBig = false;
+            }else{ // With this line we are giving it a random order
+                if (choosingOrder) {
+                    canvas.drawText(String.valueOf(place), data.x + radius, data.y
+                            - radius, mTextPaint);
+                    drawBig = false;
+                }
             }
         }
 
@@ -381,9 +416,22 @@ public class TouchDisplayView extends View {
                     mCirclePaint);
         }
 
+    }
 
+    public int indexInArray(int[] arr, int n){
+        for(int i=0; i<arr.length;i++){
+            if (arr[i]==n){
+                return i;
+            }
+        }
+        return -1;
+    }
 
-
+    public void setChoosingOrder(boolean b){
+        choosingOrder = b;
+    }
+    public boolean getChoosingOrder(){
+        return choosingOrder;
     }
 
 }

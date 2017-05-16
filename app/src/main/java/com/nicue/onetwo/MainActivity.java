@@ -12,6 +12,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.TextView;
 
 import com.nicue.onetwo.fragments.ChooserFragment;
 import com.nicue.onetwo.fragments.CounterFragment;
@@ -19,11 +22,14 @@ import com.nicue.onetwo.fragments.DiceFragment;
 import com.nicue.onetwo.fragments.TimerFragment;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
+    private Switch mSwitch;
+    private TextView actionTitle;
     private NavigationView nvDrawer;
     private Fragment firstFragment;
+    private boolean switchOn = false;
 
     private ActionBarDrawerToggle drawerToggle;
 
@@ -34,6 +40,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        mSwitch = (Switch) toolbar.findViewById(R.id.toolbar_switch);
+        actionTitle = (TextView) toolbar.findViewById(R.id.custom_toolbar_title);
+        mSwitch.setOnCheckedChangeListener(this);
         setSupportActionBar(toolbar);
 
         // Find our drawer view
@@ -49,13 +58,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // Tie DrawerLayout events to the ActionBarToggle
         mDrawer.addDrawerListener(drawerToggle);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
 
         if (getSupportFragmentManager().findFragmentById(R.id.m_content) == null){
             firstFragment = new CounterFragment();
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.m_content, firstFragment).commit();
+            //actionTitle.setText(((CounterFragment) firstFragment).getTitle());
+            actionTitle.setText("Counter");
         }
+
 
 
     }
@@ -96,6 +109,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        Fragment tempFragment = getSupportFragmentManager().findFragmentById(R.id.m_content);
+
+        if (tempFragment instanceof ChooserFragment){
+            ((ChooserFragment) tempFragment).setChoosingOrder(isChecked);
+        }
+    }
+
     public void selectDrawerItem(MenuItem menuItem) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Fragment fragment = null;
@@ -103,15 +125,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch(menuItem.getItemId()) {
             case R.id.nav_first_fragment:
                 fragmentClass = CounterFragment.class;
+                mSwitch.setVisibility(View.INVISIBLE);
                 break;
             case R.id.nav_second_fragment:
                 fragmentClass = DiceFragment.class;
+                mSwitch.setVisibility(View.INVISIBLE);
                 break;
             case R.id.nav_third_fragment:
                 fragmentClass = ChooserFragment.class;
+                mSwitch.setVisibility(View.VISIBLE);
                 break;
             case R.id.nav_fourth_fragment:
                 fragmentClass = TimerFragment.class;
+                mSwitch.setVisibility(View.INVISIBLE);
                 break;
             default:
                 fragmentClass = CounterFragment.class;
@@ -129,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Highlight the selected item has been done by NavigationView
         menuItem.setChecked(true);
         // Set action bar title
-        setTitle(menuItem.getTitle());
+        actionTitle.setText(menuItem.getTitle());
         // Close the navigation drawer
         mDrawer.closeDrawers();
     }

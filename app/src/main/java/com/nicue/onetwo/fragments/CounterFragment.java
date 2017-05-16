@@ -32,6 +32,7 @@ public class CounterFragment extends android.support.v4.app.Fragment implements 
     private RecyclerView mRecyclerView;
     private TaskDbHelper mHelper;
     private ListAdapter mListAdapter;
+    private String title = "Counter";
 
     private ArrayList<String> mObjects = new ArrayList<String>();
     private ArrayList<Integer> mObjectsNumbers = new ArrayList<Integer>();
@@ -185,5 +186,9 @@ public class CounterFragment extends android.support.v4.app.Fragment implements 
         mListAdapter.setData(objList, numList);
         cursor.close();
         db.close();
+    }
+
+    public String getTitle(){
+        return title;
     }
 }

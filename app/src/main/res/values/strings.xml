@@ -14,5 +14,7 @@
     <string name="touch_me">Place a finger each to choose among you</string>
     <string name="menu_timer">Timer</string>
     <string name="edit">Edit</string>
+    <string name="space">      </string>
+    <string name="order">Order</string>
 
 </resources>
