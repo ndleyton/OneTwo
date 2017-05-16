@@ -22,6 +22,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -373,6 +374,7 @@ public class TouchDisplayView extends View {
         // Setup text paint for circle label
         mTextPaint.setTextSize(45f);
         mTextPaint.setColor(Color.WHITE);
+        mTextPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
 
         // Setup paint for inactive border
 

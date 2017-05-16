@@ -10,7 +10,6 @@
     app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
     android:background="?attr/colorPrimary">
 
-        <!--TODO Could make this prettier-->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -21,7 +20,6 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_alignParentStart="true"
-        android:paddingStart="8dp"
         style="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"/>
 
     <Switch

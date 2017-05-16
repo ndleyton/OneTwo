@@ -134,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.nav_third_fragment:
                 fragmentClass = ChooserFragment.class;
                 mSwitch.setVisibility(View.VISIBLE);
+                mSwitch.setChecked(false);
                 break;
             case R.id.nav_fourth_fragment:
                 fragmentClass = TimerFragment.class;
