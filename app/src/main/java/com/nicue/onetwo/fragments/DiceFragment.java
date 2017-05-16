@@ -116,6 +116,9 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
                     public void onClick(DialogInterface dialog, int which) {
 
                         String faces = et_dice.getText().toString();
+                        if(faces.equals("")){
+                            faces = "6";
+                        }
                         mFaces.add(faces);
                         mItems.add(faces);
                         Log.d("Items", String.valueOf(mItems));
