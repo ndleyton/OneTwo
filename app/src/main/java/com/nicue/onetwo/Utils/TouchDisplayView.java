@@ -21,6 +21,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -344,7 +345,7 @@ public class TouchDisplayView extends View {
         //mCircleHistoricalRadius = CIRCLE_HISTORICAL_RADIUS_DP * density;
 
         // Setup text paint for circle label
-        mTextPaint.setTextSize(27f);
+        mTextPaint.setTextSize(30f);
         mTextPaint.setColor(Color.BLACK);
 
         // Setup paint for inactive border
@@ -365,14 +366,26 @@ public class TouchDisplayView extends View {
         float half_r = radius / 2f;
 
 
+        if(alreadyChosen){
+            if (chosenId == id){
+                canvas.drawText("Chosen", data.x + radius, data.y
+                        - radius, mTextPaint);
+                canvas.drawCircle(data.x, (data.y) - half_r, radius + 5,
+                        mTextPaint);
+            }
+        }
+
+
         canvas.drawCircle(data.x, (data.y) - half_r, radius,
                 mCirclePaint);
-
 
 
         mCirclePaint.setAlpha(125);
         canvas.drawCircle(data.x, (data.y) - half_r, radius*2f,
                 mCirclePaint);
+
+
+
 
     }
 

@@ -43,11 +43,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Setup drawer view
         setupDrawerContent(nvDrawer);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         // Find our drawer view
-        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerToggle = setupDrawerToggle();
 
         // Tie DrawerLayout events to the ActionBarToggle
@@ -115,7 +112,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.nav_fourth_fragment:
                 fragmentClass = TimerFragment.class;
-                Log.d("Fragment", "Fourth, Timer");
                 break;
             default:
                 fragmentClass = CounterFragment.class;
@@ -126,7 +122,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.m_content, fragment).commit();
