@@ -330,8 +330,6 @@ public class TouchDisplayView extends View {
     private static final int BACKGROUND_ACTIVE = Color.WHITE;
 
     // inactive border
-    private static final float INACTIVE_BORDER_DP = 15f;
-    private static final int INACTIVE_BORDER_COLOR = 0xFFffd060;
     private Paint mBorderPaint = new Paint();
     private float mBorderWidth;
 
@@ -345,14 +343,10 @@ public class TouchDisplayView extends View {
         //mCircleHistoricalRadius = CIRCLE_HISTORICAL_RADIUS_DP * density;
 
         // Setup text paint for circle label
-        mTextPaint.setTextSize(30f);
-        mTextPaint.setColor(Color.BLACK);
+        mTextPaint.setTextSize(40f);
+        mTextPaint.setColor(Color.WHITE);
 
         // Setup paint for inactive border
-        mBorderWidth = INACTIVE_BORDER_DP * density;
-        mBorderPaint.setStrokeWidth(mBorderWidth);
-        mBorderPaint.setColor(INACTIVE_BORDER_COLOR);
-        mBorderPaint.setStyle(Paint.Style.STROKE);
 
     }
 
@@ -360,6 +354,7 @@ public class TouchDisplayView extends View {
         // select the color based on the id
         int color = COLORS[id % COLORS.length];
         mCirclePaint.setColor(color);
+        boolean drawBig = true;
 
 
         float radius = data.pressure * mCircleRadius;
@@ -372,6 +367,7 @@ public class TouchDisplayView extends View {
                         - radius, mTextPaint);
                 canvas.drawCircle(data.x, (data.y) - half_r, radius + 5,
                         mTextPaint);
+                drawBig = false;
             }
         }
 
@@ -379,10 +375,11 @@ public class TouchDisplayView extends View {
         canvas.drawCircle(data.x, (data.y) - half_r, radius,
                 mCirclePaint);
 
-
-        mCirclePaint.setAlpha(125);
-        canvas.drawCircle(data.x, (data.y) - half_r, radius*2f,
-                mCirclePaint);
+        if(drawBig) {
+            mCirclePaint.setAlpha(125);
+            canvas.drawCircle(data.x, (data.y) - half_r, radius * 2f,
+                    mCirclePaint);
+        }
 
 
 
