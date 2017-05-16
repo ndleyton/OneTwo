@@ -343,7 +343,7 @@ public class TouchDisplayView extends View {
         //mCircleHistoricalRadius = CIRCLE_HISTORICAL_RADIUS_DP * density;
 
         // Setup text paint for circle label
-        mTextPaint.setTextSize(40f);
+        mTextPaint.setTextSize(45f);
         mTextPaint.setColor(Color.WHITE);
 
         // Setup paint for inactive border
