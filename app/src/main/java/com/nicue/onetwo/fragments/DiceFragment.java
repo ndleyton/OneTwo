@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.adapters.DiceListAdapter;
@@ -26,6 +27,7 @@ import com.nicue.onetwo.adapters.DiceListAdapter;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class DiceFragment extends android.support.v4.app.Fragment implements View.OnClickListener,
         DiceListAdapter.DiceAdapterOnClickHandler,DiceListAdapter.ItemClickListener {
@@ -33,8 +35,10 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
     private ArrayList<String> mFaces = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private DiceListAdapter mListAdapter;
+    private GridLayoutManager layoutManager;
     private boolean started = false;
     private Handler handler = new Handler();
+    private Random rand = new Random();
 
 
     @Nullable
@@ -44,7 +48,7 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
 
         mRecyclerView = (RecyclerView) diceView.findViewById(R.id.recyclerview_dice);
 
-        RecyclerView.LayoutManager layoutManager
+        layoutManager
                 = new GridLayoutManager(getActivity(), 2);
 
         mRecyclerView.setLayoutManager(layoutManager);
@@ -90,6 +94,7 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
         mListAdapter.setmData(mItems, mFaces);
         mListAdapter.notifyDataSetChanged();
     }
+
     /*
     public void rollDice(View v) {
         int id = v.getId();
@@ -144,7 +149,6 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
         dialog.show();
     }
 
-
     private void readItems() {
         SharedPreferences prefs = getActivity().getSharedPreferences("SHARED_PREFS_FILE",   Context.MODE_PRIVATE);
         String myJSONArrayString = prefs.getString("DICES", "");
@@ -169,6 +173,55 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("DICES", mJSONArray.toString());
         editor.apply();
+    }
+
+    public void rollAllDices(){
+        try {
+
+            final int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+            final int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
+            Vibrator vibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+            long[] pattern = {0,15,10,15,10,15,10,15,10,15};
+            vibrator.vibrate(pattern,-1);
+            for (int i = firstVisibleItemPosition; i <= lastVisibleItemPosition; ++i) {
+                DiceListAdapter.ViewHolder holder = (DiceListAdapter.ViewHolder) mRecyclerView.findViewHolderForAdapterPosition(i);
+                int max_dice = Integer.valueOf(holder.facesTextView.getText().toString());
+                ExteriorRollingRunnable rollingRunnable = new ExteriorRollingRunnable(holder.mTextView, max_dice);
+                handler.post(rollingRunnable);
+                handler.postDelayed(rollingRunnable, 50);
+                handler.postDelayed(rollingRunnable, 110);
+                handler.postDelayed(rollingRunnable, 190);
+                handler.postDelayed(rollingRunnable, 280);
+                if (rand.nextBoolean()){
+                    handler.postDelayed(rollingRunnable, 500);
+                }
+                //RecyclerView.ViewHolder vh = (RecyclerView.ViewHolder) mRecyclerView.findViewHolderForAdapterPosition(i);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    public class ExteriorRollingRunnable implements Runnable{
+        private TextView mView;
+        private int mMaxDice;
+
+        public ExteriorRollingRunnable (TextView v, int maxDice){
+            mView = v;
+            mMaxDice = maxDice;
+        }
+        @Override
+        public void run() {
+            realRun(mView, mMaxDice);
+        }
+
+        public void realRun(TextView v, int maxDice){
+            Random random = new Random();
+            int new_num = random.nextInt(maxDice) + 1;
+            v.setText(String.valueOf(new_num));
+
+        }
     }
 }
 

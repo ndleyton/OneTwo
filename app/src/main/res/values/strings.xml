@@ -14,6 +14,8 @@
     <string name="touch_me">Place a finger each to choose among you</string>
     <string name="menu_timer">Timer</string>
     <string name="edit">Edit</string>
+    <string name="roll_all">Roll All</string>
+    <string name="add_timer">Add Timer</string>
     <string name="space">      </string>
     <string name="order">Order</string>
 

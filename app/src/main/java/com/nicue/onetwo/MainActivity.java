@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -26,10 +27,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
     private Switch mSwitch;
+    private Button rollAllButton;
+    private Button addTimerButton;
     private TextView actionTitle;
     private NavigationView nvDrawer;
     private Fragment firstFragment;
     private boolean switchOn = false;
+    private String currentTitleString;
 
     private ActionBarDrawerToggle drawerToggle;
 
@@ -41,8 +45,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         mSwitch = (Switch) toolbar.findViewById(R.id.toolbar_switch);
+        rollAllButton = (Button) toolbar.findViewById(R.id.roll_dices_button);
+        addTimerButton = (Button) toolbar.findViewById(R.id.add_timer_button);
         actionTitle = (TextView) toolbar.findViewById(R.id.custom_toolbar_title);
         mSwitch.setOnCheckedChangeListener(this);
+        rollAllButton.setOnClickListener(this);
+        addTimerButton.setOnClickListener(this);
         setSupportActionBar(toolbar);
 
         // Find our drawer view
@@ -66,7 +74,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.m_content, firstFragment).commit();
             //actionTitle.setText(((CounterFragment) firstFragment).getTitle());
-            actionTitle.setText("Counter");
+            currentTitleString = "Counter";
+            actionTitle.setText(currentTitleString);
+        }else{
+            Fragment tempFragment = getSupportFragmentManager().findFragmentById(R.id.m_content);
+
+            if (tempFragment instanceof CounterFragment){
+                currentTitleString = "Counter";
+
+            }else if (tempFragment instanceof DiceFragment){
+                currentTitleString = "Dice";
+                rollAllButton.setVisibility(View.VISIBLE);
+
+            }else if (tempFragment instanceof ChooserFragment){
+                currentTitleString = "Chooser";
+                mSwitch.setVisibility(View.VISIBLE);
+
+            }else if (tempFragment instanceof TimerFragment){
+                currentTitleString = "Timer";
+
+            }
+            actionTitle.setText(currentTitleString);
+
         }
 
 
@@ -104,8 +133,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        if (findViewById(R.id.remove_button).equals(v.getId())){
-            //CounterFragment.deleteObj(v);
+        int view_id = v.getId();
+        switch (view_id){
+            case R.id.roll_dices_button:
+                rollAllDices();
         }
     }
 
@@ -126,19 +157,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.nav_first_fragment:
                 fragmentClass = CounterFragment.class;
                 mSwitch.setVisibility(View.INVISIBLE);
+                rollAllButton.setVisibility(View.INVISIBLE);
                 break;
             case R.id.nav_second_fragment:
                 fragmentClass = DiceFragment.class;
                 mSwitch.setVisibility(View.INVISIBLE);
+                rollAllButton.setVisibility(View.VISIBLE);
                 break;
             case R.id.nav_third_fragment:
                 fragmentClass = ChooserFragment.class;
                 mSwitch.setVisibility(View.VISIBLE);
+                rollAllButton.setVisibility(View.INVISIBLE);
                 mSwitch.setChecked(false);
                 break;
             case R.id.nav_fourth_fragment:
                 fragmentClass = TimerFragment.class;
                 mSwitch.setVisibility(View.INVISIBLE);
+                rollAllButton.setVisibility(View.INVISIBLE);
                 break;
             default:
                 fragmentClass = CounterFragment.class;
@@ -156,7 +191,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Highlight the selected item has been done by NavigationView
         menuItem.setChecked(true);
         // Set action bar title
-        actionTitle.setText(menuItem.getTitle());
+        currentTitleString = menuItem.getTitle().toString();
+        actionTitle.setText(currentTitleString);
         // Close the navigation drawer
         mDrawer.closeDrawers();
     }
@@ -177,6 +213,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ((CounterFragment) tempFragment).deleteObj(view);
         }
     }
+
+    public void rollAllDices(){
+        Fragment tempFragment = getSupportFragmentManager().findFragmentById(R.id.m_content);
+
+        if (tempFragment instanceof DiceFragment){
+            ((DiceFragment) tempFragment).rollAllDices();
+        }
+    }
+
+
     /*
     public void rollDice(View view){
         Fragment tempFragment = getSupportFragmentManager().findFragmentById(R.id.m_content);
