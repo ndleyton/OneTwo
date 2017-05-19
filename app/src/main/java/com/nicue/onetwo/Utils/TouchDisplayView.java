@@ -1,20 +1,5 @@
 package com.nicue.onetwo.Utils;
 
-/*
- * Copyright (C) 2013 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -37,11 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
-/**
- * View that shows touch events and their history. This view demonstrates the
- * use of {@link #onTouchEvent(android.view.MotionEvent)} and {@link android.view.MotionEvent}s to keep
- * track of touch pointers across events.
- */
+
 public class TouchDisplayView extends View {
 
     //private long startTime = 0L;
@@ -372,11 +353,9 @@ public class TouchDisplayView extends View {
         //mCircleHistoricalRadius = CIRCLE_HISTORICAL_RADIUS_DP * density;
 
         // Setup text paint for circle label
-        mTextPaint.setTextSize(45f);
+        mTextPaint.setTextSize(30f*density);
         mTextPaint.setColor(Color.WHITE);
         mTextPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-
-        // Setup paint for inactive border
 
     }
 
@@ -396,13 +375,15 @@ public class TouchDisplayView extends View {
             if (chosenId == id){
                 canvas.drawText("Chosen", data.x + radius, data.y
                         - radius, mTextPaint);
-                canvas.drawCircle(data.x, (data.y) - half_r, radius + 5,
+                canvas.drawCircle(data.x, (data.y) - half_r, radius + 10,
                         mTextPaint);
                 drawBig = false;
             }else{ // With this line we are giving it a random order
                 if (choosingOrder) {
-                    canvas.drawText(String.valueOf(place), data.x + radius, data.y
-                            - radius, mTextPaint);
+                    canvas.drawText(String.valueOf(place), data.x + radius+20, data.y
+                            - radius -20, mTextPaint);
+                    //canvas.drawText(String.valueOf(place), data.x - radius-20, data.y
+                    //        + radius +20, mTextPaint);
                     drawBig = false;
                 }
             }

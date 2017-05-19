@@ -107,11 +107,10 @@ public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHo
             Vibrator vibrator = (Vibrator) view.getContext().getSystemService(Context.VIBRATOR_SERVICE);
             long[] pattern = {0,15,10,15,10,15};
             vibrator.vibrate(pattern,-1);
-            int pos = getAdapterPosition();
+            int pos = getLayoutPosition();  // getAdapterPosition() may return -1 and produce an error
             int max_dice = Integer.parseInt(mFaces.get(pos));
             int new_num = random.nextInt(max_dice) + 1;
             mData.set(pos, String.valueOf(new_num));
-            //mClickHandler.onClick(view, pos);
             notifyDataSetChanged();
             RollingRunnable rollingRunnable = new RollingRunnable(pos, max_dice);
             handler.postDelayed(rollingRunnable, 50);
@@ -131,13 +130,7 @@ public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHo
 
         }
     }
-    /*
 
-    // convenience method for getting data at click position
-    public String getItem(int id) {
-        return mData.get(id);
-    }
-    */
 
     // allows clicks events to be caught
     public void setClickListener(ItemClickListener itemClickListener) {

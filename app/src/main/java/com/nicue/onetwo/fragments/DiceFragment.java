@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -106,10 +107,14 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
     */
 
     public void fabDiceClick(View view) {
-        final EditText et_dice = new EditText(getActivity());
-        et_dice.setRawInputType(InputType.TYPE_CLASS_NUMBER |InputType.TYPE_NUMBER_FLAG_DECIMAL);
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View alertView = inflater.inflate(R.layout.dice_alert_dialog, null);
+
+        final EditText et_dice = (EditText) alertView.findViewById(R.id.et_dice);
+        //et_dice.setRawInputType(InputType.TYPE_CLASS_NUMBER |InputType.TYPE_NUMBER_FLAG_DECIMAL);
         AlertDialog dialog = new AlertDialog.Builder(getActivity())
-                .setView(et_dice)
+                .setView(alertView)
                 .setTitle("Dice\'s Faces:")
                 .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                     @Override
@@ -119,9 +124,12 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
                         if(faces.equals("")){
                             faces = "6";
                         }
+                        int int_faces = Integer.parseInt(faces);
+                        if (int_faces<2){
+                            faces ="2";
+                        }
                         mFaces.add(faces);
                         mItems.add(faces);
-                        Log.d("Items", String.valueOf(mItems));
                         mListAdapter.setmData(mItems,mFaces);
                         writeItems();
 
@@ -135,7 +143,6 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
         //        WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         dialog.show();
     }
-
 
 
     private void readItems() {
@@ -154,7 +161,6 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
         for (int i = 0 ; i<mFaces.size(); i++)
         {mItems.add(mFaces.get(i));
         }
-
     }
 
     private void writeItems() {
