@@ -30,7 +30,7 @@ public class TimerFragment extends Fragment implements View.OnClickListener {
     private LayoutInflater mInflater;
     private int runningTimer = 0;   // Could change this to initiate when you press a play sign
     private boolean isPaused = true;
-    private int setSeconds = 300;
+    private long setMiliSeconds = 300000;
 
     @Nullable
     @Override
@@ -137,11 +137,10 @@ public class TimerFragment extends Fragment implements View.OnClickListener {
                 .setPositiveButton("Set", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        setSeconds = npMinutes.getValue() * 60 + npSeconds.getValue();
+                        setMiliSeconds = npMinutes.getValue() * 60 + npSeconds.getValue();
+                        setMiliSeconds = setMiliSeconds *1000;
                         editTimers();
                         dialog.dismiss();
-
-
 
 
                     }
@@ -155,7 +154,7 @@ public class TimerFragment extends Fragment implements View.OnClickListener {
             TimerBackend tb = mTimers.get(i);
             View v = tb.getmView();
             tb.stopTimer();
-            TimerBackend new_tb = new TimerBackend(v,setSeconds);
+            TimerBackend new_tb = new TimerBackend(v,setMiliSeconds);
             mTimers.set(i,new_tb);
         }
     }

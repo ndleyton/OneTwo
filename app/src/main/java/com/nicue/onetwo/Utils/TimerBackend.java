@@ -19,16 +19,17 @@ public class TimerBackend {
     private boolean isPaused = true;
 
     public TimerBackend(View v){
-        int defaulTime = 300000;
+        long defaulTime = 300000;
         mView = v;
         mCardView = (CardView) v.findViewById(R.id.cv_timer);
         mButton = (Button) mView.findViewById(R.id.chrono);
-        timer = new CountDownTimer(defaulTime,1000) {
+        timer = new CountDownTimer(defaulTime,10) {
             @Override
             public void onTick(long millisUntilFinished) {
-                pausedTime = millisUntilFinished/1000;
-                long min = pausedTime/60;
-                long dim_secs = pausedTime%60;
+                pausedTime = millisUntilFinished;
+                long currentSec = pausedTime/1000;
+                long min = currentSec/60;
+                long dim_secs = currentSec%60;
                 String min_sec = String.format("%d:%02d",min,dim_secs);
 
                 mButton.setText(min_sec);
@@ -36,28 +37,30 @@ public class TimerBackend {
 
             @Override
             public void onFinish() {
-
+                mButton.setText("00:00");
             }
         };
-        pausedTime = defaulTime/1000;
-        long min = pausedTime/60;
-        long dim_secs = pausedTime%60;
+        pausedTime = defaulTime;
+        long currentSec = defaulTime/1000;
+        long min = currentSec/60;
+        long dim_secs = currentSec%60;
         String min_sec = String.format("%d:%02d",min,dim_secs);
 
         mButton.setText(min_sec);
         setNonClickable();
     }
 
-    public TimerBackend(View v, int seconds){
+    public TimerBackend(View v, long miliseconds){
         mView = v;
         mCardView = (CardView) v.findViewById(R.id.cv_timer);
         mButton = (Button) mView.findViewById(R.id.chrono);
-        timer = new CountDownTimer(seconds*1000,1000) {
+        timer = new CountDownTimer(miliseconds,10) {
             @Override
             public void onTick(long millisUntilFinished) {
-                pausedTime = millisUntilFinished/1000;
-                long min = pausedTime/60;
-                long dim_secs = pausedTime%60;
+                pausedTime = millisUntilFinished;
+                long currentSecs = millisUntilFinished/1000;
+                long min = currentSecs/60;
+                long dim_secs = currentSecs%60;
                 String min_sec = String.format("%d:%02d",min,dim_secs);
 
                 mButton.setText(min_sec);
@@ -65,13 +68,14 @@ public class TimerBackend {
 
             @Override
             public void onFinish() {
-
+                mButton.setText("00:00");
             }
         };
         setNonClickable();
-        pausedTime = seconds*1000/1000;
-        long min = pausedTime/60;
-        long dim_secs = pausedTime%60;
+        pausedTime = miliseconds;
+        long currentSecs = pausedTime /1000;
+        long min = currentSecs/60;
+        long dim_secs = currentSecs%60;
         String min_sec = String.format("%d:%02d",min,dim_secs);
         mButton.setText(min_sec);
     }
@@ -87,19 +91,20 @@ public class TimerBackend {
         if (!isPaused) {
             setNonClickable();
             timer.cancel();
-            timer = new CountDownTimer(pausedTime * 1000, 1000) {
+            timer = new CountDownTimer(pausedTime, 10) {
                 @Override
                 public void onTick(long millisUntilFinished) {
-                    pausedTime = millisUntilFinished / 1000;
-                    long min = pausedTime / 60;
-                    long dim_secs = pausedTime % 60;
+                    pausedTime = millisUntilFinished;
+                    long currentSec = pausedTime /1000;
+                    long min = currentSec / 60;
+                    long dim_secs = currentSec % 60;
                     String min_sec = String.format("%d:%02d", min, dim_secs);
 
                     mButton.setText(min_sec);
                 }
-
                 @Override
                 public void onFinish() {
+                    mButton.setText("00:00");
 
                 }
             };
