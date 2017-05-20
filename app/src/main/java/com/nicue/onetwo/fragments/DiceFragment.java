@@ -96,6 +96,7 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
     }
 
     /*
+    If there is need to roll the dice from the Fragment
     public void rollDice(View v) {
         int id = v.getId();
         Log.d("Clicked", "onFragment");
