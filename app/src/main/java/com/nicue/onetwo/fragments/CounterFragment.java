@@ -113,7 +113,6 @@ public class CounterFragment extends android.support.v4.app.Fragment implements 
                     public void onClick(DialogInterface dialog, int which) {
                         String object_dirty = etToCount.getText().toString();
                         String object = object_dirty.replaceAll("'","\"");
-                        Log.d("Se ingresa", object);
 
                         int number;
                         try {

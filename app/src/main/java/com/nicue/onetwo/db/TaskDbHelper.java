@@ -18,6 +18,10 @@ public class TaskDbHelper extends SQLiteOpenHelper {
                 TaskContract.TaskEntry.COL_TASK_TITLE + " TEXT NOT NULL);";
 
         db.execSQL(createTable);
+
+        String exampleRow = "INSERT INTO "+TaskContract.TaskEntry.TABLE+" VALUES "+
+                "(0, 42 , 'Example Lives/Score')";
+        db.execSQL(exampleRow);
     }
 
     @Override
