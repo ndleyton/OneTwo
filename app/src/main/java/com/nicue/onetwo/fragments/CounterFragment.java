@@ -30,6 +30,7 @@ import java.util.ArrayList;
 
 public class CounterFragment extends android.support.v4.app.Fragment implements ListAdapter.ListAdapterOnClickHandler, View.OnClickListener {
     private RecyclerView mRecyclerView;
+    private TextView instructionTextView;
     private TaskDbHelper mHelper;
     private ListAdapter mListAdapter;
     private String title = "Counter";
@@ -46,6 +47,7 @@ public class CounterFragment extends android.support.v4.app.Fragment implements 
         mHelper = new TaskDbHelper(this.getActivity());
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview_counters);
+        instructionTextView = (TextView) view.findViewById(R.id.tv_instruction_counter);
 
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
@@ -182,6 +184,12 @@ public class CounterFragment extends android.support.v4.app.Fragment implements 
         mListAdapter.setData(objList, numList);
         cursor.close();
         db.close();
+
+        if (objList.size() > 0) {
+            instructionTextView.setVisibility(View.INVISIBLE);
+        }else {
+            instructionTextView.setVisibility(View.VISIBLE);
+        }
     }
 
     public String getTitle(){

@@ -8,11 +8,29 @@
     android:layout_alignParentBottom="true"
     android:overScrollMode="always">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/tv_instruction_counter"
+        android:layout_marginTop="260dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text="@string/counter_instruction"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview_counters"
         android:layout_width = "match_parent"
         android:layout_height="wrap_content"
+
         android:overScrollMode="always"/>
+
+    </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
