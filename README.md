@@ -13,7 +13,7 @@ If you want to contribute to OneTwo, fill an Issue saying what would you like to
 
 ## Screenshots
 
-![Alt text](imgs/SS_counter.png?raw=true "Title")  ![Alt text](imgs/SS_Chooser.png?raw=true "Title")
+![](imgs/SS_counter.png)  ![](imgs/SS_Chooser.png?raw=true)
 
 ## License 
  
