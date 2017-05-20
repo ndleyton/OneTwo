@@ -150,8 +150,7 @@ public class CounterFragment extends android.support.v4.app.Fragment implements 
                 })
                 .setNegativeButton("Cancel", null)
                 .create();
-        //dialog.getWindow().setSoftInputMode(
-        //        WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN | WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         dialog.show();
     }
 

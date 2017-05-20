@@ -96,7 +96,7 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
     }
 
     /*
-    If there is need to roll the dice from the Fragment
+    If there is  need to roll the dice from the Fragment
     public void rollDice(View v) {
         int id = v.getId();
         Log.d("Clicked", "onFragment");
@@ -145,8 +145,7 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
                 })
                 .setNegativeButton("Cancel", null)
                 .create();
-        //dialog.getWindow().setSoftInputMode(
-        //        WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN | WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         dialog.show();
     }
 
