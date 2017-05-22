@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Switch mSwitch;
     private Button rollAllButton;
     private Button addTimerButton;
+    private Button delTimerButton;
     private TextView actionTitle;
     private NavigationView nvDrawer;
     private Fragment firstFragment;
@@ -47,10 +48,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mSwitch = (Switch) toolbar.findViewById(R.id.toolbar_switch);
         rollAllButton = (Button) toolbar.findViewById(R.id.roll_dices_button);
         addTimerButton = (Button) toolbar.findViewById(R.id.add_timer_button);
+        delTimerButton = (Button) toolbar.findViewById(R.id.remove_timer_button);
         actionTitle = (TextView) toolbar.findViewById(R.id.custom_toolbar_title);
         mSwitch.setOnCheckedChangeListener(this);
         rollAllButton.setOnClickListener(this);
         addTimerButton.setOnClickListener(this);
+        delTimerButton.setOnClickListener(this);
         setSupportActionBar(toolbar);
 
         // Find our drawer view
@@ -92,6 +95,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }else if (tempFragment instanceof TimerFragment){
                 currentTitleString = "Timer";
+                delTimerButton.setVisibility(View.VISIBLE);
+                addTimerButton.setVisibility(View.VISIBLE);
 
             }
             actionTitle.setText(currentTitleString);
@@ -137,6 +142,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (view_id){
             case R.id.roll_dices_button:
                 rollAllDices();
+                break;
+            case R.id.add_timer_button:
+                addTimer();
+                break;
+            case R.id.remove_timer_button:
+                delTimer();
+                break;
         }
     }
 
@@ -158,22 +170,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 fragmentClass = CounterFragment.class;
                 mSwitch.setVisibility(View.INVISIBLE);
                 rollAllButton.setVisibility(View.INVISIBLE);
+                delTimerButton.setVisibility(View.INVISIBLE);
+                addTimerButton.setVisibility(View.INVISIBLE);
                 break;
             case R.id.nav_second_fragment:
                 fragmentClass = DiceFragment.class;
                 mSwitch.setVisibility(View.INVISIBLE);
                 rollAllButton.setVisibility(View.VISIBLE);
+                delTimerButton.setVisibility(View.INVISIBLE);
+                addTimerButton.setVisibility(View.INVISIBLE);
                 break;
             case R.id.nav_third_fragment:
                 fragmentClass = ChooserFragment.class;
                 mSwitch.setVisibility(View.VISIBLE);
                 rollAllButton.setVisibility(View.INVISIBLE);
+                delTimerButton.setVisibility(View.INVISIBLE);
+                addTimerButton.setVisibility(View.INVISIBLE);
                 mSwitch.setChecked(false);
                 break;
             case R.id.nav_fourth_fragment:
                 fragmentClass = TimerFragment.class;
                 mSwitch.setVisibility(View.INVISIBLE);
                 rollAllButton.setVisibility(View.INVISIBLE);
+                delTimerButton.setVisibility(View.VISIBLE);
+                addTimerButton.setVisibility(View.VISIBLE);
                 break;
             default:
                 fragmentClass = CounterFragment.class;
@@ -221,6 +241,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ((DiceFragment) tempFragment).rollAllDices();
         }
     }
+
+    public void addTimer(){
+        Fragment tempFragment = getSupportFragmentManager().findFragmentById(R.id.m_content);
+
+        if (tempFragment instanceof TimerFragment){
+            ((TimerFragment) tempFragment).addTimer();
+        }
+    }
+
+    public void delTimer(){
+        Fragment tempFragment = getSupportFragmentManager().findFragmentById(R.id.m_content);
+
+        if (tempFragment instanceof TimerFragment){
+            ((TimerFragment) tempFragment).delTimer();
+        }
+    }
+
 
 
     /*

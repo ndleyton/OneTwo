@@ -18,5 +18,7 @@
     <string name="add_timer">Add Timer</string>
     <string name="space">      </string>
     <string name="order">Order</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
     <string name="counter_instruction">Press the button to add a counter or swipe right for more options</string>
 </resources>

@@ -3,6 +3,7 @@ package com.nicue.onetwo.fragments;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
@@ -26,6 +27,8 @@ import java.util.ArrayList;
 public class TimerFragment extends Fragment implements View.OnClickListener {
     private LinearLayout mLayout;
     private LinearLayout exteriorLayout;
+    private Button playButton;
+    private Button editButton;
     private ArrayList<TimerBackend> mTimers = new ArrayList<>();
     private LayoutInflater mInflater;
     private int runningTimer = 0;   // Could change this to initiate when you press a play sign
@@ -37,10 +40,12 @@ public class TimerFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.timer_layout, container, false);
         exteriorLayout = (LinearLayout) view.findViewById(R.id.timer_r_layout);
-        Button playButton = (Button) view.findViewById(R.id.play_button);
-        Button editButton = (Button) view.findViewById(R.id.edit_button);
+        playButton = (Button) view.findViewById(R.id.play_button);
+        editButton = (Button) view.findViewById(R.id.edit_button);
         mLayout = (LinearLayout) exteriorLayout.findViewById(R.id.linear_timers);
         mInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+
         View v = mInflater.inflate(R.layout.list_item_timer, null, false);
         Button button = (Button) v.findViewById(R.id.chrono);
         button.setOnClickListener(this);
@@ -50,8 +55,10 @@ public class TimerFragment extends Fragment implements View.OnClickListener {
 
         TimerBackend timerBackend = new TimerBackend(v);
         //timerBackend.startTimer();
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 50,1);
+        mLayout.addView(v, lp);
 
-        mLayout.addView(v, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        v.setFitsSystemWindows(true);
         mTimers.add(timerBackend);
         addChrono();
         return view;
@@ -60,16 +67,26 @@ public class TimerFragment extends Fragment implements View.OnClickListener {
     public void addChrono() {
         mInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View va = mInflater.inflate(R.layout.list_item_timer, null, false);
+        va.setFitsSystemWindows(true);
         Button button = (Button) va.findViewById(R.id.chrono);
         button.setOnClickListener(this);
+        //button.setOnLongClickListener(this);
         //va.setOnClickListener(this);
 
-        TimerBackend timerBackend = new TimerBackend(va);
+        TimerBackend timerBackend = new TimerBackend(va, setMiliSeconds);
         //timerBackend.startTimer();
 
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        //LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,50,1);
         mLayout.addView(va, lp);
         mTimers.add(timerBackend);
+
+        //turn the first timer if there is only 2 of them
+        if (mTimers.size() == 2){
+            mTimers.get(0).getmView().setRotation(180);
+        }else{
+            mTimers.get(0).getmView().setRotation(0);
+        }
     }
 
     @Override
@@ -89,6 +106,7 @@ public class TimerFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+
     public void clickedTimer(View v) {
         Vibrator vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
         vibrator.vibrate(30);
@@ -102,17 +120,11 @@ public class TimerFragment extends Fragment implements View.OnClickListener {
         vibrator.vibrate(30);
         if (isPaused) {
             mTimers.get(runningTimer).startTimer();
+            playButton.setText(getString(R.string.pause));
         } else {
             mTimers.get(runningTimer).pauseTimer();
-            /*
-            for (TimerBackend tb: mTimers
-                 ) {
-                if (!tb.getisPaused()){
-                    tb.pauseTimer();
-                    tb.setClickable();
-                }
-            }
-            */
+            playButton.setText(getString(R.string.play));
+
         }
         isPaused = !isPaused;
     }
@@ -134,6 +146,7 @@ public class TimerFragment extends Fragment implements View.OnClickListener {
         npSeconds.setMinValue(0);
         AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setView(alertView)
+                .setTitle("Set Time:")
                 .setPositiveButton("Set", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -149,6 +162,7 @@ public class TimerFragment extends Fragment implements View.OnClickListener {
                 .create();
         dialog.show();
     }
+
     public void editTimers(){
         for (int i=0; i<mTimers.size();i++){
             TimerBackend tb = mTimers.get(i);
@@ -157,5 +171,48 @@ public class TimerFragment extends Fragment implements View.OnClickListener {
             TimerBackend new_tb = new TimerBackend(v,setMiliSeconds);
             mTimers.set(i,new_tb);
         }
+        isPaused = true;
+        runningTimer = 0;
+        playButton.setText(getString(R.string.play));
+    }
+
+    public void addTimer(){
+        getScreenHeight();
+        if (mTimers.size() < maxTimers()){
+            addChrono();
+            mLayout.invalidate();
+        }
+    }
+
+    public void delTimer(){
+        if (mTimers.size() > 1){
+            if (runningTimer == mTimers.size()-1){
+                runningTimer = 0;
+                mTimers.get(0).startTimer();
+            }
+            TimerBackend tb = mTimers.get(mTimers.size()-1);
+            tb.deleteTimer();
+            mTimers.remove(mTimers.size()-1);
+            mLayout.invalidate();
+
+            if (mTimers.size() == 2){
+                mTimers.get(0).getmView().setRotation(180);
+            }else{
+                mTimers.get(0).getmView().setRotation(0);
+            }
+        }
+    }
+
+    public int getScreenHeight(){
+        Configuration configuration = getActivity().getResources().getConfiguration();
+        int screenHeightDp = configuration.screenHeightDp; //The current height of the available screen space, in dp units, corresponding to screen height resource qualifier.
+        int smallestScreenWidthDp = configuration.smallestScreenWidthDp;
+        //Log.d("ScreenHeight: ",String.valueOf(screenHeightDp));
+        return screenHeightDp;
+    }
+
+    // returns max timers withouth them getting weird
+    public int maxTimers(){
+        return (getScreenHeight()-22)/78;
     }
 }

@@ -149,4 +149,9 @@ public class TimerBackend {
 
     public long getPausedTime(){return pausedTime;}
 
+    public void deleteTimer(){
+        timer.cancel();
+        mView.setVisibility(View.GONE);
+    }
+
 }

@@ -15,9 +15,12 @@
     <string name="menu_timer">Timer</string>
     <string name="edit">Edit</string>
     <string name="roll_all">Roll All</string>
-    <string name="add_timer">Add Timer</string>
+    <string name="add_timer">Add </string>
+    <string name="remove_timer">Remove</string>
     <string name="space">      </string>
     <string name="order">Order</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
     <string name="counter_instruction">Press the button to add a counter or swipe right for more options</string>
 
 </resources>

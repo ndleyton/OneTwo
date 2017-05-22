@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
     android:id="@+id/item_timer"
     android:gravity="center"
+    android:layout_weight="1"
     android:layout_centerInParent="true"
     >
 
@@ -11,7 +13,7 @@
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:layout_gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="match_parent"
         android:id="@+id/cv_timer"
         android:layout_marginLeft="64dp"
         android:layout_marginRight="64dp"
@@ -28,6 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
+        android:layout_gravity="center"
         android:gravity="center"
         android:textColor="@android:color/white"
         android:textStyle="bold"
