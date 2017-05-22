@@ -181,7 +181,7 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
             final int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
             final int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
             Vibrator vibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
-            long[] pattern = {0,15,10,15,10,15,10,15,10,15};
+            long[] pattern = {0,15,10,15,10,15,10,15,10,15,10,15,10,15};
             vibrator.vibrate(pattern,-1);
             for (int i = firstVisibleItemPosition; i <= lastVisibleItemPosition; ++i) {
                 DiceListAdapter.ViewHolder holder = (DiceListAdapter.ViewHolder) mRecyclerView.findViewHolderForAdapterPosition(i);
