@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">OneTwo</string>
+    <string name="instruction">ボタンを押してカウンターを追加します</string>
+    <string name="add_counter">カウンターを追加</string>
+    <string name="alert_tv_object">誰がプレイ中ですか?</string>
+    <string name="alert_tv_number">ライフ/スコア: </string>
+    <string name="menu_counter">カウンター</string>
+    <string name="menu_dice">サイコロ</string>
+    <string name="drawer_open">ナビゲーションドロワーを開く</string>
+    <string name="drawer_close">ナビゲーションドロワーを閉じる</string>
+    <string name="nav_header">OneTwo</string>
+    <string name="dice_title">サイコロの面</string>
+    <string name="menu_chooser">選択</string>
+    <string name="touch_me">それぞれに指を置いて選択します</string>
+    <string name="menu_timer">タイマー</string>
+    <string name="edit">Edit</string>
+    <string name="roll_all">すべて転がす</string>
+    <string name="add_timer">追加 </string>
+    <string name="remove_timer">削除</string>
+    <string name="space">      </string>
+    <string name="order">並び</string>
+    <string name="play">プレイ</string>
+    <string name="pause">ポーズ</string>
+    <string name="counter_instruction">ボタンを押してカウンターを追加するか、右にスワイプしてさらにオプションを表示します</string>
+
+</resources>
