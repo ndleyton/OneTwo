@@ -20,7 +20,7 @@ public class TimerBackend {
     private long pausedTime;
     private boolean isPaused = true;
     private VibratorInterface vibratorInterface;
-    private long panicMiliSec = 10000;
+    private long panicMiliSec = 10000;  // miliseconds to start to show deciseconds
 
     public interface VibratorInterface{
         void finishedTimer();

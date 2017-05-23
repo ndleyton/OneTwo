@@ -174,12 +174,10 @@ public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHo
         }
     }
 
-
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemLongClick(View view, int position);
     }
-
 
     public void setmData(ArrayList<String> diceData, ArrayList<String> facesData){
         mData = diceData;

@@ -197,7 +197,6 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
         }catch (Exception e){
             e.printStackTrace();
         }
-
     }
 
     public class ExteriorRollingRunnable implements Runnable{
