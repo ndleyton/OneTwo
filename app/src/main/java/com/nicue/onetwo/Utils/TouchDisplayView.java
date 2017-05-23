@@ -56,7 +56,6 @@ public class TouchDisplayView extends View {
                 shuffleArray(randomArray);
                 chosenId = randomArray[0];
                 chosenColor = COLORS[chosenId % COLORS.length];
-                //Log.d("Checking fingers", "Done");
                 Vibrator v = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
                 long[] pattern = {0,20,10,50};
                 v.vibrate(pattern, -1);
@@ -89,7 +88,6 @@ public class TouchDisplayView extends View {
     }
 
 
-
     // Hold data for active touch pointer IDs
     private SparseArray<TouchHistory> mTouches;
 
@@ -97,9 +95,8 @@ public class TouchDisplayView extends View {
     private boolean mHasTouch = false;
 
     /**
-     * Holds data related to a touch pointer, including its current position,
-     * pressure and historical positions. Objects are allocated through an
-     * object pool using {} and {@link #recycle()} to reuse
+     * Holds data related to a touch pointer,
+     * object pool using {} and recycle to reuse
      * existing objects.
      */
     static final class TouchHistory {
@@ -158,33 +155,19 @@ public class TouchDisplayView extends View {
 
         final int action = event.getAction();
 
-        /*
-         * Switch on the action. The action is extracted from the event by
-         * applying the MotionEvent.ACTION_MASK. Alternatively a call to
-         * event.getActionMasked() would yield in the action as well.
-         */
+
         switch (action & MotionEvent.ACTION_MASK) {
 
             case MotionEvent.ACTION_DOWN: {
                 //fingers = 1;
                 // first pressed gesture has started
 
-                /*
-                 * Only one touch event is stored in the MotionEvent. Extract
-                 * the pointer identifier of this touch from the first index
-                 * within the MotionEvent object.
-                 */
                 int id = event.getPointerId(0);
 
                 TouchHistory data = TouchHistory.obtain(event.getX(0), event.getY(0),
                         event.getPressure(0));
-                //data.label = "id: " + 0;
 
-                /*
-                 * Store the data under its pointer identifier. The pointer
-                 * number stays consistent for the duration of a gesture,
-                 * accounting for other pointers going up or down.
-                 */
+                //Store the data under its pointer identifier. The pointer number stays consistent
                 mTouches.put(id, data);
 
                 Vibrator v = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
@@ -273,15 +256,10 @@ public class TouchDisplayView extends View {
                     // get the data stored externally about this pointer.
                     TouchHistory data = mTouches.get(id);
 
-                    // add previous position to history
-                    //data.addHistory(data.x, data.y);
-
                     //add new values
                     data.setTouch(event.getX(index), event.getY(index),
                             event.getPressure(index));
-
                 }
-
                 break;
             }
         }
@@ -322,28 +300,20 @@ public class TouchDisplayView extends View {
     }
 
     /*
-     * Below are only helper methods and variables required for drawing.
+     * helper methods and variables required for drawing.
      */
 
     // radius of active touch circle in dp
     private static final float CIRCLE_RADIUS_DP = 75f;
-    // radius of historical circle in dp
-    //private static final float CIRCLE_HISTORICAL_RADIUS_DP = 7f;
 
     // calculated radiuses in px
     private float mCircleRadius;
-    //private float mCircleHistoricalRadius;
 
     private Paint mCirclePaint = new Paint();
     private Paint mTextPaint = new Paint();
 
     private static final int BACKGROUND_ACTIVE = Color.WHITE;
 
-    // inactive border
-    private Paint mBorderPaint = new Paint();
-    private float mBorderWidth;
-
-    ;
 
     private void initialisePaint() {
 
@@ -382,13 +352,14 @@ public class TouchDisplayView extends View {
                 if (choosingOrder) {
                     canvas.drawText(String.valueOf(place), data.x + radius+20, data.y
                             - radius -20, mTextPaint);
+
+                    // uncomment this to add a second indicator of order
                     //canvas.drawText(String.valueOf(place), data.x - radius-20, data.y
                     //        + radius +20, mTextPaint);
                     drawBig = false;
                 }
             }
         }
-
 
         canvas.drawCircle(data.x, (data.y) - half_r, radius,
                 mCirclePaint);

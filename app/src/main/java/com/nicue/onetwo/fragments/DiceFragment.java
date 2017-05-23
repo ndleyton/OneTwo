@@ -11,8 +11,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.InputFilter;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -195,7 +193,6 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
                 if (rand.nextBoolean()){
                     handler.postDelayed(rollingRunnable, 500);
                 }
-                //RecyclerView.ViewHolder vh = (RecyclerView.ViewHolder) mRecyclerView.findViewHolderForAdapterPosition(i);
             }
         }catch (Exception e){
             e.printStackTrace();

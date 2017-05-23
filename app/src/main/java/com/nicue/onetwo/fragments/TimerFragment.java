@@ -31,7 +31,7 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
     private Button editButton;
     private ArrayList<TimerBackend> mTimers = new ArrayList<>();
     private LayoutInflater mInflater;
-    private int runningTimer = 0;   // Could change this to initiate when you press a play sign
+    private int runningTimer = 0;   // Could change this to initiate when you press a timer
     private boolean isPaused = true;
     private long setMiliSeconds = 300000;
 
@@ -46,16 +46,13 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
         mLayout = (LinearLayout) exteriorLayout.findViewById(R.id.linear_timers);
         mInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-
         View v = mInflater.inflate(R.layout.list_item_timer, null, false);
         Button button = (Button) v.findViewById(R.id.chrono);
         button.setOnClickListener(this);
         playButton.setOnClickListener(this);
         editButton.setOnClickListener(this);
-        //v.setOnClickListener(this);
 
         TimerBackend timerBackend = new TimerBackend(v,this);
-        //timerBackend.startTimer();
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 50,1);
         mLayout.addView(v, lp);
 
@@ -71,8 +68,6 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
         va.setFitsSystemWindows(true);
         Button button = (Button) va.findViewById(R.id.chrono);
         button.setOnClickListener(this);
-        //button.setOnLongClickListener(this);
-        //va.setOnClickListener(this);
 
         TimerBackend timerBackend = new TimerBackend(va, setMiliSeconds,this);
 
@@ -205,13 +200,11 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
             }
         }
     }
-
+    //The current height of the available screen space, in dp units
+    // corresponding to screen height resource qualifier.
     public int getScreenHeight(){
         Configuration configuration = getActivity().getResources().getConfiguration();
-        int screenHeightDp = configuration.screenHeightDp; //The current height of the available screen space, in dp units, corresponding to screen height resource qualifier.
-        int smallestScreenWidthDp = configuration.smallestScreenWidthDp;
-        //Log.d("ScreenHeight: ",String.valueOf(screenHeightDp));
-        return screenHeightDp;
+        return configuration.screenHeightDp;
     }
 
     // returns max timers withouth them getting weird

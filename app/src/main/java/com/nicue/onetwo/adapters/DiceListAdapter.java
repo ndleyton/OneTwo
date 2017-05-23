@@ -59,7 +59,6 @@ public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHo
     public interface DiceAdapterOnClickHandler {
         void onClick(View v);
         void onClick(View v, int pos);
-        //void onValueChanged(String obj, int num);
     }
 
     // inflates the cell layout from xml when needed
@@ -71,7 +70,7 @@ public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHo
         return viewHolder;
     }
 
-    // binds the data to the textview in each cell
+    // binds the data to the textviews in each cell and changes the image depending on number of faces
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         String number = mData.get(position);
@@ -172,14 +171,7 @@ public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHo
             int pos = getAdapterPosition();
             mClickListener.onItemLongClick(v,pos);
             return true;
-
         }
-    }
-
-
-    // allows clicks events to be caught
-    public void setClickListener(ItemClickListener itemClickListener) {
-        this.mClickListener = itemClickListener;
     }
 
 
@@ -195,5 +187,4 @@ public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHo
         notifyDataSetChanged();
     }
 
-    public void keepRollingDice(){}
 }
