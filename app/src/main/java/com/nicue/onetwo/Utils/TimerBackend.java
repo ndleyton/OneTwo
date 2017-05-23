@@ -44,7 +44,7 @@ public class TimerBackend {
                     min_sec = String.format("%d:%02d", min, dim_secs);
                 }else{
                     long deci_sec = (millisUntilFinished %1000)/10;
-                    min_sec = String.format("%d:%02d:%03d", min, dim_secs,deci_sec);
+                    min_sec = String.format("%d:%02d:%02d", min, dim_secs,deci_sec);
                 }
 
                 mButton.setText(min_sec);
@@ -84,7 +84,7 @@ public class TimerBackend {
                     min_sec = String.format("%d:%02d", min, dim_secs);
                 }else{
                     long deci_sec = (millisUntilFinished %1000)/10;
-                    min_sec = String.format("%d:%02d:%03d", min, dim_secs,deci_sec);
+                    min_sec = String.format("%d:%02d:%02d", min, dim_secs,deci_sec);
                 }
 
                 mButton.setText(min_sec);
@@ -130,7 +130,7 @@ public class TimerBackend {
                         min_sec = String.format("%d:%02d", min, dim_secs);
                     }else{
                         long deci_sec = (millisUntilFinished %1000)/10;
-                        min_sec = String.format("%d:%02d:%03d", min, dim_secs,deci_sec);
+                        min_sec = String.format("%d:%02d:%02d", min, dim_secs,deci_sec);
                     }
 
                     mButton.setText(min_sec);
