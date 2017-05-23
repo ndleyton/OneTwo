@@ -24,7 +24,7 @@ import com.nicue.onetwo.Utils.TimerBackend;
 
 import java.util.ArrayList;
 
-public class TimerFragment extends Fragment implements View.OnClickListener {
+public class TimerFragment extends Fragment implements View.OnClickListener, TimerBackend.VibratorInterface {
     private LinearLayout mLayout;
     private LinearLayout exteriorLayout;
     private Button playButton;
@@ -34,6 +34,7 @@ public class TimerFragment extends Fragment implements View.OnClickListener {
     private int runningTimer = 0;   // Could change this to initiate when you press a play sign
     private boolean isPaused = true;
     private long setMiliSeconds = 300000;
+
 
     @Nullable
     @Override
@@ -53,7 +54,7 @@ public class TimerFragment extends Fragment implements View.OnClickListener {
         editButton.setOnClickListener(this);
         //v.setOnClickListener(this);
 
-        TimerBackend timerBackend = new TimerBackend(v);
+        TimerBackend timerBackend = new TimerBackend(v,this);
         //timerBackend.startTimer();
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 50,1);
         mLayout.addView(v, lp);
@@ -73,10 +74,8 @@ public class TimerFragment extends Fragment implements View.OnClickListener {
         //button.setOnLongClickListener(this);
         //va.setOnClickListener(this);
 
-        TimerBackend timerBackend = new TimerBackend(va, setMiliSeconds);
-        //timerBackend.startTimer();
+        TimerBackend timerBackend = new TimerBackend(va, setMiliSeconds,this);
 
-        //LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,50,1);
         mLayout.addView(va, lp);
         mTimers.add(timerBackend);
@@ -106,6 +105,11 @@ public class TimerFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    @Override
+    public void finishedTimer() {
+        Vibrator vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
+        vibrator.vibrate(300);
+    }
 
     public void clickedTimer(View v) {
         Vibrator vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
@@ -124,7 +128,6 @@ public class TimerFragment extends Fragment implements View.OnClickListener {
         } else {
             mTimers.get(runningTimer).pauseTimer();
             playButton.setText(getString(R.string.play));
-
         }
         isPaused = !isPaused;
     }
@@ -168,7 +171,7 @@ public class TimerFragment extends Fragment implements View.OnClickListener {
             TimerBackend tb = mTimers.get(i);
             View v = tb.getmView();
             tb.stopTimer();
-            TimerBackend new_tb = new TimerBackend(v,setMiliSeconds);
+            TimerBackend new_tb = new TimerBackend(v,setMiliSeconds, this);
             mTimers.set(i,new_tb);
         }
         isPaused = true;

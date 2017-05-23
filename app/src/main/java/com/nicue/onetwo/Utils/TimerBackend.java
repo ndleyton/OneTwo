@@ -1,7 +1,9 @@
 package com.nicue.onetwo.Utils;
 
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.os.CountDownTimer;
+import android.os.Vibrator;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
@@ -17,8 +19,15 @@ public class TimerBackend {
     private Button mButton;
     private long pausedTime;
     private boolean isPaused = true;
+    private VibratorInterface vibratorInterface;
+    private long panicMiliSec = 10000;
 
-    public TimerBackend(View v){
+    public interface VibratorInterface{
+        void finishedTimer();
+    }
+
+    public TimerBackend(View v, VibratorInterface vInterface){
+        vibratorInterface = vInterface;
         long defaulTime = 300000;
         mView = v;
         mCardView = (CardView) v.findViewById(R.id.cv_timer);
@@ -30,14 +39,22 @@ public class TimerBackend {
                 long currentSec = pausedTime/1000;
                 long min = currentSec/60;
                 long dim_secs = currentSec%60;
-                String min_sec = String.format("%d:%02d",min,dim_secs);
+                String min_sec;
+                if (millisUntilFinished >= panicMiliSec ) {
+                    min_sec = String.format("%d:%02d", min, dim_secs);
+                }else{
+                    long deci_sec = (millisUntilFinished %1000)/10;
+                    min_sec = String.format("%d:%02d:%03d", min, dim_secs,deci_sec);
+                }
 
                 mButton.setText(min_sec);
             }
 
             @Override
             public void onFinish() {
-                mButton.setText("00:00");
+                mButton.setText("0:00");
+                mButton.setBackgroundColor(0xff424242);
+                vibratorInterface.finishedTimer();
             }
         };
         pausedTime = defaulTime;
@@ -50,7 +67,8 @@ public class TimerBackend {
         setNonClickable();
     }
 
-    public TimerBackend(View v, long miliseconds){
+    public TimerBackend(View v, long miliseconds, VibratorInterface vInterface){
+        vibratorInterface = vInterface;
         mView = v;
         mCardView = (CardView) v.findViewById(R.id.cv_timer);
         mButton = (Button) mView.findViewById(R.id.chrono);
@@ -61,15 +79,24 @@ public class TimerBackend {
                 long currentSecs = millisUntilFinished/1000;
                 long min = currentSecs/60;
                 long dim_secs = currentSecs%60;
-                String min_sec = String.format("%d:%02d",min,dim_secs);
+                String min_sec;
+                if (millisUntilFinished >= panicMiliSec ) {
+                    min_sec = String.format("%d:%02d", min, dim_secs);
+                }else{
+                    long deci_sec = (millisUntilFinished %1000)/10;
+                    min_sec = String.format("%d:%02d:%03d", min, dim_secs,deci_sec);
+                }
 
                 mButton.setText(min_sec);
             }
 
             @Override
             public void onFinish() {
-                mButton.setText("00:00");
+                mButton.setText("0:00");
+                mButton.setBackgroundColor(0xff424242);
+                vibratorInterface.finishedTimer();
             }
+
         };
         setNonClickable();
         pausedTime = miliseconds;
@@ -98,13 +125,21 @@ public class TimerBackend {
                     long currentSec = pausedTime /1000;
                     long min = currentSec / 60;
                     long dim_secs = currentSec % 60;
-                    String min_sec = String.format("%d:%02d", min, dim_secs);
+                    String min_sec;
+                    if (millisUntilFinished >= panicMiliSec ) {
+                        min_sec = String.format("%d:%02d", min, dim_secs);
+                    }else{
+                        long deci_sec = (millisUntilFinished %1000)/10;
+                        min_sec = String.format("%d:%02d:%03d", min, dim_secs,deci_sec);
+                    }
 
                     mButton.setText(min_sec);
                 }
                 @Override
                 public void onFinish() {
-                    mButton.setText("00:00");
+                    mButton.setText("0:00");
+                    mButton.setBackgroundColor(0xff424242);
+                    vibratorInterface.finishedTimer();
 
                 }
             };
