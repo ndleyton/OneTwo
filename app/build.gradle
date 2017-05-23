@@ -7,8 +7,8 @@ android {
         applicationId "com.nicue.onetwo"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 7
-        versionName "1.1.0"
+        versionCode 8
+        versionName "1.1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

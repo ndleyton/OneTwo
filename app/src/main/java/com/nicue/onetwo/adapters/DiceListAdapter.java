@@ -1,6 +1,8 @@
 package com.nicue.onetwo.adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.support.v7.widget.RecyclerView;
@@ -76,6 +78,49 @@ public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHo
         String faces = mFaces.get(position);
         holder.mTextView.setText(number);
         holder.facesTextView.setText(faces);
+        int faces_int = Integer.parseInt(faces);
+        if (faces_int < 5){
+            holder.mImageView.setImageResource(R.drawable.triangle_2);
+            holder.mTextView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        }else if (faces_int < 7){
+            holder.mImageView.setImageResource(R.drawable.square_4);
+            holder.mTextView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        }else if (faces_int < 13){
+            holder.mImageView.setImageResource(R.drawable.penta_3);
+            holder.mTextView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        }else if (faces_int < 21){
+            holder.mImageView.setImageResource(R.drawable.hexa_1);
+            holder.mTextView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        }else{
+            holder.mImageView.setImageResource(R.drawable.hexa_0);
+        }
+
+        /*
+        Tried to add color randomly on dices, but they changed with every roll... maybe too psicodelic
+
+        int faces_int = Integer.parseInt(faces);
+        int random_color = random.nextInt(4)+1;
+        try {
+            if (faces_int < 5) {
+                Field field = R.drawable.class.getDeclaredField(String.format("triangle_%d",random_color));
+                int a = field.getInt(this);
+                holder.mImageView.setImageResource(a);
+            } else if (faces_int < 7) {
+                Field field = R.drawable.class.getDeclaredField(String.format("square_%d",random_color));
+                int a = field.getInt(this);
+                holder.mImageView.setImageResource(a);
+            } else if (faces_int < 13) {
+                Field field = R.drawable.class.getDeclaredField(String.format("penta_%d",random_color));
+                int a = field.getInt(this);
+                holder.mImageView.setImageResource(a);
+            } else if (faces_int < 21) {
+                Field field = R.drawable.class.getDeclaredField(String.format("hexa_%d",random_color));
+                int a = field.getInt(this);
+                holder.mImageView.setImageResource(a);
+            }
+        }catch (Exception e){e.printStackTrace();}
+
+         */
     }
 
     @Override
