@@ -142,6 +142,12 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
         npSeconds.setValue(0);
         npSeconds.setMaxValue(60);
         npSeconds.setMinValue(0);
+        npSeconds.setFormatter(new NumberPicker.Formatter() {
+            @Override
+            public String format(int index) {
+                return String.format("%02d",index);
+            }
+        });
         AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setView(alertView)
                 .setTitle("Set Time:")

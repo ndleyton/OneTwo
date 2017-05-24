@@ -82,16 +82,17 @@ public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHo
             holder.mImageView.setImageResource(R.drawable.triangle_2);
             holder.mTextView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         }else if (faces_int < 7){
-            holder.mImageView.setImageResource(R.drawable.square_4);
+            holder.mImageView.setImageResource(R.drawable.square_2);
             holder.mTextView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         }else if (faces_int < 13){
-            holder.mImageView.setImageResource(R.drawable.penta_3);
+            holder.mImageView.setImageResource(R.drawable.penta_2);
             holder.mTextView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         }else if (faces_int < 21){
-            holder.mImageView.setImageResource(R.drawable.hexa_1);
+            holder.mImageView.setImageResource(R.drawable.hexa_2);
             holder.mTextView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        }else{
+        }else if (faces_int <1000){
             holder.mImageView.setImageResource(R.drawable.hexa_0);
+            holder.mTextView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         }
 
         /*

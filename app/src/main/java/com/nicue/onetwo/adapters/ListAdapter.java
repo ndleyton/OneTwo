@@ -2,9 +2,11 @@ package com.nicue.onetwo.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
@@ -22,7 +24,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListAdapterVie
 
 
     private final ListAdapterOnClickHandler mClickHandler;
-
 
     /**
      * The interface that receives onClick messages.
@@ -64,10 +65,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListAdapterVie
     public class ListAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, NumberPicker.OnValueChangeListener, NumberPicker.OnScrollListener {
         public final TextView mTextView;
         public final NumberPicker numberPicker;
+        public final Button removeButton;
         private int scrollState_p = 0;
         public ListAdapterViewHolder(View view) {
             super(view);
             mTextView = (TextView) view.findViewById(R.id.tv_object_data);
+            removeButton = (Button) view.findViewById(R.id.remove_button);
             numberPicker = (NumberPicker) view.findViewById(R.id.number_picker);
             numberPicker.setMaxValue(99999);
             numberPicker.setMinValue(0);
@@ -76,6 +79,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListAdapterVie
             numberPicker.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
+                    v.performClick();
                     return true;
                 }
             });
@@ -85,18 +89,23 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListAdapterVie
         @Override
         public void onScrollStateChange(NumberPicker view, int scrollState) {
             this.scrollState_p = scrollState;
+            int pos = getAdapterPosition();
+            Log.d("zpos",String.valueOf(pos));
+            Log.d("zScrollState",String.valueOf(scrollState));
             if (scrollState == SCROLL_STATE_IDLE){
                 int actual_value = view.getValue();
                 int adapterPosition = getAdapterPosition();
                 String obj = mObjectsToCount.get(adapterPosition);
                 mClickHandler.onValueChanged(obj, actual_value);
-
             }
         }
 
         @Override
         public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-            if (this.scrollState_p == 0) {
+            int pos = getAdapterPosition();
+            Log.d("zpos",String.valueOf(pos));
+            Log.d("zScrollState",String.valueOf(this.scrollState_p));
+            if (this.scrollState_p == SCROLL_STATE_IDLE) {
                 int adapterPosition = getAdapterPosition();
                 String obj = mObjectsToCount.get(adapterPosition);
                 mClickHandler.onValueChanged(obj, newVal);
