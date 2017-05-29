@@ -52,7 +52,7 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
 
         mRecyclerView.setLayoutManager(layoutManager);
 
-        mListAdapter = new DiceListAdapter(this,this);
+        mListAdapter = new DiceListAdapter(this,this,getContext());
 
         /* Setting the adapter attaches it to the RecyclerView in our layout. */
         mRecyclerView.setAdapter(mListAdapter);
@@ -206,6 +206,9 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
                 handler.postDelayed(rollingRunnable, 280);
                 if (rand.nextBoolean()){
                     handler.postDelayed(rollingRunnable, 500);
+                    if (rand.nextBoolean()){
+                        handler.postDelayed(rollingRunnable, 700);
+                    }
                 }
             }
         }catch (Exception e){

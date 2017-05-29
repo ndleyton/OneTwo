@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,7 @@ import java.util.Random;
 
 public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHolder> {
 
+    private Context mContext;
     private final Handler handler = new Handler();
 
     public class RollingRunnable implements Runnable{
@@ -51,9 +53,10 @@ public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHo
     private Random random = new Random();
 
 
-    public DiceListAdapter(DiceAdapterOnClickHandler clickHandler, ItemClickListener clickListener ) {
+    public DiceListAdapter(DiceAdapterOnClickHandler clickHandler, ItemClickListener clickListener, Context context ) {
         mClickHandler = clickHandler;
         mClickListener = clickListener;
+        mContext = context;
     }
 
     public interface DiceAdapterOnClickHandler {
@@ -82,13 +85,13 @@ public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHo
             holder.mImageView.setImageResource(R.drawable.triangle_2);
             holder.mTextView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         }else if (faces_int < 7){
-            holder.mImageView.setImageResource(R.drawable.square_2);
+            holder.mImageView.setImageResource(R.drawable.square_1);
             holder.mTextView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         }else if (faces_int < 13){
-            holder.mImageView.setImageResource(R.drawable.penta_2);
+            holder.mImageView.setImageResource(R.drawable.penta_3);
             holder.mTextView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         }else if (faces_int < 21){
-            holder.mImageView.setImageResource(R.drawable.hexa_2);
+            holder.mImageView.setImageResource(R.drawable.hexa_4);
             holder.mTextView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         }else if (faces_int <1000){
             holder.mImageView.setImageResource(R.drawable.hexa_0);
