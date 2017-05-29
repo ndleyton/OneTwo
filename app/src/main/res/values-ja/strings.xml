@@ -6,6 +6,10 @@
     <string name="alert_tv_number">ライフ/スコア: </string>
     <string name="menu_counter">カウンター</string>
     <string name="menu_dice">サイコロ</string>
+    <string name="menu_counter_space">&#160;カウンター</string>
+    <string name="menu_dice_space">&#160;サイコロ</string>
+    <string name="menu_chooser_space">&#160;選択</string>
+    <string name="menu_timer_space">&#160;タイマー</string>
     <string name="drawer_open">ナビゲーションドロワーを開く</string>
     <string name="drawer_close">ナビゲーションドロワーを閉じる</string>
     <string name="nav_header">OneTwo</string>

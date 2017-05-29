@@ -4,8 +4,7 @@
         <item
             android:id="@+id/nav_first_fragment"
             android:icon="@drawable/counter"
-            android:title="@string/menu_counter"
-            android:checked="true"/>
+            android:title="@string/menu_counter" />
         <item
             android:id="@+id/nav_second_fragment"
             android:icon="@drawable/dice_multiple"

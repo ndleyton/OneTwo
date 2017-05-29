@@ -142,12 +142,14 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
 
         final NumberPicker npMinutes = (NumberPicker) alertView.findViewById(R.id.minute_picker);
         final NumberPicker npSeconds = (NumberPicker) alertView.findViewById(R.id.seconds_picker);
+        long showSecs = (setMiliSeconds/1000)%60;
+        long showMins = (setMiliSeconds/1000)/60;
         npMinutes.setMinValue(0);
         npMinutes.setMaxValue(999);
-        npMinutes.setValue(5);
-        npSeconds.setValue(0);
+        npMinutes.setValue((int) showMins);
         npSeconds.setMaxValue(60);
         npSeconds.setMinValue(0);
+        npSeconds.setValue((int) showSecs);
         npSeconds.setFormatter(new NumberPicker.Formatter() {
             @Override
             public String format(int index) {

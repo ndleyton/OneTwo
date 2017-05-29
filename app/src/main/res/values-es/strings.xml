@@ -6,6 +6,10 @@
     <string name="alert_tv_number">Lives/Score: </string>
     <string name="menu_counter">Counter</string>
     <string name="menu_dice">Dice</string>
+    <string name="menu_counter_space">&#160;Counter</string>
+    <string name="menu_dice_space">&#160;Dice</string>
+    <string name="menu_chooser_space">&#160;Choose</string>
+    <string name="menu_timer_space">&#160;Timer</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="nav_header">OneTwo</string>

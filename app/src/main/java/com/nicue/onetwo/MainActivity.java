@@ -4,6 +4,7 @@ import android.content.res.Configuration;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import com.nicue.onetwo.fragments.ChooserFragment;
 import com.nicue.onetwo.fragments.CounterFragment;
 import com.nicue.onetwo.fragments.DiceFragment;
+import com.nicue.onetwo.fragments.StartFragment;
 import com.nicue.onetwo.fragments.TimerFragment;
 
 
@@ -77,24 +79,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.m_content, firstFragment).commit();
             //actionTitle.setText(((CounterFragment) firstFragment).getTitle());
-            currentTitleString = "Counter";
+            currentTitleString = getString(R.string.menu_counter);
             actionTitle.setText(currentTitleString);
+
         }else{
             Fragment tempFragment = getSupportFragmentManager().findFragmentById(R.id.m_content);
 
             if (tempFragment instanceof CounterFragment){
-                currentTitleString = "Counter";
+                currentTitleString = getString(R.string.menu_counter);
 
             }else if (tempFragment instanceof DiceFragment){
-                currentTitleString = "Dice";
+                currentTitleString = getString(R.string.menu_dice);
                 rollAllButton.setVisibility(View.VISIBLE);
 
             }else if (tempFragment instanceof ChooserFragment){
-                currentTitleString = "Chooser";
+                currentTitleString = getString(R.string.menu_chooser);
                 mSwitch.setVisibility(View.VISIBLE);
 
             }else if (tempFragment instanceof TimerFragment){
-                currentTitleString = "Timer";
+                currentTitleString = getString(R.string.menu_counter);
                 delTimerButton.setVisibility(View.VISIBLE);
                 addTimerButton.setVisibility(View.VISIBLE);
 
@@ -102,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             actionTitle.setText(currentTitleString);
 
         }
-
 
 
     }
@@ -256,6 +258,111 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (tempFragment instanceof TimerFragment){
             ((TimerFragment) tempFragment).delTimer();
         }
+    }
+
+    public void counterClicked(View v){
+        Fragment fragment = null;
+        Class fragmentClass;
+        fragmentClass = CounterFragment.class;
+        mSwitch.setVisibility(View.INVISIBLE);
+        rollAllButton.setVisibility(View.INVISIBLE);
+        delTimerButton.setVisibility(View.INVISIBLE);
+        addTimerButton.setVisibility(View.INVISIBLE);
+
+
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.m_content, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+
+
+        // Highlight the selected item has been done by NavigationView
+        nvDrawer.getMenu().getItem(0).setChecked(true);
+        // Set action bar title
+        currentTitleString = nvDrawer.getMenu().getItem(0).getTitle().toString();
+        actionTitle.setText(currentTitleString);
+
+    }
+    public void timerClicked(View v){
+        Fragment fragment = null;
+        Class fragmentClass;
+        fragmentClass = TimerFragment.class;
+        mSwitch.setVisibility(View.INVISIBLE);
+        rollAllButton.setVisibility(View.INVISIBLE);
+        delTimerButton.setVisibility(View.VISIBLE);
+        addTimerButton.setVisibility(View.VISIBLE);
+
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.m_content, fragment).commit();
+
+        // Highlight the selected item has been done by NavigationView
+        nvDrawer.getMenu().getItem(3).setChecked(true);
+        // Set action bar title
+        currentTitleString = nvDrawer.getMenu().getItem(0).getTitle().toString();
+        actionTitle.setText(currentTitleString);
+
+    }
+    public void diceClicked(View v){
+        Fragment fragment = null;
+        Class fragmentClass;
+        fragmentClass = DiceFragment.class;
+        mSwitch.setVisibility(View.INVISIBLE);
+        rollAllButton.setVisibility(View.VISIBLE);
+        delTimerButton.setVisibility(View.INVISIBLE);
+        addTimerButton.setVisibility(View.INVISIBLE);
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.m_content, fragment).commit();
+
+        // Highlight the selected item has been done by NavigationView
+        nvDrawer.getMenu().getItem(1).setChecked(true);
+        // Set action bar title
+        currentTitleString = nvDrawer.getMenu().getItem(0).getTitle().toString();
+        actionTitle.setText(currentTitleString);
+
+    }
+    public void chooserClicked(View v){
+        Fragment fragment = null;
+        Class fragmentClass;
+        fragmentClass = ChooserFragment.class;
+        mSwitch.setVisibility(View.VISIBLE);
+        rollAllButton.setVisibility(View.INVISIBLE);
+        delTimerButton.setVisibility(View.INVISIBLE);
+        addTimerButton.setVisibility(View.INVISIBLE);
+        mSwitch.setChecked(false);
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.m_content, fragment).commit();
+
+        // Highlight the selected item has been done by NavigationView
+        nvDrawer.getMenu().getItem(2).setChecked(true);
+        // Set action bar title
+        currentTitleString = nvDrawer.getMenu().getItem(0).getTitle().toString();
+        actionTitle.setText(currentTitleString);
+
     }
 
 
