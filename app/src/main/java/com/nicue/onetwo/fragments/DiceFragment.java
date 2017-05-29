@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -57,6 +58,19 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
         mRecyclerView.setAdapter(mListAdapter);
 
         FloatingActionButton fab_dice = (FloatingActionButton) diceView.findViewById(R.id.fab_dice);
+
+        fab_dice.setScaleX(0);
+        fab_dice.setScaleY(0);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab_dice);
+                fab.animate().scaleX(1).setInterpolator(new DecelerateInterpolator(2)).start();
+                fab.animate().scaleY(1).setInterpolator(new DecelerateInterpolator(2)).start();
+                //fab.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
+
+            }}, 300);
         fab_dice.setOnClickListener(this);
         mRecyclerView = (RecyclerView) diceView.findViewById(R.id.recyclerview_dice);
         readItems();

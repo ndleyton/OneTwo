@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -18,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -70,12 +72,29 @@ public class CounterFragment extends android.support.v4.app.Fragment implements 
         mRecyclerView.setAdapter(mListAdapter);
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+
+
+        //fab.setTranslationY(fab.getHeight() + 512);
+        fab.setScaleX(0);
+        fab.setScaleY(0);
+
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+                fab.animate().scaleX(1).setInterpolator(new DecelerateInterpolator(2)).start();
+                fab.animate().scaleY(1).setInterpolator(new DecelerateInterpolator(2)).start();
+                //fab.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
+
+            }}, 300);
         fab.setOnClickListener(this);
         //getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         updateUI();
 
         return view;
     }
+
 
     @Override
     public void onClick(View v) {

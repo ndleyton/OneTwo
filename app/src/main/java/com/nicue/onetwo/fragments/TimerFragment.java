@@ -62,6 +62,12 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        stopAllTimers();
+        super.onDestroyView();
+    }
+
     public void addChrono() {
         mInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View va = mInflater.inflate(R.layout.list_item_timer, null, false);
@@ -206,6 +212,14 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
             }
         }
     }
+
+    public void stopAllTimers(){
+        for (TimerBackend tb:mTimers
+                ) {
+            tb.deleteTimer();
+        }
+    }
+
     //The current height of the available screen space, in dp units
     // corresponding to screen height resource qualifier.
     public int getScreenHeight(){

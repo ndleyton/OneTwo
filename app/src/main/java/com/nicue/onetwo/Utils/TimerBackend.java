@@ -55,6 +55,7 @@ public class TimerBackend {
                 mButton.setText("0:00");
                 mButton.setBackgroundColor(0xff424242);
                 vibratorInterface.finishedTimer();
+                setTimertoZero();
             }
         };
         pausedTime = defaulTime;
@@ -95,6 +96,7 @@ public class TimerBackend {
                 mButton.setText("0:00");
                 mButton.setBackgroundColor(0xff424242);
                 vibratorInterface.finishedTimer();
+                setTimertoZero();
             }
 
         };
