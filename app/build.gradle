@@ -7,13 +7,13 @@ android {
         applicationId "com.nicue.onetwo"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 12
-        versionName "1.1.4"
+        versionCode 13
+        versionName "1.1.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

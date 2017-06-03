@@ -18,11 +18,14 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.nicue.onetwo.Utils.TimerBackend;
 import com.nicue.onetwo.fragments.ChooserFragment;
 import com.nicue.onetwo.fragments.CounterFragment;
 import com.nicue.onetwo.fragments.DiceFragment;
 import com.nicue.onetwo.fragments.StartFragment;
 import com.nicue.onetwo.fragments.TimerFragment;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
@@ -37,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Fragment firstFragment;
     private boolean switchOn = false;
     private String currentTitleString;
+    private ArrayList<TimerBackend> timerBackends = new ArrayList<>();
 
     private ActionBarDrawerToggle drawerToggle;
 
@@ -105,8 +109,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             actionTitle.setText(currentTitleString);
 
         }
-
-
     }
 
     @Override
@@ -164,6 +166,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void selectDrawerItem(MenuItem menuItem) {
+        // Let's check first if the fragment is the timer, to save its values
+        Fragment tempFragment = getSupportFragmentManager().findFragmentById(R.id.m_content);
+
+        if (tempFragment instanceof TimerFragment){
+            timerBackends = ((TimerFragment) tempFragment).getData();
+        }
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Fragment fragment = null;
         Class fragmentClass;
@@ -203,6 +211,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         try {
             fragment = (Fragment) fragmentClass.newInstance();
+
+            // now we fill the timerFragment if that's what we selected
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -217,6 +227,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         actionTitle.setText(currentTitleString);
         // Close the navigation drawer
         mDrawer.closeDrawers();
+
     }
 
 
@@ -258,6 +269,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (tempFragment instanceof TimerFragment){
             ((TimerFragment) tempFragment).delTimer();
         }
+    }
+
+    public void loadTimersData(){
+        Fragment tempFragment2 = getSupportFragmentManager().findFragmentById(R.id.m_content);
+
+        if (tempFragment2 instanceof TimerFragment){
+            if (timerBackends.size()>0) {
+                ((TimerFragment) tempFragment2).setData(timerBackends);
+            }
+        }
+        timerBackends.clear();
     }
 
     public void counterClicked(View v){
@@ -364,8 +386,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         actionTitle.setText(currentTitleString);
 
     }
-
-
 
     /*
     public void rollDice(View view){

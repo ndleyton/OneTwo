@@ -2,6 +2,7 @@ package com.nicue.onetwo.Utils;
 
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -308,9 +309,12 @@ public class TouchDisplayView extends View {
 
     // calculated radiuses in px
     private float mCircleRadius;
+    private int mScreenWidth;
 
     private Paint mCirclePaint = new Paint();
     private Paint mTextPaint = new Paint();
+    private Paint mStrokePaint = new Paint();
+    private Paint mTransStrokePaint = new Paint();
 
     private static final int BACKGROUND_ACTIVE = Color.WHITE;
 
@@ -320,12 +324,22 @@ public class TouchDisplayView extends View {
         // Calculate radiuses i n px from dp based on screen density
         float density = getResources().getDisplayMetrics().density;
         mCircleRadius = CIRCLE_RADIUS_DP * density;
+        //we want to know the screen width to make the white text remain in the screen
+        Configuration configuration = getContext().getResources().getConfiguration();
+        mScreenWidth = configuration.smallestScreenWidthDp * (int) density ;
         //mCircleHistoricalRadius = CIRCLE_HISTORICAL_RADIUS_DP * density;
 
         // Setup text paint for circle label
         mTextPaint.setTextSize(30f*density);
+        mStrokePaint.setTextSize(30f*density);
         mTextPaint.setColor(Color.WHITE);
+        mStrokePaint.setColor(Color.WHITE);
+        mTransStrokePaint.setColor(Color.WHITE);
         mTextPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        mStrokePaint.setStyle(Paint.Style.STROKE);
+        mStrokePaint.setStrokeWidth(6f* density);
+        mTransStrokePaint.setStyle(Paint.Style.STROKE);
+        mTransStrokePaint.setStrokeWidth(6f* density);
 
     }
 
@@ -343,15 +357,34 @@ public class TouchDisplayView extends View {
         if(alreadyChosen){
             int place = indexInArray(randomArray, id) +1;
             if (chosenId == id){
-                canvas.drawText("Chosen", data.x + radius, data.y
-                        - radius, mTextPaint);
+                //We draw he circle first to be under the text
                 canvas.drawCircle(data.x, (data.y) - half_r, radius + 10,
-                        mTextPaint);
+                        mStrokePaint);
+                //Here we can add more circles for more visibility of chosen one;
+                mTransStrokePaint.setAlpha(125);
+                canvas.drawCircle(data.x, (data.y) - half_r, radius + 50,
+                        mTransStrokePaint);
+                mTransStrokePaint.setAlpha(50);
+                canvas.drawCircle(data.x, (data.y) - half_r, radius + 90,
+                        mTransStrokePaint);
+                if ((data.x + radius + 20)<mScreenWidth ) {
+                    canvas.drawText("Chosen", data.x + radius, data.y
+                            - radius, mTextPaint);
+                }else{
+                    canvas.drawText("Chosen", data.x - radius -100, data.y
+                            - radius - 90, mTextPaint);
+                }
+
                 drawBig = false;
             }else{ // With this line we are giving it a random order
                 if (choosingOrder) {
-                    canvas.drawText(String.valueOf(place), data.x + radius+20, data.y
-                            - radius -20, mTextPaint);
+                    if ((data.x + radius + 20)<mScreenWidth ) {
+                        canvas.drawText(String.valueOf(place), data.x + radius + 20, data.y
+                                - radius - 20, mTextPaint);
+                    }else{
+                        canvas.drawText(String.valueOf(place), data.x - radius-40, data.y
+                                        - radius -20, mTextPaint);
+                    }
 
                     // uncomment this to add a second indicator of order
                     //canvas.drawText(String.valueOf(place), data.x - radius-20, data.y

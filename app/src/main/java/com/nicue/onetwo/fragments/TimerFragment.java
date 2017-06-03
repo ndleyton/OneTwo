@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
 
+import com.nicue.onetwo.MainActivity;
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.Utils.TimerBackend;
 
@@ -36,9 +37,17 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
     private long setMiliSeconds = 300000;
 
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setRetainInstance(true); // to persist data on rotation
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        isPaused = true;
         View view = inflater.inflate(R.layout.timer_layout, container, false);
         exteriorLayout = (LinearLayout) view.findViewById(R.id.timer_r_layout);
         playButton = (Button) view.findViewById(R.id.play_button);
@@ -46,11 +55,16 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
         mLayout = (LinearLayout) exteriorLayout.findViewById(R.id.linear_timers);
         mInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
+        ((MainActivity)getActivity()).loadTimersData();
+        Log.d("mTimers0",String.valueOf(mTimers));
+
+        playButton.setOnClickListener(this);
+        editButton.setOnClickListener(this);
+
+        /*
         View v = mInflater.inflate(R.layout.list_item_timer, null, false);
         Button button = (Button) v.findViewById(R.id.chrono);
         button.setOnClickListener(this);
-        playButton.setOnClickListener(this);
-        editButton.setOnClickListener(this);
 
         TimerBackend timerBackend = new TimerBackend(v,this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 50,1);
@@ -58,7 +72,33 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
 
         v.setFitsSystemWindows(true);
         mTimers.add(timerBackend);
-        addChrono();
+        */
+        int timersCount = mTimers.size();
+        Log.d("mTimers1",String.valueOf(mTimers));
+        if (timersCount == 0) {
+            addChrono();
+            addChrono();
+        }else{
+            if (runningTimer >= maxTimers()){
+                runningTimer=0;
+            }
+
+            long[] times = new long[mTimers.size()];
+            for (int j=0;j<times.length;j++){
+                times[j]=mTimers.get(j).getPausedTime();
+            }
+            for (TimerBackend tb: mTimers){
+                tb.deleteTimer();
+            }
+            mTimers.clear();
+            for (int i=0;i<times.length;i++){
+                if (i<maxTimers()) {
+                    long time = times[i];
+                    addChronoTimed(time);
+                }
+            }
+        }
+        Log.d("mTimers2",String.valueOf(mTimers));
         return view;
     }
 
@@ -76,6 +116,27 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
         button.setOnClickListener(this);
 
         TimerBackend timerBackend = new TimerBackend(va, setMiliSeconds,this);
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,50,1);
+        mLayout.addView(va, lp);
+        mTimers.add(timerBackend);
+
+        //turn the first timer if there is only 2 of them
+        if (mTimers.size() == 2){
+            mTimers.get(0).getmView().setRotation(180);
+        }else{
+            mTimers.get(0).getmView().setRotation(0);
+        }
+    }
+
+    public void addChronoTimed(long miliseconds) {
+        mInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View va = mInflater.inflate(R.layout.list_item_timer, null, false);
+        va.setFitsSystemWindows(true);
+        Button button = (Button) va.findViewById(R.id.chrono);
+        button.setOnClickListener(this);
+
+        TimerBackend timerBackend = new TimerBackend(va, miliseconds,this);
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,50,1);
         mLayout.addView(va, lp);
@@ -221,6 +282,20 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
             tb.deleteTimer();
         }
     }
+
+    public ArrayList<TimerBackend> getData(){
+        return mTimers;
+    }
+
+    public void setData(ArrayList<TimerBackend> timers){
+        mTimers.clear();
+
+        for (int i=0;i<timers.size();i++){
+            long time = timers.get(i).getPausedTime();
+            addChronoTimed(time);
+         }
+    }
+
 
     //The current height of the available screen space, in dp units
     // corresponding to screen height resource qualifier.
