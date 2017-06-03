@@ -367,7 +367,7 @@ public class TouchDisplayView extends View {
                 mTransStrokePaint.setAlpha(50);
                 canvas.drawCircle(data.x, (data.y) - half_r, radius + 90,
                         mTransStrokePaint);
-                if ((data.x + radius + 20)<mScreenWidth ) {
+                if ((data.x + radius + 50)<mScreenWidth ) {
                     canvas.drawText("Chosen", data.x + radius, data.y
                             - radius, mTextPaint);
                 }else{

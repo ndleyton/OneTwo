@@ -35,6 +35,7 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
     private int runningTimer = 0;   // Could change this to initiate when you press a timer
     private boolean isPaused = true;
     private long setMiliSeconds = 300000;
+    private long[] persistanceData = new long[]{};
 
 
     @Override
@@ -56,7 +57,6 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
         mInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         ((MainActivity)getActivity()).loadTimersData();
-        Log.d("mTimers0",String.valueOf(mTimers));
 
         playButton.setOnClickListener(this);
         editButton.setOnClickListener(this);
@@ -74,7 +74,6 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
         mTimers.add(timerBackend);
         */
         int timersCount = mTimers.size();
-        Log.d("mTimers1",String.valueOf(mTimers));
         if (timersCount == 0) {
             addChrono();
             addChrono();
@@ -87,7 +86,7 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
             for (int j=0;j<times.length;j++){
                 times[j]=mTimers.get(j).getPausedTime();
             }
-            for (TimerBackend tb: mTimers){
+            for (TimerBackend tb: mTimers){  //Se eliminan timers anteriores
                 tb.deleteTimer();
             }
             mTimers.clear();
@@ -98,7 +97,6 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
                 }
             }
         }
-        Log.d("mTimers2",String.valueOf(mTimers));
         return view;
     }
 
@@ -294,6 +292,14 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
             long time = timers.get(i).getPausedTime();
             addChronoTimed(time);
          }
+    }
+    public void setPersistanceData(ArrayList<TimerBackend> timers){
+        persistanceData = new long[]{timers.size()};
+
+        for (int i=0;i<persistanceData.length;i++){
+            long time = timers.get(i).getPausedTime();
+            addChronoTimed(time);
+        }
     }
 
 
