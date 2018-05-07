@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">UnDeux</string>
+    <string name="instruction">Appuyez sur le bouton pour ajouter un score</string>
+    <string name="add_counter">Ajouter un score</string>
+    <string name="alert_tv_object">Qui joue?</string>
+    <string name="alert_tv_number">Vies/Score</string>
+    <string name="menu_counter">Score</string>
+    <string name="menu_dice">Dé</string>
+    <string name="menu_chooser">Choisir</string>
+    <string name="menu_timer">Minuteur</string>
+    <string name="menu_counter_space">Score</string>
+    <string name="menu_dice_space">Dé</string>
+    <string name="menu_chooser_space">Choisir</string>
+    <string name="menu_timer_space">Minuteur</string>
+    <string name="drawer_open">Ouvrir la fenêtre de navigation</string>
+    <string name="drawer_close">Fermer la fenêtre de navigation</string>
+    <string name="nav_header">UnDeux</string>
+    <string name="dice_title">Nombre de faces du dé</string>
+    <string name="touch_me">Posez un doigt chacun pour choisir parmi vous</string>
+    <string name="edit">Éditer</string>
+    <string name="roll_all">Tout lancer</string>
+    <string name="add_timer">Ajouter</string>
+    <string name="remove_timer">Enlever</string>
+    <string name="order">Ordonné</string>
+    <string name="play">Jouer</string>
+    <string name="pause">Pause</string>
+    <string name="counter_instruction">Appuyez sur le bouton pour ajouter un score ou balayez vers la droite pour plus d\'options</string>
+
+</resources>
