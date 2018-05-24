@@ -21,6 +21,7 @@
     <string name="roll_all">Tout lancer</string>
     <string name="add_timer">Ajouter</string>
     <string name="remove_timer">Enlever</string>
+    <string name="space">      </string>
     <string name="order">Ordonné</string>
     <string name="play">Jouer</string>
     <string name="pause">Pause</string>
