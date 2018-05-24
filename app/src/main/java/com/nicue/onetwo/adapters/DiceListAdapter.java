@@ -45,6 +45,26 @@ public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHo
         }
     }
 
+    public class SetViewRunnable implements Runnable{
+        private TextView mView;
+        private int mMaxDice;
+
+        public SetViewRunnable (TextView v, int maxDice){
+            mView = v;
+            mMaxDice = maxDice;
+        }
+        @Override
+        public void run() {
+            realRun(mView, mMaxDice);
+        }
+
+        public void realRun(TextView v, int maxDice){
+            int new_num = random.nextInt(maxDice) + 1;
+            v.setText(String.valueOf(new_num));
+        }
+    }
+
+
     private ArrayList<String> mFaces = new ArrayList<>();
     private ArrayList<String> mData = new ArrayList<>();
     private LayoutInflater mInflater;
@@ -161,10 +181,12 @@ public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHo
             mData.set(pos, String.valueOf(new_num));
             notifyDataSetChanged();
             RollingRunnable rollingRunnable = new RollingRunnable(pos, max_dice);
-            handler.postDelayed(rollingRunnable, 50);
-            handler.postDelayed(rollingRunnable, 110);
-            handler.postDelayed(rollingRunnable, 190);
-            handler.postDelayed(rollingRunnable, 280);
+            // SetViewRunnable just changes textView
+            //SetViewRunnable setViewRunnable = new SetViewRunnable(mTextView, max_dice);
+            handler.postDelayed(rollingRunnable, 60);
+            handler.postDelayed(rollingRunnable, 130);
+            handler.postDelayed(rollingRunnable, 210);
+            handler.postDelayed(rollingRunnable, 320);
             if (random.nextBoolean()){
                 handler.postDelayed(rollingRunnable, 500);
             }

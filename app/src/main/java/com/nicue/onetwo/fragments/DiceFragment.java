@@ -193,24 +193,32 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
             final int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
             final int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
             Vibrator vibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
-            long[] pattern = {0,15,10,15,10,15,10,15,10,15,10,15,10,15};
+            long[] pattern = {0,15,10,15,10,15,10,15,10,15,10,15,10,15,15,10,15,10,15,10,15};
             vibrator.vibrate(pattern,-1);
             for (int i = firstVisibleItemPosition; i <= lastVisibleItemPosition; ++i) {
                 DiceListAdapter.ViewHolder holder = (DiceListAdapter.ViewHolder) mRecyclerView.findViewHolderForAdapterPosition(i);
                 int max_dice = Integer.valueOf(holder.facesTextView.getText().toString());
                 ExteriorRollingRunnable rollingRunnable = new ExteriorRollingRunnable(holder.mTextView, max_dice);
                 handler.post(rollingRunnable);
-                handler.postDelayed(rollingRunnable, 50);
-                handler.postDelayed(rollingRunnable, 110);
-                handler.postDelayed(rollingRunnable, 190);
-                handler.postDelayed(rollingRunnable, 280);
+                handler.postDelayed(rollingRunnable, 60);
+                handler.postDelayed(rollingRunnable, 130);
+                handler.postDelayed(rollingRunnable, 220);
+                handler.postDelayed(rollingRunnable, 300);
+                /*
                 if (rand.nextBoolean()){
                     handler.postDelayed(rollingRunnable, 500);
                     if (rand.nextBoolean()){
                         handler.postDelayed(rollingRunnable, 700);
                     }
                 }
+                */
             }
+            delayedThowAllDice(500);
+            delayedThowSomeDice(750);
+
+
+
+
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -235,6 +243,42 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
             v.setText(String.valueOf(new_num));
 
         }
+    }
+
+    public void delayedThowAllDice(int milisec) {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                int diceNumber = mFaces.size();
+                int dieFaces;
+                for (int i=0; i<diceNumber;i++){
+                    dieFaces = Integer.parseInt(mFaces.get(i));
+                    int new_num = rand.nextInt(dieFaces) + 1;
+                    mItems.set(i, String.valueOf(new_num));
+                }
+                mListAdapter.setmData(mItems, mFaces);
+                mListAdapter.notifyDataSetChanged();
+            }
+
+        }, milisec);
+    }
+    public void delayedThowSomeDice(int milisec) {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                int diceNumber = mFaces.size();
+                int dieFaces;
+                for (int i=0; i<diceNumber;i++){
+                    if(rand.nextBoolean()){continue;}
+                    dieFaces = Integer.parseInt(mFaces.get(i));
+                    int new_num = rand.nextInt(dieFaces) + 1;
+                    mItems.set(i, String.valueOf(new_num));
+                }
+                mListAdapter.setmData(mItems, mFaces);
+                mListAdapter.notifyDataSetChanged();
+            }
+
+        }, milisec);
     }
 }
 
