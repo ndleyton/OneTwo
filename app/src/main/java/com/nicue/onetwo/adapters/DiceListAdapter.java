@@ -1,11 +1,9 @@
 package com.nicue.onetwo.adapters;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Vibrator;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -180,7 +178,8 @@ public class DiceListAdapter extends RecyclerView.Adapter<DiceListAdapter.ViewHo
             int new_num = random.nextInt(max_dice) + 1;
             mData.set(pos, String.valueOf(new_num));
             notifyDataSetChanged();
-            RollingRunnable rollingRunnable = new RollingRunnable(pos, max_dice);
+            RollingRunnable rollingRunnable;
+            rollingRunnable = new RollingRunnable(pos, max_dice);
             // SetViewRunnable just changes textView
             //SetViewRunnable setViewRunnable = new SetViewRunnable(mTextView, max_dice);
             handler.postDelayed(rollingRunnable, 60);
