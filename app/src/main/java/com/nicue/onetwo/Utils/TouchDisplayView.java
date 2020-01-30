@@ -95,6 +95,20 @@ public class TouchDisplayView extends View {
     // Is there an active touch?
     private boolean mHasTouch = false;
 
+    public void reset() {
+        fingersDown = false;
+        alreadyChosen = false;
+        chosenColor = 0;
+        chosenId = -1;
+        randomArray = new int[0];
+        // SparseArray for touch events, indexed by touch id
+        mTouches = new SparseArray<TouchHistory>(10);
+
+        initialisePaint();
+        // trigger redraw on UI thread
+        this.postInvalidate();
+    }
+
     /**
      * Holds data related to a touch pointer,
      * object pool using {} and recycle to reuse
@@ -154,114 +168,124 @@ public class TouchDisplayView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        final int action = event.getAction();
+        if(!alreadyChosen) { // Do not delete display if chosen done
 
+            final int action = event.getAction();
 
-        switch (action & MotionEvent.ACTION_MASK) {
+            switch (action & MotionEvent.ACTION_MASK) {
 
-            case MotionEvent.ACTION_DOWN: {
-                //fingers = 1;
-                // first pressed gesture has started
+                case MotionEvent.ACTION_DOWN: {
 
-                int id = event.getPointerId(0);
+                    // TODO remove
+                    //fingersDown = true;
 
-                TouchHistory data = TouchHistory.obtain(event.getX(0), event.getY(0),
-                        event.getPressure(0));
+                    //fingers = 1;
+                    // first pressed gesture has started
 
-                //Store the data under its pointer identifier. The pointer number stays consistent
-                mTouches.put(id, data);
+                    int id = event.getPointerId(0);
 
-                Vibrator v = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
-                v.vibrate(20);
+                    TouchHistory data = TouchHistory.obtain(event.getX(0), event.getY(0),
+                            event.getPressure(0));
 
-                mHasTouch = true;
+                    //Store the data under its pointer identifier. The pointer number stays consistent
+                    mTouches.put(id, data);
 
-                break;
-            }
+                    Vibrator v = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
+                    v.vibrate(20);
 
-            case MotionEvent.ACTION_POINTER_DOWN: {
+                    mHasTouch = true;
 
-                fingersDown = true;
-                //fingers ++ ;
+                    // TODO remove
+                    //handler.postDelayed(runnable, 1500);
 
-                /*
-                 * A non-primary pointer has gone down, after an event for the
-                 * primary pointer (ACTION_DOWN) has already been received.
-                 */
-                int index = event.getActionIndex();
-                int id = event.getPointerId(index);
+                    break;
+                }
 
-                TouchHistory data = TouchHistory.obtain(event.getX(index), event.getY(index),
-                        event.getPressure(index));
-                //data.label = "id: " + id;
+                case MotionEvent.ACTION_POINTER_DOWN: {
 
-                Vibrator v = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
-                v.vibrate(20);
+                    fingersDown = true;
+                    //fingers ++ ;
 
-                /*
-                 * Store the data under its pointer identifier. The index of
-                 * this pointer can change over multiple events, but this
-                 * pointer is always identified by the same identifier for this
-                 * active gesture.
-                 */
-                mTouches.put(id, data);
-                handler.postDelayed(runnable, 1500);
-
-                break;
-            }
-
-            case MotionEvent.ACTION_UP: {
-                //fingers = 0;
-                /*
-                 * Final pointer has gone up and has ended the last pressed
-                 * gesture.
-                 */
-
-                int id = event.getPointerId(0);
-                TouchHistory data = mTouches.get(id);
-                mTouches.remove(id);
-                data.recycle();
-
-                mHasTouch = false;
-
-                break;
-            }
-
-            case MotionEvent.ACTION_POINTER_UP: {
-                fingersDown = false;
-                alreadyChosen = false;
-                randomArray = new int[0];
-                //fingers --;
-                handler.removeCallbacks(runnable);
-                /*
-                 * A non-primary pointer has gone up and other pointers are
-                 * still active.
-                 */
-
-                int index = event.getActionIndex();
-                int id = event.getPointerId(index);
-
-                TouchHistory data = mTouches.get(id);
-                mTouches.remove(id);
-                data.recycle();
-
-                break;
-            }
-
-            case MotionEvent.ACTION_MOVE: {
-
-                for (int index = 0; index < event.getPointerCount(); index++) {
-                    // get pointer id for data stored at this index
+                    /*
+                     * A non-primary pointer has gone down, after an event for the
+                     * primary pointer (ACTION_DOWN) has already been received.
+                     */
+                    int index = event.getActionIndex();
                     int id = event.getPointerId(index);
 
-                    // get the data stored externally about this pointer.
-                    TouchHistory data = mTouches.get(id);
-
-                    //add new values
-                    data.setTouch(event.getX(index), event.getY(index),
+                    TouchHistory data = TouchHistory.obtain(event.getX(index), event.getY(index),
                             event.getPressure(index));
+                    //data.label = "id: " + id;
+
+                    Vibrator v = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
+                    v.vibrate(20);
+
+                    /*
+                     * Store the data under its pointer identifier. The index of
+                     * this pointer can change over multiple events, but this
+                     * pointer is always identified by the same identifier for this
+                     * active gesture.
+                     */
+                    mTouches.put(id, data);
+                    handler.postDelayed(runnable, 1500);
+
+                    break;
                 }
-                break;
+
+                case MotionEvent.ACTION_UP: {
+                    //fingers = 0;
+                    /*
+                     * Final pointer has gone up and has ended the last pressed
+                     * gesture.
+                     */
+
+                    int id = event.getPointerId(0);
+                    TouchHistory data = mTouches.get(id);
+                    mTouches.remove(id);
+                    data.recycle();
+
+                    mHasTouch = false;
+                    handler.removeCallbacks(runnable);
+
+                    break;
+                }
+
+                case MotionEvent.ACTION_POINTER_UP: {
+                    fingersDown = false;
+                    alreadyChosen = false;
+                    randomArray = new int[0];
+                    //fingers --;
+                    handler.removeCallbacks(runnable);
+                    /*
+                     * A non-primary pointer has gone up and other pointers are
+                     * still active.
+                     */
+
+                    int index = event.getActionIndex();
+                    int id = event.getPointerId(index);
+
+                    TouchHistory data = mTouches.get(id);
+                    mTouches.remove(id);
+                    data.recycle();
+
+                    break;
+                }
+
+                case MotionEvent.ACTION_MOVE: {
+
+                    for (int index = 0; index < event.getPointerCount(); index++) {
+                        // get pointer id for data stored at this index
+                        int id = event.getPointerId(index);
+
+                        // get the data stored externally about this pointer.
+                        TouchHistory data = mTouches.get(id);
+
+                        //add new values
+                        data.setTouch(event.getX(index), event.getY(index),
+                                event.getPressure(index));
+                    }
+                    break;
+                }
             }
         }
 

@@ -24,4 +24,7 @@ public class ChooserFragment extends Fragment{
     public void setChoosingOrder(boolean b){
         mView.setChoosingOrder(b);
     }
+    public void resetChooser(){
+        mView.reset();
+    }
 }

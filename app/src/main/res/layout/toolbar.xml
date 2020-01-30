@@ -50,14 +50,23 @@
         android:text="@string/roll_all"
         android:visibility="invisible" />
 
-    <Switch
-        android:id="@+id/toolbar_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:text="@string/order"
-        android:visibility="invisible"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"/>
+    <Button
+            android:id="@+id/reset_chosen_button"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/toolbar_switch"
+            android:text="@string/reset"
+            android:visibility="invisible" />
+
+        <Switch
+            android:id="@+id/toolbar_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:padding="8dp"
+            android:text="@string/order"
+            android:visibility="invisible" />
     </RelativeLayout>
 </android.support.v7.widget.Toolbar>

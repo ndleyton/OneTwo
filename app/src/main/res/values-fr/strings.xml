@@ -26,5 +26,6 @@
     <string name="play">Jouer</string>
     <string name="pause">Pause</string>
     <string name="counter_instruction">Appuyez sur le bouton pour ajouter un score ou balayez vers la droite pour plus d\'options</string>
+    <string name="reset">Reset</string>
 
 </resources>
