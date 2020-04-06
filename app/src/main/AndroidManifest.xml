@@ -14,9 +14,9 @@
             android:name=".MainActivity"
             android:windowSoftInputMode="adjustPan|adjustResize|stateAlwaysHidden|stateHidden">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />j
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />k
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
     </application>
