@@ -18,6 +18,7 @@
     <string name="dice_title">Dice\'s faces</string>
     <string name="touch_me">Place a finger each to choose among you</string>
     <string name="edit">Edit</string>
+    <string name="roll">Roll</string>
     <string name="roll_all">Roll All</string>
     <string name="add_timer">Add </string>
     <string name="remove_timer">Remove</string>
