@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.os.Vibrator;
 
+import com.nicue.onetwo.R;
 import com.nicue.onetwo.Utils.Pools.SimplePool;
 
 import java.util.Arrays;
@@ -368,10 +369,10 @@ public class TouchDisplayView extends View {
                 canvas.drawCircle(data.x, (data.y) - half_r, radius + 90,
                         mTransStrokePaint);
                 if ((data.x + radius + 50)<mScreenWidth ) {
-                    canvas.drawText("Chosen", data.x + radius, data.y
+                    canvas.drawText(getContext().getString(R.string.chosen), data.x + radius, data.y
                             - radius, mTextPaint);
                 }else{
-                    canvas.drawText("Chosen", data.x - radius -100, data.y
+                    canvas.drawText(getContext().getString(R.string.chosen), data.x - radius -100, data.y
                             - radius - 90, mTextPaint);
                 }
 

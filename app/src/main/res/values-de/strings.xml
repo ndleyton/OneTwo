@@ -27,5 +27,10 @@
     <string name="play">Start</string>
     <string name="pause">Pause</string>
     <string name="counter_instruction">Knopf drücken um Zähler hinzuzufügen oder nach rechts wischen für mehr Optionen</string>
+    <string name="add">Hinzufügen</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="timer_dialog_message">Zeit einstellen:</string>
+    <string name="timer_dialog_set">Setzen</string>
+    <string name="chosen">Gewählt</string>
 
 </resources>
