@@ -133,8 +133,8 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
         //et_dice.setRawInputType(InputType.TYPE_CLASS_NUMBER |InputType.TYPE_NUMBER_FLAG_DECIMAL);
         AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setView(alertView)
-                .setTitle("Dice\'s Faces:")
-                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                .setTitle(getString(R.string.dice_title))
+                .setPositiveButton(getString(R.string.add), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
@@ -155,7 +155,7 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
 
                     }
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .create();
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN | WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         dialog.show();

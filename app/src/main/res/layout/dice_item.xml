@@ -56,7 +56,7 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Roll"
+                    android:text="@string/roll"
                     android:id="@+id/throw_button"
                     android:layout_toEndOf="@+id/imageView_dice"
                     android:layout_centerVertical="true"/>

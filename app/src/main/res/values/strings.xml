@@ -18,6 +18,7 @@
     <string name="dice_title">Dice\'s faces</string>
     <string name="touch_me">Place a finger each to choose among you</string>
     <string name="edit">Edit</string>
+    <string name="roll">Roll</string>
     <string name="roll_all">Roll All</string>
     <string name="add_timer">Add </string>
     <string name="remove_timer">Remove</string>
@@ -26,5 +27,10 @@
     <string name="play">Play</string>
     <string name="pause">Pause</string>
     <string name="counter_instruction">Press the button to add a counter or swipe right for more options</string>
+    <string name="add">Add</string>
+    <string name="cancel">Cancel</string>
+    <string name="timer_dialog_message">Set Time:</string>
+    <string name="timer_dialog_set">Set</string>
+    <string name="chosen">Chosen</string>
 
 </resources>

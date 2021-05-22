@@ -217,8 +217,8 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
         });
         AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setView(alertView)
-                .setTitle("Set Time:")
-                .setPositiveButton("Set", new DialogInterface.OnClickListener() {
+                .setTitle(getString(R.string.timer_dialog_message))
+                .setPositiveButton(getString(R.string.timer_dialog_set), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         setMiliSeconds = npMinutes.getValue() * 60 + npSeconds.getValue();
@@ -229,7 +229,7 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
 
                     }
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .create();
         dialog.show();
     }

@@ -129,7 +129,7 @@ public class CounterFragment extends android.support.v4.app.Fragment implements 
         final EditText etNumber = (EditText) alertView.findViewById(R.id.et_number);
         AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setView(alertView)
-                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.add), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String object_dirty = etToCount.getText().toString();
@@ -167,7 +167,7 @@ public class CounterFragment extends android.support.v4.app.Fragment implements 
 
                     }
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .create();
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN | WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         dialog.show();

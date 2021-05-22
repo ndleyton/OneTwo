@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">OneTwo</string>
+    <string name="instruction">Knopf drücken um Zähler hinzuzufügen</string>
+    <string name="add_counter">Zähler hinzufügen</string>
+    <string name="alert_tv_object">Wer spielt?</string>
+    <string name="alert_tv_number">Leben/Punkte: </string>
+    <string name="menu_counter">Zähler</string>
+    <string name="menu_dice">Würfel</string>
+    <string name="menu_chooser">Wählen</string>
+    <string name="menu_timer">Timer</string>
+    <string name="menu_counter_space">&#160;Zähler</string>
+    <string name="menu_dice_space">&#160;Würfel</string>
+    <string name="menu_chooser_space">&#160;Wählen</string>
+    <string name="menu_timer_space">&#160;Timer</string>
+    <string name="drawer_open">Menü öffnen</string>
+    <string name="drawer_close">Menü schließen</string>
+    <string name="nav_header">OneTwo</string>
+    <string name="dice_title">Würfelseiten</string>
+    <string name="touch_me">Jeder legt einen Finger auf, dann wird einer ausgewählt</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="roll">Würfeln</string>
+    <string name="roll_all">Alle würfeln</string>
+    <string name="add_timer">Hinzufügen </string>
+    <string name="remove_timer">Entfernen</string>
+    <string name="space">      </string>
+    <string name="order">Reihenfolge</string>
+    <string name="play">Start</string>
+    <string name="pause">Pause</string>
+    <string name="counter_instruction">Knopf drücken um Zähler hinzuzufügen oder nach rechts wischen für mehr Optionen</string>
+    <string name="add">Hinzufügen</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="timer_dialog_message">Zeit einstellen:</string>
+    <string name="timer_dialog_set">Setzen</string>
+    <string name="chosen">Gewählt</string>
+
+</resources>
