@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/OneTwo.iml" filepath="$PROJECT_DIR$/OneTwo.iml" group="OneTwo" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="OneTwo/app" />
+      <module fileurl="file://$PROJECT_DIR$/OneTwo.iml" filepath="$PROJECT_DIR$/OneTwo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/OneTwo.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/OneTwo.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/OneTwo.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/OneTwo.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/OneTwo.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/OneTwo.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/OneTwo.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/OneTwo.app.unitTest.iml" />
     </modules>
   </component>
 </project>

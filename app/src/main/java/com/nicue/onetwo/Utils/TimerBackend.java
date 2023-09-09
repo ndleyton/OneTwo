@@ -1,10 +1,9 @@
 package com.nicue.onetwo.Utils;
 
 import android.animation.ObjectAnimator;
-import android.content.Context;
 import android.os.CountDownTimer;
-import android.os.Vibrator;
-import android.support.v7.widget.CardView;
+
+import androidx.cardview.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;

@@ -2,14 +2,11 @@ package com.nicue.onetwo.Utils;
 
 
 import android.content.Context;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.ViewCompat;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.core.view.ViewCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
-
-import java.util.List;
 
 public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {
     public ScrollAwareFABBehavior(Context context, AttributeSet attrs) {
@@ -35,7 +32,7 @@ public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {
                 @Override
                 public void onHidden(FloatingActionButton fab) {
                     super.onShown(fab);
-                    fab.setVisibility(View.INVISIBLE);
+                    fab.hide();
                 }
             });
         } else if (dyConsumed < 0){
