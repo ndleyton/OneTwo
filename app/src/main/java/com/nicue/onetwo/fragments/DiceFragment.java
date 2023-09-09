@@ -6,11 +6,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +29,7 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class DiceFragment extends android.support.v4.app.Fragment implements View.OnClickListener,
+public class DiceFragment extends Fragment implements View.OnClickListener,
         DiceListAdapter.DiceAdapterOnClickHandler,DiceListAdapter.ItemClickListener {
     private ArrayList<String> mItems = new ArrayList<>();
     private ArrayList<String> mFaces = new ArrayList<>();
@@ -174,9 +175,7 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
             mFaces = new ArrayList<String>();
         }
         mItems.clear();
-        for (int i = 0 ; i<mFaces.size(); i++)
-        {mItems.add(mFaces.get(i));
-        }
+        mItems.addAll(mFaces);
     }
 
     private void writeItems() {
@@ -214,7 +213,7 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
                 */
             }
             delayedThowAllDice(500);
-            delayedThowSomeDice(750);
+            delayedThrowSomeDice(750);
 
 
 
@@ -262,7 +261,7 @@ public class DiceFragment extends android.support.v4.app.Fragment implements Vie
 
         }, milisec);
     }
-    public void delayedThowSomeDice(int milisec) {
+    public void delayedThrowSomeDice(int milisec) {
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
