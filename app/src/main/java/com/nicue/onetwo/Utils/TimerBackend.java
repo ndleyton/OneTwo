@@ -27,11 +27,11 @@ public class TimerBackend {
 
     public TimerBackend(View v, VibratorInterface vInterface){
         vibratorInterface = vInterface;
-        long defaulTime = 300000;
+        long defaultTime = 300000;
         mView = v;
         mCardView = (CardView) v.findViewById(R.id.cv_timer);
         mButton = (Button) mView.findViewById(R.id.chrono);
-        timer = new CountDownTimer(defaulTime,10) {
+        timer = new CountDownTimer(defaultTime,10) {
             @Override
             public void onTick(long millisUntilFinished) {
                 pausedTime = millisUntilFinished;
@@ -57,8 +57,8 @@ public class TimerBackend {
                 setTimertoZero();
             }
         };
-        pausedTime = defaulTime;
-        long currentSec = defaulTime/1000;
+        pausedTime = defaultTime;
+        long currentSec = defaultTime/1000;
         long min = currentSec/60;
         long dim_secs = currentSec%60;
         String min_sec = String.format("%d:%02d",min,dim_secs);

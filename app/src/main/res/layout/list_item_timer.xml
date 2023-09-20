@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="0dp"
+    android:layout_height="match_parent"
+    android:paddingTop="0dp"
     android:id="@+id/item_timer"
     android:gravity="center"
     android:layout_weight="1"
     android:layout_centerInParent="true">
+    <!-- paddingTop is not working in this block -->
 
     <androidx.cardview.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
@@ -19,8 +21,7 @@
         android:layout_marginTop="16dp"
         card_view:cardCornerRadius="8dp"
         card_view:cardElevation="8dp"
-        android:clickable="true"
-        android:longClickable="true">
+       >
 
 
     <Button
