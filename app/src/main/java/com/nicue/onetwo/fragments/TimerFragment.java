@@ -84,7 +84,7 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
             for (int j=0;j<times.length;j++){
                 times[j]=mTimers.get(j).getPausedTime();
             }
-            for (TimerBackend tb: mTimers){  //Se eliminan timers anteriores
+            for (TimerBackend tb: mTimers){  //We eliminate prior timers
                 tb.deleteTimer();
             }
             mTimers.clear();
@@ -308,7 +308,7 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
         return configuration.screenHeightDp;
     }
 
-    // returns max timers withouth them getting weird
+    // returns max timers without them getting weird
     public int maxTimers(){
         return (getScreenHeight()-22)/78;
     }
