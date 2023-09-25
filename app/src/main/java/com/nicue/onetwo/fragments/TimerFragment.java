@@ -6,18 +6,16 @@ import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
-import android.widget.RelativeLayout;
 
 import com.nicue.onetwo.MainActivity;
 import com.nicue.onetwo.R;
@@ -86,7 +84,7 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
             for (int j=0;j<times.length;j++){
                 times[j]=mTimers.get(j).getPausedTime();
             }
-            for (TimerBackend tb: mTimers){  //Se eliminan timers anteriores
+            for (TimerBackend tb: mTimers){  //We eliminate prior timers
                 tb.deleteTimer();
             }
             mTimers.clear();
@@ -310,7 +308,7 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
         return configuration.screenHeightDp;
     }
 
-    // returns max timers withouth them getting weird
+    // returns max timers without them getting weird
     public int maxTimers(){
         return (getScreenHeight()-22)/78;
     }
