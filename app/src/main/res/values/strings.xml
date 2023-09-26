@@ -8,6 +8,7 @@
     <string name="menu_dice">Dice</string>
     <string name="menu_chooser">Choose</string>
     <string name="menu_timer">Timer</string>
+    <string name="menu_settings">Settings</string>
     <string name="menu_counter_space">&#160;Counter</string>
     <string name="menu_dice_space">&#160;Dice</string>
     <string name="menu_chooser_space">&#160;Choose</string>
