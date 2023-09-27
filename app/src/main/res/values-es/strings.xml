@@ -28,4 +28,7 @@
     <string name="counter_instruction">Press the button to add a counter or swipe right for more options</string>
     <string name="menu_settings">Ajustes</string>
     <string name="ui_header">UI</string>
+    <string name="always_on_title">Mantener pantalla encendida</string>
+    <string name="misc_header">Misc</string>
+    <string name="always_on_summary">Mantener pantalla encendida</string>
 </resources>

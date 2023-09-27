@@ -28,5 +28,8 @@
     <string name="counter_instruction">Appuyez sur le bouton pour ajouter un score ou balayez vers la droite pour plus d\'options</string>
     <string name="menu_settings">Paramètres</string>
     <string name="ui_header">UI</string>
+    <string name="always_on_title">Garder l\'écran allumé</string>
+    <string name="misc_header">Misc</string>
+    <string name="always_on_summary">Garder l\'écran allumé</string>
 
 </resources>

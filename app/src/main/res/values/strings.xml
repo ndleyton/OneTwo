@@ -32,15 +32,10 @@
     <string name="misc_header">Misc</string>
 
     <!-- UI Preferences -->
-    <string name="always_on_title">Keep screen always on</string>
-    <string name="dark_mode_title">Dark Mode</string>
+    <string name="always_on_title">Always on</string>
+    <string name="always_on_summary">Keep screen on while using</string>
+    <string name="dark_mode_title" translatable="false">Dark Mode</string>
+    <string name="dark_mode_summary" translatable="false">Use dark mode theme</string>
 
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
 
 </resources>
