@@ -27,4 +27,5 @@
     <string name="pause">Pause</string>
     <string name="counter_instruction">Press the button to add a counter or swipe right for more options</string>
     <string name="menu_settings">Ajustes</string>
+    <string name="ui_header">UI</string>
 </resources>

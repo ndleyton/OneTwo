@@ -27,5 +27,20 @@
     <string name="play">Play</string>
     <string name="pause">Pause</string>
     <string name="counter_instruction">Press the button to add a counter or swipe right for more options</string>
+    <!-- Preference Titles -->
+    <string name="ui_header">UI</string>
+    <string name="misc_header">Misc</string>
+
+    <!-- UI Preferences -->
+    <string name="always_on_title">Keep screen always on</string>
+    <string name="dark_mode_title">Dark Mode</string>
+
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
 
 </resources>

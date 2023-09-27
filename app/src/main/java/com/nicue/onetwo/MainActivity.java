@@ -27,6 +27,7 @@ import com.nicue.onetwo.fragments.TimerFragment;
 
 import java.util.ArrayList;
 
+import com.nicue.onetwo.fragments.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     private DrawerLayout mDrawer;
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Set the screen to always on a.k.a. a wakelock
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-
+        // Set the action bar title
         if (getSupportFragmentManager().findFragmentById(R.id.m_content) == null){
             firstFragment = new CounterFragment();
             getSupportFragmentManager().beginTransaction()
@@ -107,6 +108,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 currentTitleString = getString(R.string.menu_counter);
                 delTimerButton.setVisibility(View.VISIBLE);
                 addTimerButton.setVisibility(View.VISIBLE);
+
+            }else if (tempFragment instanceof SettingsFragment){
+                currentTitleString = getString(R.string.menu_settings);
 
             }
             actionTitle.setText(currentTitleString);
@@ -208,6 +212,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 delTimerButton.setVisibility(View.VISIBLE);
                 addTimerButton.setVisibility(View.VISIBLE);
                 break;
+            case R.id.nav_last_fragment:
+                fragmentClass = SettingsFragment.class;
+                mSwitch.setVisibility(View.INVISIBLE);
+                rollAllButton.setVisibility(View.INVISIBLE);
+                delTimerButton.setVisibility(View.INVISIBLE);
+                addTimerButton.setVisibility(View.INVISIBLE);
             default:
                 fragmentClass = CounterFragment.class;
         }

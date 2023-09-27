@@ -27,5 +27,6 @@
     <string name="pause">ポーズ</string>
     <string name="counter_instruction">ボタンを押してカウンターを追加するか、右にスワイプしてさらにオプションを表示します</string>
     <string name="menu_settings">設定</string>
+    <string name="ui_header">UI</string>
 
 </resources>
