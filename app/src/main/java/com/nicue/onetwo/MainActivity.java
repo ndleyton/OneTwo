@@ -1,5 +1,6 @@
 package com.nicue.onetwo;
 
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import com.google.android.material.navigation.NavigationView;
 import androidx.fragment.app.Fragment;
@@ -10,6 +11,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
+import androidx.preference.PreferenceManager;
 
 import android.view.MenuItem;
 import android.view.View;
@@ -78,8 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mDrawer.addDrawerListener(drawerToggle);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        // Set the screen to always on a.k.a. a wakelock
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 
         // Set the action bar title
         if (getSupportFragmentManager().findFragmentById(R.id.m_content) == null){
@@ -123,6 +124,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
         drawerToggle.syncState();
+        // we don't need to setup wakelock on create
+        setupScreenWakelock(savedInstanceState);
+
     }
 
     @Override
@@ -130,6 +134,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggles
         drawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    private void setupScreenWakelock(Bundle savedInstanceState) {
+        // We check from SharedPreferences if we initiate a wakelock
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
+        boolean is_screen_always_on = sharedPreferences.getBoolean("always_on", true);
+        // Set the screen to always on a.k.a. a wakelock
+        if (is_screen_always_on){
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
     }
 
     private ActionBarDrawerToggle setupDrawerToggle() {
@@ -218,6 +233,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 rollAllButton.setVisibility(View.INVISIBLE);
                 delTimerButton.setVisibility(View.INVISIBLE);
                 addTimerButton.setVisibility(View.INVISIBLE);
+                break;
             default:
                 fragmentClass = CounterFragment.class;
         }
