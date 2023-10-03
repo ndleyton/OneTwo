@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#083e64</color>
+    <color name="colorPrimaryLight">#416892</color>
+    <color name="colorPrimaryDark">#001839</color>
+    <color name="colorAccent">#f3bb21</color>
+    <color name="secondAccent">#bd2430</color>
+    <color name="secondAccentLight">#f65b59</color>
+    <color name="secondAccentDark">#850009</color>
+    <color name="diceColor0">#850009</color>
+    <color name="diceColor1">#b9d529</color>
+    <color name="diceColor2">#5DD8F4</color>
+    <color name="diceColor3">#F3BB21</color>
+    <color name="diceColor4">#B92130</color>
+</resources>
