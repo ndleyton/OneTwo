@@ -1,15 +1,36 @@
 package com.nicue.onetwo.fragments;
 
 import android.os.Bundle;
+import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.nicue.onetwo.R;
 
-public class SettingsFragment extends PreferenceFragmentCompat {
 
+public class SettingsFragment extends PreferenceFragmentCompat {
+    private Preference always_on;
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey);
+        always_on = findPreference("always_on");
+        setPreferenceChangeListeners();
+
+    }
+    private void setPreferenceChangeListeners() {
+        always_on.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
+                if ((boolean) newValue){
+                    getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
+                else {
+                    getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
+                return true;
+            }
+        });
     }
 }
