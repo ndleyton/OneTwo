@@ -10,6 +10,7 @@
 
         <SwitchPreferenceCompat
             app:key="dark_mode"
+            app:defaultValue="false"
             app:summary="@string/dark_mode_summary"
             app:title="@string/dark_mode_title" />
 

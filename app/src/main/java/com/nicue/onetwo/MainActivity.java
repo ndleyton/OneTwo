@@ -1,8 +1,12 @@
 package com.nicue.onetwo;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import com.google.android.material.navigation.NavigationView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -41,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView actionTitle;
     private NavigationView nvDrawer;
     private Fragment firstFragment;
-    private boolean switchOn = false;
     private String currentTitleString;
     private ArrayList<TimerBackend> timerBackends = new ArrayList<>();
 
@@ -125,27 +128,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Sync the toggle state after onRestoreInstanceState has occurred.
         drawerToggle.syncState();
         // we don't need to setup wakelock on create
-        setupScreenWakelock(savedInstanceState);
+        setupSharedPreferences(savedInstanceState);
 
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggles
         drawerToggle.onConfigurationChanged(newConfig);
     }
 
-    private void setupScreenWakelock(Bundle savedInstanceState) {
+    private void setupSharedPreferences(Bundle savedInstanceState) {
         // We check from SharedPreferences if we initiate a wakelock
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
         boolean is_screen_always_on = sharedPreferences.getBoolean("always_on", true);
+        boolean is_dark_mode_on = sharedPreferences.getBoolean("dark_mode", false);
         // Set the screen to always on a.k.a. a wakelock
         if (is_screen_always_on){
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
+        // Set the theme to dark mode
+        if(is_dark_mode_on){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
     }
+
+
 
     private ActionBarDrawerToggle setupDrawerToggle() {
         return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open,  R.string.drawer_close);
@@ -187,6 +197,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @SuppressLint("NonConstantResourceId")
     public void selectDrawerItem(MenuItem menuItem) {
         // Let's check first if the fragment is the timer, to save its values
         Fragment tempFragment = getSupportFragmentManager().findFragmentById(R.id.m_content);
@@ -416,17 +427,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         actionTitle.setText(currentTitleString);
 
     }
-
-    /*
-    public void rollDice(View view){
-        Fragment tempFragment = getSupportFragmentManager().findFragmentById(R.id.m_content);
-
-        if (tempFragment instanceof DiceFragment){
-            ((DiceFragment) tempFragment).rollDice(view);
-        }
-    }
-    */
-
 }
 
 
