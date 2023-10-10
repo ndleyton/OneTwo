@@ -1,6 +1,7 @@
-package com.nicue.onetwo.Utils;
+package com.nicue.onetwo.utils;
 
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.os.CountDownTimer;
 
 import androidx.cardview.widget.CardView;
@@ -49,6 +50,7 @@ public class TimerBackend {
                 mButton.setText(min_sec);
             }
 
+            @SuppressLint("SetTextI18n")
             @Override
             public void onFinish() {
                 mButton.setText("0:00");
@@ -60,6 +62,7 @@ public class TimerBackend {
         pausedTime = defaultTime;
         long currentSec = defaultTime/1000;
         long min = currentSec/60;
+        //noinspection ConstantValue
         long dim_secs = currentSec%60;
         String min_sec = String.format("%d:%02d",min,dim_secs);
 
@@ -90,6 +93,7 @@ public class TimerBackend {
                 mButton.setText(min_sec);
             }
 
+            @SuppressLint("SetTextI18n")
             @Override
             public void onFinish() {
                 mButton.setText("0:00");
@@ -136,6 +140,7 @@ public class TimerBackend {
 
                     mButton.setText(min_sec);
                 }
+                @SuppressLint("SetTextI18n")
                 @Override
                 public void onFinish() {
                     mButton.setText("0:00");

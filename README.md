@@ -1,5 +1,6 @@
 # OneTwo
-#### OneTwo is a free Open Source Android app with tools to help you with your TableTop experience. That includes a Counter, Dices, Timers and an intuitive way to choose who starts!
+
+#### OneTwo is a free Open Source Android app with tools to help you with your TableTop experience. That includes a Counter, Dices, Chess style Timers and an intuitive way to choose who starts!
 
 ![Alt text](imgs/Header.png?raw=true "Title")
 ## How to get it
@@ -9,13 +10,17 @@ There's three main ways to get OneTwo
 * Get it on [F-droid](https://f-droid.org/repository/browse/?fdfilter=onetwo&fdid=com.nicue.onetwo)
 * Clone this repository and import it in Android Studio with "Import Project"
 
+
 ## How to Contribute
 If you want to contribute to OneTwo, fill an Issue saying what would you like to change and if you want to be a contributor. Once you are a collaborator, you can commit and push, or do a pull request if you would like to!
 
 ## Screenshots
 
-![](imgs/SS_counter.png)  ![](imgs/SS_Chooser.png)
+![](imgs/SS_bare_timer.png) ![](imgs/SS_navview.png)  ![](imgs/SS_counter.png)  ![](imgs/SS_Chooser.png)
 
 ## License 
  
 OneTwo is licensed under the MIT License
+
+<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="50"> 
+<a href="https://play.google.com/store/apps/details?id=com.nicue.onetwo&hl=es_PR&gl=US"><img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="50></a>

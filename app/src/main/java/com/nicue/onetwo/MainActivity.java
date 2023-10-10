@@ -1,7 +1,12 @@
 package com.nicue.onetwo;
 
+import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import com.google.android.material.navigation.NavigationView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -10,15 +15,17 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
+import androidx.preference.PreferenceManager;
 
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.nicue.onetwo.Utils.TimerBackend;
+import com.nicue.onetwo.utils.TimerBackend;
 import com.nicue.onetwo.fragments.ChooserFragment;
 import com.nicue.onetwo.fragments.CounterFragment;
 import com.nicue.onetwo.fragments.DiceFragment;
@@ -26,6 +33,7 @@ import com.nicue.onetwo.fragments.TimerFragment;
 
 import java.util.ArrayList;
 
+import com.nicue.onetwo.fragments.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     private DrawerLayout mDrawer;
@@ -37,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView actionTitle;
     private NavigationView nvDrawer;
     private Fragment firstFragment;
-    private boolean switchOn = false;
     private String currentTitleString;
     private ArrayList<TimerBackend> timerBackends = new ArrayList<>();
 
@@ -77,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
 
+
+        // Set the action bar title
         if (getSupportFragmentManager().findFragmentById(R.id.m_content) == null){
             firstFragment = new CounterFragment();
             getSupportFragmentManager().beginTransaction()
@@ -104,6 +113,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 delTimerButton.setVisibility(View.VISIBLE);
                 addTimerButton.setVisibility(View.VISIBLE);
 
+            }else if (tempFragment instanceof SettingsFragment){
+                currentTitleString = getString(R.string.menu_settings);
+
             }
             actionTitle.setText(currentTitleString);
 
@@ -115,14 +127,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
         drawerToggle.syncState();
+        // we don't need to setup wakelock on create
+        setupSharedPreferences(savedInstanceState);
+
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggles
         drawerToggle.onConfigurationChanged(newConfig);
     }
+
+    private void setupSharedPreferences(Bundle savedInstanceState) {
+        // We check from SharedPreferences if we initiate a wakelock
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
+        boolean is_screen_always_on = sharedPreferences.getBoolean("always_on", true);
+        boolean is_dark_mode_on = sharedPreferences.getBoolean("dark_mode", false);
+        // Set the screen to always on a.k.a. a wakelock
+        if (is_screen_always_on){
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+        // Set the theme to dark mode
+        if(is_dark_mode_on){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+    }
+
+
 
     private ActionBarDrawerToggle setupDrawerToggle() {
         return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open,  R.string.drawer_close);
@@ -132,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                         selectDrawerItem(menuItem);
                         return true;
                     }
@@ -164,6 +197,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @SuppressLint("NonConstantResourceId")
     public void selectDrawerItem(MenuItem menuItem) {
         // Let's check first if the fragment is the timer, to save its values
         Fragment tempFragment = getSupportFragmentManager().findFragmentById(R.id.m_content);
@@ -204,6 +238,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 delTimerButton.setVisibility(View.VISIBLE);
                 addTimerButton.setVisibility(View.VISIBLE);
                 break;
+            case R.id.nav_last_fragment:
+                fragmentClass = SettingsFragment.class;
+                mSwitch.setVisibility(View.INVISIBLE);
+                rollAllButton.setVisibility(View.INVISIBLE);
+                delTimerButton.setVisibility(View.INVISIBLE);
+                addTimerButton.setVisibility(View.INVISIBLE);
+                break;
             default:
                 fragmentClass = CounterFragment.class;
         }
@@ -215,6 +256,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } catch (Exception e) {
             e.printStackTrace();
         }
+        assert fragment != null;
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.m_content, fragment).commit();
@@ -231,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
@@ -299,6 +341,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        assert fragment != null;
         fragmentTransaction.replace(R.id.m_content, fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
@@ -327,6 +370,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
+        assert fragment != null;
         fragmentManager.beginTransaction().replace(R.id.m_content, fragment).commit();
 
         // Highlight the selected item has been done by NavigationView
@@ -351,6 +395,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
+        assert fragment != null;
         fragmentManager.beginTransaction().replace(R.id.m_content, fragment).commit();
 
         // Highlight the selected item has been done by NavigationView
@@ -376,6 +421,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
+        assert fragment != null;
         fragmentManager.beginTransaction().replace(R.id.m_content, fragment).commit();
 
         // Highlight the selected item has been done by NavigationView
@@ -385,17 +431,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         actionTitle.setText(currentTitleString);
 
     }
-
-    /*
-    public void rollDice(View view){
-        Fragment tempFragment = getSupportFragmentManager().findFragmentById(R.id.m_content);
-
-        if (tempFragment instanceof DiceFragment){
-            ((DiceFragment) tempFragment).rollDice(view);
-        }
-    }
-    */
-
 }
 
 
