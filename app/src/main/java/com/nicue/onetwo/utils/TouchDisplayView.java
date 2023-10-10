@@ -1,4 +1,4 @@
-package com.nicue.onetwo.Utils;
+package com.nicue.onetwo.utils;
 
 
 import android.content.Context;
@@ -6,21 +6,16 @@ import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PointF;
-import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.os.Vibrator;
 
-import com.nicue.onetwo.Utils.Pools.SimplePool;
+import com.nicue.onetwo.utils.Pools.SimplePool;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Random;
 
 

@@ -19,7 +19,7 @@ import android.widget.NumberPicker;
 
 import com.nicue.onetwo.MainActivity;
 import com.nicue.onetwo.R;
-import com.nicue.onetwo.Utils.TimerBackend;
+import com.nicue.onetwo.utils.TimerBackend;
 
 import java.util.ArrayList;
 

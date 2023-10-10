@@ -2,6 +2,7 @@ package com.nicue.onetwo.fragments;
 
 // Counter Fragment, set by default
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -160,10 +161,6 @@ public class CounterFragment extends Fragment implements ListAdapter.ListAdapter
                         mRecyclerView.smoothScrollToPosition(mListAdapter.getItemCount()-1);
 
                         dialog.dismiss();
-
-                        //Intent intent = new Intent(getBaseContext() , MainActivity.class);
-                        //startActivity(intent);
-
 
                     }
                 })

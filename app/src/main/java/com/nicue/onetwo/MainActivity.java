@@ -25,7 +25,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.nicue.onetwo.Utils.TimerBackend;
+import com.nicue.onetwo.utils.TimerBackend;
 import com.nicue.onetwo.fragments.ChooserFragment;
 import com.nicue.onetwo.fragments.CounterFragment;
 import com.nicue.onetwo.fragments.DiceFragment;
@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                         selectDrawerItem(menuItem);
                         return true;
                     }
@@ -273,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
@@ -341,6 +341,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        assert fragment != null;
         fragmentTransaction.replace(R.id.m_content, fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
@@ -369,6 +370,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
+        assert fragment != null;
         fragmentManager.beginTransaction().replace(R.id.m_content, fragment).commit();
 
         // Highlight the selected item has been done by NavigationView
@@ -393,6 +395,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
+        assert fragment != null;
         fragmentManager.beginTransaction().replace(R.id.m_content, fragment).commit();
 
         // Highlight the selected item has been done by NavigationView
@@ -418,6 +421,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
+        assert fragment != null;
         fragmentManager.beginTransaction().replace(R.id.m_content, fragment).commit();
 
         // Highlight the selected item has been done by NavigationView

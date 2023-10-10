@@ -1,4 +1,4 @@
-package com.nicue.onetwo.Utils;
+package com.nicue.onetwo.utils;
 
 /**
  * Helper class for crating pools of objects. An example use looks like this:
