@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.os.Vibrator;
 
+import com.nicue.onetwo.R;
 import com.nicue.onetwo.utils.Pools.SimplePool;
 
 import java.util.Random;
@@ -30,6 +31,9 @@ public class TouchDisplayView extends View {
     private int chosenColor = 0;
     private int chosenId = -1;
     private int[] randomArray = {};
+
+    private int backgroundColorOverride = getResources().getColor(R.color.overrideBackground);
+
 
     private final int[] COLORS = {
             0xFF03A9F4, 0xFF009688, 0xFF8BC34A, 0xFFF44336, 0xFFFF9800,
@@ -274,7 +278,7 @@ public class TouchDisplayView extends View {
 
         // Canvas background color depends on whether there is an active touch
         if (mHasTouch) {
-            canvas.drawColor(BACKGROUND_ACTIVE);
+            canvas.drawColor(backgroundColorOverride);
             if (alreadyChosen){
                 canvas.drawColor(chosenColor);
             }
@@ -311,7 +315,8 @@ public class TouchDisplayView extends View {
     private Paint mStrokePaint = new Paint();
     private Paint mTransStrokePaint = new Paint();
 
-    private static final int BACKGROUND_ACTIVE = Color.WHITE;
+
+
 
 
     private void initialisePaint() {

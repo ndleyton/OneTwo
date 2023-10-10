@@ -8,6 +8,7 @@
     <color name="secondAccent">#bd2430</color>
     <color name="secondAccentLight">#f65b59</color>
     <color name="secondAccentDark">#850009</color>
+    <color name="overrideBackground">#FF1A1A1A</color>
     <color name="diceColor0">#850009</color>
     <color name="diceColor1">#b9d529</color>
     <color name="diceColor2">#5DD8F4</color>
