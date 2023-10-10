@@ -19,7 +19,7 @@
             android:text="@string/play"
             android:gravity="center"
             android:textSize="24sp"
-            android:textColor="@color/colorPrimary"/>
+            android:textColor="@color/colorPrimaryText"/>
 
         <Button
             android:id="@+id/edit_button"
@@ -30,7 +30,7 @@
             android:text="@string/edit"
             android:gravity="center"
             android:textSize="24sp"
-            android:textColor="@color/colorPrimary" />
+            android:textColor="@color/colorPrimaryText" />
 
     </RelativeLayout>
 

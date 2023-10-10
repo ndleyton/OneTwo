@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nicue.onetwo.R;
-import com.nicue.onetwo.Utils.TouchDisplayView;
+import com.nicue.onetwo.utils.TouchDisplayView;
 
 public class ChooserFragment extends Fragment{
     private TouchDisplayView mView;
