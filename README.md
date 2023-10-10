@@ -16,7 +16,7 @@ If you want to contribute to OneTwo, fill an Issue saying what would you like to
 
 ## Screenshots
 
-![](imgs/SS_timer.png) ![](imgs/SS_navview.png)  ![](imgs/SS_counter.png)  ![](imgs/SS_Chooser.png)
+![](imgs/SS_bare_timer.png) ![](imgs/SS_navview.png)  ![](imgs/SS_counter.png)  ![](imgs/SS_Chooser.png)
 
 ## License 
  
