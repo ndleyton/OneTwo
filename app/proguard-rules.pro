@@ -15,3 +15,17 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+# ---- Room ----
+# Keep all Room-generated _Impl classes and their constructors.
+# R8 strips these by default since they are only referenced via reflection.
+-keep class **.*_Impl { *; }
+-keep class **.*_Impl$* { *; }
+
+# Keep Room database subclasses
+-keep class * extends androidx.room.RoomDatabase { *; }
+-keepclassmembers class * extends androidx.room.RoomDatabase { *; }
+
+# Keep Room entity and DAO annotations so R8 doesn't rename them
+-keep @androidx.room.Entity class * { *; }
+-keep @androidx.room.Dao interface * { *; }
