@@ -408,8 +408,7 @@ public class TouchDisplayView extends View {
                 if (choosingOrder) {
                     int place = indexInArray(randomArray, id) + 1;
                     mTextPaint.setColor(Color.WHITE);
-                    canvas.drawText(String.valueOf(place), data.x,
-                            data.y - half_r - radius - mOrderLabelOffset, mTextPaint);
+                    drawOrderLabels(canvas, String.valueOf(place), data.x, data.y - half_r, radius);
                     drawBig = false;
                 }
             }
@@ -424,6 +423,50 @@ public class TouchDisplayView extends View {
                     mCirclePaint);
         }
 
+    }
+
+    private void drawOrderLabels(Canvas canvas, String label, float centerX, float centerY, float radius) {
+        float textSize = mTextPaint.getTextSize();
+        float halfTextWidth = mTextPaint.measureText(label) / 2f;
+        float labelDistance = radius + mOrderLabelOffset;
+        float baselineCenterOffset = textSize / 3f;
+
+        float minX = halfTextWidth;
+        float maxX = getWidth() - halfTextWidth;
+        float minBaselineY = textSize;
+        float maxBaselineY = getHeight() - baselineCenterOffset;
+
+        drawRotatedOrderLabel(canvas, label,
+                clamp(centerX, minX, maxX),
+                clamp(centerY - labelDistance + baselineCenterOffset, minBaselineY, maxBaselineY),
+                0f, baselineCenterOffset);
+        drawRotatedOrderLabel(canvas, label,
+                clamp(centerX + labelDistance, minX, maxX),
+                clamp(centerY + baselineCenterOffset, minBaselineY, maxBaselineY),
+                90f, baselineCenterOffset);
+        drawRotatedOrderLabel(canvas, label,
+                clamp(centerX, minX, maxX),
+                clamp(centerY + labelDistance + baselineCenterOffset, minBaselineY, maxBaselineY),
+                180f, baselineCenterOffset);
+        drawRotatedOrderLabel(canvas, label,
+                clamp(centerX - labelDistance, minX, maxX),
+                clamp(centerY + baselineCenterOffset, minBaselineY, maxBaselineY),
+                -90f, baselineCenterOffset);
+    }
+
+    private void drawRotatedOrderLabel(Canvas canvas, String label, float x, float baselineY,
+                                       float degrees, float baselineCenterOffset) {
+        canvas.save();
+        canvas.rotate(degrees, x, baselineY - baselineCenterOffset);
+        canvas.drawText(label, x, baselineY, mTextPaint);
+        canvas.restore();
+    }
+
+    private float clamp(float value, float min, float max) {
+        if (max < min) {
+            return min;
+        }
+        return Math.max(min, Math.min(value, max));
     }
 
     private void startSelectionRevealAnimation() {
