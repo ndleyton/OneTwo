@@ -41,6 +41,18 @@ public class CounterFragment extends Fragment implements ListAdapter.ListAdapter
     private ArrayList<String> mObjects = new ArrayList<String>();
     private ArrayList<Integer> mObjectsNumbers = new ArrayList<Integer>();
 
+    static String sanitizeObjectName(String rawObjectName) {
+        return rawObjectName.replaceAll("'", "\"");
+    }
+
+    static int parseCountValue(String rawNumber) {
+        try {
+            return Integer.parseInt(rawNumber);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
 
 
     @Nullable
@@ -134,14 +146,8 @@ public class CounterFragment extends Fragment implements ListAdapter.ListAdapter
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String object_dirty = etToCount.getText().toString();
-                        String object = object_dirty.replaceAll("'","\"");
-
-                        int number;
-                        try {
-                            number = Integer.parseInt(etNumber.getText().toString());
-                        }catch (Exception e){
-                            number = 0;
-                        }
+                        String object = sanitizeObjectName(object_dirty);
+                        int number = parseCountValue(etNumber.getText().toString());
 
 
                         SQLiteDatabase db = mHelper.getWritableDatabase();

@@ -35,6 +35,10 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
     private long setMiliSeconds = 300000;
     private long[] persistanceData = new long[]{};
 
+    static int calculateMaxTimers(int screenHeightDp) {
+        return (screenHeightDp - 22) / 78;
+    }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -310,6 +314,6 @@ public class TimerFragment extends Fragment implements View.OnClickListener, Tim
 
     // returns max timers without them getting weird
     public int maxTimers(){
-        return (getScreenHeight()-22)/78;
+        return calculateMaxTimers(getScreenHeight());
     }
 }
