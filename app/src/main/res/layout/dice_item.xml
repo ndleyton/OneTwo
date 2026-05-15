@@ -3,15 +3,16 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <androidx.cardview.widget.CardView
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    <com.google.android.material.card.MaterialCardView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        card_view:cardCornerRadius="4dp"
-        card_view:cardElevation="6dp"
-        android:layout_margin="4dp"
-        android:id="@+id/dice_cv">
+        android:layout_margin="@dimen/space_xs"
+        android:id="@+id/dice_cv"
+        app:cardBackgroundColor="?attr/colorSurfaceContainer"
+        app:cardElevation="3dp"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.OneTwo.Container">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -53,7 +54,7 @@
 
                 </FrameLayout>
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Roll"
@@ -62,6 +63,6 @@
                     android:layout_centerVertical="true"/>
             </RelativeLayout>
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>

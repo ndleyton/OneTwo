@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="100dp"
     android:orientation="horizontal"
-    android:paddingStart="16dp"
-    android:paddingEnd="8dp">
+    android:paddingStart="@dimen/space_m"
+    android:paddingEnd="@dimen/space_s">
 
     <NumberPicker
         android:id="@+id/number_picker"
@@ -19,7 +20,7 @@
         android:layout_height="wrap_content"
         android:textSize="30sp"
         android:layout_gravity="center_vertical"
-        android:paddingStart="8dp"
+        android:paddingStart="@dimen/space_s"
         android:layout_weight="8.7"/>
 
     <TextView
@@ -27,14 +28,17 @@
         android:layout_height="0dp"
         android:id="@+id/db_id" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/remove_button"
-        android:layout_width="34dp"
-        android:minWidth="34dp"
-        android:layout_height="40dp"
+        style="@style/Widget.OneTwo.FilledIconButton"
+        android:layout_width="48dp"
+        android:minWidth="48dp"
+        android:layout_height="48dp"
         android:layout_gravity="center_vertical|end"
         android:layout_weight="0.3"
-        android:background="@android:drawable/ic_menu_delete"
-        android:gravity="end" />
+        android:gravity="center"
+        app:icon="@android:drawable/ic_menu_delete"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp" />
 
 </LinearLayout>

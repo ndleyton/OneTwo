@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/alert_tv_object"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>
+        android:textAppearance="?attr/textAppearanceTitleMedium" />
 
     <EditText
         android:id="@+id/et_to_count"
