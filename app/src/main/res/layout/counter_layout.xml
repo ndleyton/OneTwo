@@ -39,6 +39,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:src="@drawable/ic_plus_white_24dp"
+        android:tint="#083e64"
         app:fabSize="normal"
         app:layout_behavior="com.nicue.onetwo.utils.ScrollAwareFABBehavior" />
 
