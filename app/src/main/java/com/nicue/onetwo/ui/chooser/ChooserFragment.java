@@ -18,7 +18,7 @@ import com.nicue.onetwo.data.settings.SettingsRepository;
 import com.nicue.onetwo.databinding.ChooserLayoutBinding;
 
 public class ChooserFragment extends Fragment {
-    private static final long INSTRUCTION_HIDE_DELAY_MS = 1500L;
+    private static final long INSTRUCTION_HIDE_DELAY_MS = 800L;
 
     private ChooserLayoutBinding binding;
     private ChooserViewModel viewModel;

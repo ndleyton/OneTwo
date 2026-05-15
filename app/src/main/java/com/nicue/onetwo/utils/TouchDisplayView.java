@@ -441,18 +441,27 @@ public class TouchDisplayView extends View {
             return;
         }
 
+        if (selectionRevealMaxRadius <= 0f) {
+            return;
+        }
+
+        float revealRadius = selectionRevealMaxRadius * (1f - selectionRevealProgress);
+
+        mRevealPaint.setColor(backgroundColorOverride);
+        canvas.drawCircle(selectionRevealCenterX, selectionRevealCenterY, revealRadius, mRevealPaint);
+    }
+
+    private void updateSelectionRevealBounds() {
         TouchHistory chosenTouch = mTouches.get(chosenId);
         if (chosenTouch == null) {
+            selectionRevealMaxRadius = 0f;
             return;
         }
 
         float radius = chosenTouch.pressure * mCircleRadius;
-        float centerX = chosenTouch.x;
-        float centerY = chosenTouch.y - (radius / 2f);
-        float revealRadius = maxDistanceToCorner(centerX, centerY) * (1f - selectionRevealProgress);
-
-        mRevealPaint.setColor(backgroundColorOverride);
-        canvas.drawCircle(centerX, centerY, revealRadius, mRevealPaint);
+        selectionRevealCenterX = chosenTouch.x;
+        selectionRevealCenterY = chosenTouch.y - (radius / 2f);
+        selectionRevealMaxRadius = maxDistanceToCorner(selectionRevealCenterX, selectionRevealCenterY);
     }
 
     private float maxDistanceToCorner(float x, float y) {
@@ -474,6 +483,9 @@ public class TouchDisplayView extends View {
         chosenId = -1;
         randomArray = new int[0];
         selectionRevealProgress = 1f;
+        selectionRevealCenterX = 0f;
+        selectionRevealCenterY = 0f;
+        selectionRevealMaxRadius = 0f;
         if (selectionRevealAnimator != null) {
             selectionRevealAnimator.cancel();
             selectionRevealAnimator = null;
