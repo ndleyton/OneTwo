@@ -31,5 +31,7 @@
     <string name="always_on_title">Garder l\'écran allumé</string>
     <string name="misc_header">Misc</string>
     <string name="always_on_summary">Garder l\'écran allumé</string>
+    <string name="chooser_order_title">Ordre du choix</string>
+    <string name="chooser_order_summary">Choisir les doigts dans l\'ordre de pose</string>
 
 </resources>

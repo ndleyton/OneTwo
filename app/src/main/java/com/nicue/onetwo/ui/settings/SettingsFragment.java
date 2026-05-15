@@ -29,6 +29,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         configureAlwaysOnPreference();
         configureDarkModePreference();
+        configureChooserOrderPreference();
     }
 
     private void configureAlwaysOnPreference() {
@@ -62,6 +63,23 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 boolean enabled = (Boolean) newValue;
                 settingsRepository.setDarkModeEnabled(enabled);
                 getSettingsApplier().applyDarkMode(enabled);
+                return true;
+            }
+        });
+    }
+
+    private void configureChooserOrderPreference() {
+        SwitchPreferenceCompat preference = findPreference("chooser_order");
+        if (preference == null) {
+            return;
+        }
+        preference.setPersistent(false);
+        preference.setChecked(settingsRepository.isChooserOrderEnabled());
+        preference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
+                boolean enabled = (Boolean) newValue;
+                settingsRepository.setChooserOrderEnabled(enabled);
                 return true;
             }
         });

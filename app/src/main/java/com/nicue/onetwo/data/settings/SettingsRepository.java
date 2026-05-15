@@ -28,6 +28,14 @@ public class SettingsRepository {
         dataSource.setDarkModeEnabled(enabled);
     }
 
+    public boolean isChooserOrderEnabled() {
+        return dataSource.isChooserOrderEnabled();
+    }
+
+    public void setChooserOrderEnabled(boolean enabled) {
+        dataSource.setChooserOrderEnabled(enabled);
+    }
+
     public void applyNightMode() {
         boolean darkModeEnabled = isDarkModeEnabled();
         AppCompatDelegate.setDefaultNightMode(

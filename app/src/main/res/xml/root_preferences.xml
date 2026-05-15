@@ -14,6 +14,12 @@
             app:summary="@string/dark_mode_summary"
             app:title="@string/dark_mode_title" />
 
+        <SwitchPreferenceCompat
+            app:key="chooser_order"
+            app:defaultValue="false"
+            app:summary="@string/chooser_order_summary"
+            app:title="@string/chooser_order_title" />
+
     </PreferenceCategory>
 
 

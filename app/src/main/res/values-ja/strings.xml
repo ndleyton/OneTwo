@@ -31,5 +31,7 @@
     <string name="always_on_title">Keep Screen on</string>
     <string name="misc_header">Misc</string>
     <string name="always_on_summary">Keep Screen on</string>
+    <string name="chooser_order_title">選択順</string>
+    <string name="chooser_order_summary">指を置いた順に選択します</string>
 
 </resources>

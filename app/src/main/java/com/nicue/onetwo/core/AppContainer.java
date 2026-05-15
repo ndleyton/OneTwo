@@ -13,30 +13,32 @@ import com.nicue.onetwo.data.settings.SettingsRepository;
 import com.nicue.onetwo.data.timer.TimerStateStore;
 import com.nicue.onetwo.db.TaskContract;
 
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class AppContainer {
-    private final ExecutorService ioExecutor = Executors.newSingleThreadExecutor();
     private final CounterRepository counterRepository;
     private final DiceRepository diceRepository;
     private final SettingsRepository settingsRepository;
     private final TimerStateStore timerStateStore;
 
     public AppContainer(Application application) {
-        CounterDatabase counterDatabase = Room.databaseBuilder(
+        this(application, Room.databaseBuilder(
                 application,
                 CounterDatabase.class,
                 TaskContract.DB_NAME
-        ).build();
-        counterRepository = new CounterRepository(counterDatabase.counterDao(), ioExecutor);
-        diceRepository = new DiceRepository(
+        ).build(), Executors.newSingleThreadExecutor());
+    }
+
+    public AppContainer(Application application, CounterDatabase counterDatabase, Executor executor) {
+        this.counterRepository = new CounterRepository(counterDatabase.counterDao(), executor);
+        this.diceRepository = new DiceRepository(
                 new DicePrefsDataSource(application.getApplicationContext())
         );
-        settingsRepository = new SettingsRepository(
+        this.settingsRepository = new SettingsRepository(
                 new SettingsPrefsDataSource(application.getApplicationContext())
         );
-        timerStateStore = new TimerStateStore();
+        this.timerStateStore = new TimerStateStore();
     }
 
     public CounterRepository getCounterRepository() {

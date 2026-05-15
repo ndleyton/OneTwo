@@ -31,4 +31,6 @@
     <string name="always_on_title">Mantener pantalla encendida</string>
     <string name="misc_header">Misc</string>
     <string name="always_on_summary">Mantener pantalla encendida</string>
+    <string name="chooser_order_title">Orden del selector</string>
+    <string name="chooser_order_summary">Elegir dedos por orden de colocación</string>
 </resources>
