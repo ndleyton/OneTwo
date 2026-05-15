@@ -13,7 +13,9 @@ import androidx.test.core.app.ApplicationProvider;
 
 import com.nicue.onetwo.OneTwoApplication;
 import com.nicue.onetwo.R;
+import com.nicue.onetwo.data.counter.CounterDatabase;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,12 +30,25 @@ public class CounterFragmentTest {
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
+    private CounterDatabase testDb;
+
     @Before
     public void setUp() {
-        // We ensure the application container is ready
-        // In a real project, we might use a TestAppContainer or Hilt
         OneTwoApplication app = ApplicationProvider.getApplicationContext();
-        assertNotNull(app.getAppContainer());
+        
+        // Create a test-friendly database that allows main thread queries
+        testDb = androidx.room.Room.inMemoryDatabaseBuilder(
+                app, CounterDatabase.class)
+                .allowMainThreadQueries()
+                .build();
+        
+        // Inject the test container with a synchronous executor
+        app.setAppContainerForTesting(new com.nicue.onetwo.core.AppContainer(app, testDb, Runnable::run));
+    }
+
+    @After
+    public void tearDown() {
+        testDb.close();
     }
 
     @Test

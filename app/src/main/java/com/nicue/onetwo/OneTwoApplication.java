@@ -17,4 +17,8 @@ public class OneTwoApplication extends Application {
     public AppContainer getAppContainer() {
         return appContainer;
     }
+
+    public void setAppContainerForTesting(AppContainer appContainer) {
+        this.appContainer = appContainer;
+    }
 }
