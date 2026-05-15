@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'checkstyle'
 
 android {
     compileSdk 35
@@ -26,7 +27,40 @@ android {
     testOptions {
         unitTests.includeAndroidResources = true
     }
+    lint {
+        abortOnError true
+        checkDependencies true
+        htmlReport true
+        textReport true
+        xmlReport true
+    }
     namespace 'com.nicue.onetwo'
+}
+
+checkstyle {
+    toolVersion = '13.4.2'
+    configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+    ignoreFailures = false
+    showViolations = true
+}
+
+tasks.register('checkstyle', Checkstyle) {
+    group = 'verification'
+    description = 'Runs Checkstyle against Java source files.'
+    source 'src/main/java', 'src/test/java', 'src/androidTest/java'
+    include '**/*.java'
+    exclude '**/build/**'
+    classpath = files()
+
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+tasks.named('check') {
+    dependsOn rootProject.tasks.named('spotlessCheck')
+    dependsOn tasks.named('checkstyle')
 }
 
 dependencies {
