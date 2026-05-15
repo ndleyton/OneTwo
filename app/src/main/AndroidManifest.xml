@@ -12,8 +12,9 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:windowSoftInputMode="adjustPan|adjustResize|stateAlwaysHidden|stateHidden"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan|adjustResize|stateAlwaysHidden|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
