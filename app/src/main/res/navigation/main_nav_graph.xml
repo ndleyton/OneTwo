@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/nav_counter">
+
+    <fragment
+        android:id="@+id/nav_counter"
+        android:name="com.nicue.onetwo.ui.counter.CounterFragment"
+        android:label="@string/menu_counter" />
+
+    <fragment
+        android:id="@+id/nav_dice"
+        android:name="com.nicue.onetwo.ui.dice.DiceFragment"
+        android:label="@string/menu_dice" />
+
+    <fragment
+        android:id="@+id/nav_chooser"
+        android:name="com.nicue.onetwo.ui.chooser.ChooserFragment"
+        android:label="@string/menu_chooser" />
+
+    <fragment
+        android:id="@+id/nav_timer"
+        android:name="com.nicue.onetwo.ui.timer.TimerFragment"
+        android:label="@string/menu_timer" />
+
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="com.nicue.onetwo.ui.settings.SettingsFragment"
+        android:label="@string/menu_settings" />
+</navigation>

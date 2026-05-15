@@ -35,7 +35,6 @@
         android:layout_gravity="center_vertical|end"
         android:layout_weight="0.3"
         android:background="@android:drawable/ic_menu_delete"
-        android:gravity="end"
-        android:onClick="deleteObj" />
+        android:gravity="end" />
 
 </LinearLayout>
