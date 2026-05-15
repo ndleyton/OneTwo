@@ -28,6 +28,9 @@ import com.nicue.onetwo.OneTwoApplication;
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.databinding.DiceAlertDialogBinding;
 import com.nicue.onetwo.databinding.DiceLayoutBinding;
+import com.google.android.material.chip.Chip;
+
+import java.util.List;
 
 public class DiceFragment extends Fragment implements DiceAdapter.Listener, MenuProvider {
     private DiceLayoutBinding binding;
@@ -82,6 +85,7 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
             @Override
             public void onChanged(DiceUiState state) {
                 adapter.submitList(state.getDice());
+                renderResultSummary(state);
             }
         });
 
@@ -158,6 +162,20 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
             );
         }
         dialog.show();
+    }
+
+    private void renderResultSummary(DiceUiState state) {
+        List<DieUiModel> dice = state.getDice();
+        binding.tvDiceTotal.setText(String.valueOf(state.getTotal()));
+        binding.tvDiceEmpty.setVisibility(dice.isEmpty() ? View.VISIBLE : View.GONE);
+        binding.chipGroupDiceResults.removeAllViews();
+        for (DieUiModel die : dice) {
+            Chip chip = new Chip(requireContext());
+            chip.setText(getString(R.string.dice_result_chip, die.getFaces(), die.getValue()));
+            chip.setCheckable(false);
+            chip.setClickable(false);
+            binding.chipGroupDiceResults.addView(chip);
+        }
     }
 
     private void vibrate(long[] pattern) {

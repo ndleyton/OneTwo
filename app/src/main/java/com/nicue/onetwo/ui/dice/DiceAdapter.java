@@ -1,6 +1,5 @@
 package com.nicue.onetwo.ui.dice;
 
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,19 +79,9 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
         void bind(DieUiModel dieUiModel) {
             int faces = dieUiModel.getFaces();
             binding.tvDice.setText(String.valueOf(dieUiModel.getValue()));
-            binding.tvFaces.setText(String.valueOf(faces));
-            if (faces < 5) {
-                binding.imageViewDice.setImageResource(R.drawable.triangle_2);
-            } else if (faces < 7) {
-                binding.imageViewDice.setImageResource(R.drawable.square_1);
-            } else if (faces < 13) {
-                binding.imageViewDice.setImageResource(R.drawable.penta_3);
-            } else if (faces < 21) {
-                binding.imageViewDice.setImageResource(R.drawable.hexa_4);
-            } else {
-                binding.imageViewDice.setImageResource(R.drawable.hexa_0);
-            }
-            binding.tvDice.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+            binding.tvDieType.setText(
+                    binding.getRoot().getContext().getString(R.string.dice_type_label, faces)
+            );
         }
     }
 }

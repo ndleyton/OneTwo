@@ -5,71 +5,57 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/space_xs"
-    android:minHeight="112dp"
+    android:minHeight="136dp"
     app:cardBackgroundColor="?attr/colorSurfaceContainer"
-    app:cardElevation="3dp"
+    app:cardElevation="0dp"
+    app:strokeColor="?attr/colorOutlineVariant"
+    app:strokeWidth="1dp"
     app:shapeAppearanceOverlay="@style/ShapeAppearance.OneTwo.Container">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="112dp"
+        android:layout_height="136dp"
         android:paddingStart="@dimen/space_sm"
+        android:paddingTop="@dimen/space_sm"
         android:paddingEnd="@dimen/space_sm">
 
         <TextView
-            android:id="@+id/tv_faces"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/tv_die_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <FrameLayout
-            android:id="@+id/dice_face_container"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_marginEnd="@dimen/space_sm"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/throw_button"
+        <TextView
+            android:id="@+id/tv_dice"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textAppearance="?attr/textAppearanceDisplayMedium"
+            android:textColor="?attr/colorOnSurface"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/throw_button"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/imageView_dice"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:adjustViewBounds="true"
-                android:contentDescription="@string/menu_dice"
-                android:scaleType="fitCenter"
-                android:src="@drawable/hexa" />
-
-            <TextView
-                android:id="@+id/tv_dice"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textColor="?attr/colorOnSurface" />
-
-        </FrameLayout>
+            app:layout_constraintTop_toBottomOf="@id/tv_die_type" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/throw_button"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
             android:insetLeft="0dp"
             android:insetRight="0dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
+            android:layout_marginBottom="@dimen/space_sm"
             android:minWidth="0dp"
             android:minHeight="0dp"
-            android:text="Roll"
+            android:text="@string/roll"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/dice_face_container"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

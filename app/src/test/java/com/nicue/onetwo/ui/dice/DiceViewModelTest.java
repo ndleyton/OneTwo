@@ -48,18 +48,24 @@ public class DiceViewModelTest {
         viewModel.addDie(6);
         viewModel.addDie(20);
 
-        List<DieUiModel> dice = LiveDataTestUtil.getValue(viewModel.getUiState()).getDice();
+        DiceUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        List<DieUiModel> dice = state.getDice();
         assertEquals(2, dice.size());
         assertEquals(6, dice.get(0).getFaces());
+        assertEquals(26, state.getTotal());
 
         viewModel.rollAllDice();
-        dice = LiveDataTestUtil.getValue(viewModel.getUiState()).getDice();
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        dice = state.getDice();
         assertTrue(dice.get(0).getValue() >= 1 && dice.get(0).getValue() <= 6);
         assertTrue(dice.get(1).getValue() >= 1 && dice.get(1).getValue() <= 20);
+        assertEquals(dice.get(0).getValue() + dice.get(1).getValue(), state.getTotal());
 
         viewModel.removeDie(0);
-        dice = LiveDataTestUtil.getValue(viewModel.getUiState()).getDice();
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        dice = state.getDice();
         assertEquals(1, dice.size());
         assertEquals(20, dice.get(0).getFaces());
+        assertEquals(dice.get(0).getValue(), state.getTotal());
     }
 }
