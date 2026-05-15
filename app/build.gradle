@@ -13,7 +13,7 @@ android {
         applicationId "com.nicue.onetwo"
         minSdkVersion 21
         targetSdkVersion 35
-        versionCode 19
+        versionCode 20
         versionName "1.3.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
