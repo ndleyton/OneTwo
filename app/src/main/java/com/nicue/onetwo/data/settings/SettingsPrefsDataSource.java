@@ -7,6 +7,7 @@ public class SettingsPrefsDataSource {
     private static final String PREF_FILE = "SETTINGS_PREFS";
     private static final String KEY_ALWAYS_ON = "always_on";
     private static final String KEY_DARK_MODE = "dark_mode";
+    private static final String KEY_CHOOSER_ORDER = "chooser_order";
     private final SharedPreferences sharedPreferences;
 
     public SettingsPrefsDataSource(Context context) {
@@ -27,5 +28,13 @@ public class SettingsPrefsDataSource {
 
     public void setDarkModeEnabled(boolean enabled) {
         sharedPreferences.edit().putBoolean(KEY_DARK_MODE, enabled).apply();
+    }
+
+    public boolean isChooserOrderEnabled() {
+        return sharedPreferences.getBoolean(KEY_CHOOSER_ORDER, false);
+    }
+
+    public void setChooserOrderEnabled(boolean enabled) {
+        sharedPreferences.edit().putBoolean(KEY_CHOOSER_ORDER, enabled).apply();
     }
 }

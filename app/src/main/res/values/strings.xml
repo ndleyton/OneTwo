@@ -36,6 +36,8 @@
     <string name="always_on_summary">Keep screen on while using</string>
     <string name="dark_mode_title" translatable="false">Dark Mode</string>
     <string name="dark_mode_summary" translatable="false">Use dark mode theme</string>
+    <string name="chooser_order_title">Chooser order</string>
+    <string name="chooser_order_summary">Choose fingers in placement order</string>
 
 
 </resources>
