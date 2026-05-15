@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="192dp"
     android:background="?attr/colorPrimary"
-    android:padding="16dp"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark"
+    android:padding="@dimen/space_m"
+    android:theme="@style/ThemeOverlay.Material3.Dark"
     android:orientation="vertical"
     android:gravity="bottom">
 

@@ -2,6 +2,7 @@ package com.nicue.onetwo.ui.timer;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -143,7 +144,7 @@ public class TimerFragment extends Fragment implements MenuProvider {
             itemBinding.chrono.setText(timer.getDisplayTime());
             itemBinding.chrono.setEnabled(timer.isEnabled());
             itemBinding.chrono.setClickable(timer.isEnabled());
-            itemBinding.chrono.setBackgroundColor(resolveButtonColor(timer));
+            itemBinding.chrono.setBackgroundTintList(ColorStateList.valueOf(resolveButtonColor(timer)));
             itemBinding.cvTimer.setCardElevation(timer.isActive() && !state.isPaused() ? 30f : 2f);
             itemBinding.getRoot().setRotation(i == 0 && timers.size() == 2 ? 180f : 0f);
         }

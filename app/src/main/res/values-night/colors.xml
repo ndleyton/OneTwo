@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#083e64</color>
-    <color name="colorPrimaryText">@color/colorPrimaryLight</color>
+    <color name="colorPrimaryText">#9DCAEF</color>
     <color name="colorPrimaryLight">#416892</color>
     <color name="colorPrimaryDark">#001839</color>
     <color name="colorAccent">#f3bb21</color>
@@ -9,6 +9,37 @@
     <color name="secondAccentLight">#f65b59</color>
     <color name="secondAccentDark">#850009</color>
     <color name="overrideBackground">#FF1A1A1A</color>
+
+    <color name="m3_primary">#9DCAEF</color>
+    <color name="m3_on_primary">#003353</color>
+    <color name="m3_primary_container">#184E75</color>
+    <color name="m3_on_primary_container">#D0E4FF</color>
+    <color name="m3_secondary">#F3BB21</color>
+    <color name="m3_on_secondary">#3B2F00</color>
+    <color name="m3_secondary_container">#564500</color>
+    <color name="m3_on_secondary_container">#FFE08A</color>
+    <color name="m3_tertiary">#FFB3B0</color>
+    <color name="m3_on_tertiary">#68000D</color>
+    <color name="m3_tertiary_container">#930019</color>
+    <color name="m3_on_tertiary_container">#FFDAD8</color>
+    <color name="m3_background">#1A1C1E</color>
+    <color name="m3_on_background">#E2E2E6</color>
+    <color name="m3_surface">#1A1C1E</color>
+    <color name="m3_on_surface">#E2E2E6</color>
+    <color name="m3_surface_variant">#41474D</color>
+    <color name="m3_on_surface_variant">#C1C7CE</color>
+    <color name="m3_surface_container">#222529</color>
+    <color name="m3_surface_container_high">#2D3135</color>
+    <color name="m3_outline">#8B9198</color>
+    <color name="m3_outline_variant">#41474D</color>
+    <color name="m3_inverse_surface">#E2E2E6</color>
+    <color name="m3_inverse_on_surface">#303034</color>
+    <color name="m3_inverse_primary">#083E64</color>
+    <color name="m3_error">#FFB4AB</color>
+    <color name="m3_on_error">#690005</color>
+    <color name="m3_error_container">#93000A</color>
+    <color name="m3_on_error_container">#FFDAD6</color>
+
     <color name="diceColor0">#850009</color>
     <color name="diceColor1">#b9d529</color>
     <color name="diceColor2">#5DD8F4</color>
