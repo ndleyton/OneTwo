@@ -1,5 +1,6 @@
 package com.nicue.onetwo.fragments;
 
+import com.nicue.onetwo.ui.timer.TimerFragment;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

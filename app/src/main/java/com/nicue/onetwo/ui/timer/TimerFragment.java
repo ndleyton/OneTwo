@@ -218,8 +218,12 @@ public class TimerFragment extends Fragment implements MenuProvider {
         }
     }
 
+    public static int calculateMaxTimers(int screenHeightDp) {
+        return Math.max(1, (screenHeightDp - 22) / 78);
+    }
+
     private int maxTimers() {
         Configuration configuration = requireContext().getResources().getConfiguration();
-        return Math.max(1, (configuration.screenHeightDp - 22) / 78);
+        return calculateMaxTimers(configuration.screenHeightDp);
     }
 }
