@@ -13,8 +13,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="112dp"
-        android:paddingStart="@dimen/space_m"
-        android:paddingEnd="@dimen/space_m">
+        android:paddingStart="@dimen/space_sm"
+        android:paddingEnd="@dimen/space_sm">
 
         <TextView
             android:id="@+id/tv_faces"
@@ -24,13 +24,11 @@
 
         <FrameLayout
             android:id="@+id/dice_face_container"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_marginEnd="@dimen/space_m"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginEnd="@dimen/space_sm"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/throw_button"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -55,8 +53,14 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/throw_button"
-            android:layout_width="112dp"
-            android:layout_height="56dp"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
             android:text="Roll"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
