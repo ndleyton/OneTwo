@@ -1,68 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dice_cv"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/space_xs"
+    android:minHeight="112dp"
+    app:cardBackgroundColor="?attr/colorSurfaceContainer"
+    app:cardElevation="3dp"
+    app:shapeAppearanceOverlay="@style/ShapeAppearance.OneTwo.Container">
 
-    <com.google.android.material.card.MaterialCardView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_gravity="center"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="@dimen/space_xs"
-        android:id="@+id/dice_cv"
-        app:cardBackgroundColor="?attr/colorSurfaceContainer"
-        app:cardElevation="3dp"
-        app:shapeAppearanceOverlay="@style/ShapeAppearance.OneTwo.Container">
+        android:layout_height="112dp"
+        android:paddingStart="@dimen/space_m"
+        android:paddingEnd="@dimen/space_m">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+        <TextView
+            android:id="@+id/tv_faces"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
+
+        <FrameLayout
+            android:id="@+id/dice_face_container"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_marginEnd="@dimen/space_m"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/throw_button"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/imageView_dice"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/menu_dice"
+                android:scaleType="fitCenter"
+                android:src="@drawable/hexa" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/tv_faces"/>
-
-            <RelativeLayout
+                android:id="@+id/tv_dice"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="?attr/colorOnSurface" />
 
+        </FrameLayout>
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/imageView_dice"
-                    android:src="@drawable/hexa" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/throw_button"
+            android:layout_width="112dp"
+            android:layout_height="56dp"
+            android:text="Roll"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/dice_face_container"
+            app:layout_constraintTop_toTopOf="parent" />
 
-
-                <FrameLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignTop="@id/imageView_dice"
-                    android:layout_alignBottom="@id/imageView_dice"
-                    android:layout_alignLeft="@id/imageView_dice"
-                    android:layout_alignRight="@id/imageView_dice"
-                    android:layout_centerInParent="true">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:id="@+id/tv_dice"
-                        android:gravity="center"
-                         />
-
-                </FrameLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Roll"
-                    android:id="@+id/throw_button"
-                    android:layout_toEndOf="@+id/imageView_dice"
-                    android:layout_centerVertical="true"/>
-            </RelativeLayout>
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-</LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>
