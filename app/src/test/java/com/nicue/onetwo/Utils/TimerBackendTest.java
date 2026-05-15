@@ -1,4 +1,4 @@
-package com.nicue.onetwo.Utils;
+package com.nicue.onetwo.utils;
 
 import org.junit.Test;
 
