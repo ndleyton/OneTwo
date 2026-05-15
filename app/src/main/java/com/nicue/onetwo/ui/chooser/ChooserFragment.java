@@ -1,7 +1,10 @@
 package com.nicue.onetwo.ui.chooser;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,8 +18,19 @@ import com.nicue.onetwo.data.settings.SettingsRepository;
 import com.nicue.onetwo.databinding.ChooserLayoutBinding;
 
 public class ChooserFragment extends Fragment {
+    private static final long INSTRUCTION_HIDE_DELAY_MS = 1500L;
+
     private ChooserLayoutBinding binding;
     private ChooserViewModel viewModel;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private final Runnable hideInstructionRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (binding != null) {
+                binding.chooserInstruction.setVisibility(View.GONE);
+            }
+        }
+    };
 
     @Nullable
     @Override
@@ -41,6 +55,16 @@ public class ChooserFragment extends Fragment {
                 binding.chooserView.setChoosingOrder(value);
             }
         });
+        binding.chooserView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View touchedView, MotionEvent event) {
+                int action = event.getActionMasked();
+                if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
+                    scheduleInstructionHide();
+                }
+                return false;
+            }
+        });
     }
 
     @Override
@@ -53,7 +77,16 @@ public class ChooserFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
+        handler.removeCallbacks(hideInstructionRunnable);
         binding = null;
         super.onDestroyView();
+    }
+
+    private void scheduleInstructionHide() {
+        if (binding.chooserInstruction.getVisibility() != View.VISIBLE) {
+            return;
+        }
+        handler.removeCallbacks(hideInstructionRunnable);
+        handler.postDelayed(hideInstructionRunnable, INSTRUCTION_HIDE_DELAY_MS);
     }
 }
