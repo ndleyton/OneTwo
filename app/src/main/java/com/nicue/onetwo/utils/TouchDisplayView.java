@@ -31,6 +31,9 @@ public class TouchDisplayView extends View {
     //private int fingers = 0;
     private Random random = new Random();
     private static final long SELECTION_REVEAL_DURATION_MS = 650L;
+    private static final int SELECTED_TOUCH_ALPHA = 255;
+    private static final int DIMMED_TOUCH_ALPHA = 105;
+    private static final int TOUCH_HALO_ALPHA = 125;
     private int chosenColor = 0;
     private int chosenId = -1;
     private int[] randomArray = {};
@@ -358,8 +361,14 @@ public class TouchDisplayView extends View {
     protected void drawCircle(Canvas canvas, int id, TouchHistory data) {
         // select the color based on the id
         int color = COLORS[id % COLORS.length];
+        int touchAlpha = alreadyChosen && chosenId != id
+                ? DIMMED_TOUCH_ALPHA
+                : SELECTED_TOUCH_ALPHA;
+        int haloAlpha = alreadyChosen && chosenId != id
+                ? DIMMED_TOUCH_ALPHA / 2
+                : TOUCH_HALO_ALPHA;
         mCirclePaint.setColor(color);
-        mCirclePaint.setAlpha(255);
+        mCirclePaint.setAlpha(touchAlpha);
         boolean drawBig = true;
 
 
@@ -411,7 +420,7 @@ public class TouchDisplayView extends View {
                 mCirclePaint);
 
         if(drawBig) {
-            mCirclePaint.setAlpha(125);
+            mCirclePaint.setAlpha(haloAlpha);
             canvas.drawCircle(data.x, (data.y) - half_r, radius * 2f,
                     mCirclePaint);
         }
