@@ -23,4 +23,4 @@ If you want to contribute to OneTwo, fill an Issue saying what would you like to
 OneTwo is licensed under the MIT License
 
 <img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="50"> 
-<a href="https://play.google.com/store/apps/details?id=com.nicue.onetwo&hl=es_PR&gl=US"><img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="50></a>
+<a href="https://play.google.com/store/apps/details?id=com.nicue.onetwo&hl=es_PR&gl=US"><img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="50"></a>
