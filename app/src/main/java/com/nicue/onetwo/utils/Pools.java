@@ -2,6 +2,7 @@ package com.nicue.onetwo.utils;
 
 /**
  * Helper class for crating pools of objects. An example use looks like this:
+ *
  * <pre>
  * public class MyPooledClass {
  *
@@ -43,7 +44,6 @@ public final class Pools {
          *
          * @param instance The instance to release.
          * @return Whether the instance was put in the pool.
-         *
          * @throws IllegalStateException If the instance is already in the pool.
          */
         public boolean release(T instance);
@@ -67,7 +67,6 @@ public final class Pools {
          * Creates a new instance.
          *
          * @param maxPoolSize The max pool size.
-         *
          * @throws IllegalArgumentException If the max pool size is less than zero.
          */
         public SimplePool(int maxPoolSize) {
@@ -125,7 +124,6 @@ public final class Pools {
          * Creates a new instance.
          *
          * @param maxPoolSize The max pool size.
-         *
          * @throws IllegalArgumentException If the max pool size is less than zero.
          */
         public SynchronizedPool(int maxPoolSize) {

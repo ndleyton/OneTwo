@@ -14,13 +14,23 @@ There's three main ways to get OneTwo
 ## How to Contribute
 If you want to contribute to OneTwo, fill an Issue saying what would you like to change and if you want to be a contributor. Once you are a collaborator, you can commit and push, or do a pull request if you would like to!
 
+## Development
+
+Useful Gradle tasks:
+
+* `./gradlew format` formats changed Java, Gradle, Markdown, properties, and XML files.
+* `./gradlew formatCheck` checks changed-file formatting without changing files.
+* `./gradlew lintAll` runs Android lint plus Java Checkstyle checks.
+* `./gradlew qualityCheck` runs formatting checks and lint checks together.
+* `./gradlew testDebugUnitTest` runs the local JVM and Robolectric test suite.
+
 ## Screenshots
 
 ![](imgs/SS_bare_timer.png) ![](imgs/SS_navview.png)  ![](imgs/SS_counter.png)  ![](imgs/SS_Chooser.png)
 
-## License 
- 
+## License
+
 OneTwo is licensed under the MIT License
 
-<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="50"> 
+<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="50">
 <a href="https://play.google.com/store/apps/details?id=com.nicue.onetwo&hl=es_PR&gl=US"><img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="50"></a>

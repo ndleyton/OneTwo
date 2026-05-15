@@ -4,14 +4,18 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        gradlePluginPortal()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:9.2.1'
+        classpath 'com.diffplug.spotless:spotless-plugin-gradle:7.2.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
+
+apply plugin: 'com.diffplug.spotless'
 
 allprojects {
     repositories {
@@ -20,6 +24,49 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
+spotless {
+    ratchetFrom 'origin/master'
+
+    java {
+        target 'app/src/**/*.java'
+        googleJavaFormat('1.28.0').aosp()
+        removeUnusedImports()
+        formatAnnotations()
+    }
+
+    format 'projectFiles', {
+        target '**/*.gradle', '**/*.md', '**/*.properties', '**/*.xml'
+        targetExclude '**/build/**', '.gradle/**', '.idea/**', 'local.properties'
+        leadingTabsToSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+tasks.register('format') {
+    group = 'formatting'
+    description = 'Formats Java and project resource files.'
+    dependsOn 'spotlessApply'
+}
+
+tasks.register('formatCheck') {
+    group = 'verification'
+    description = 'Checks Java and project resource file formatting.'
+    dependsOn 'spotlessCheck'
+}
+
+tasks.register('lintAll') {
+    group = 'verification'
+    description = 'Runs Android lint and Java style checks.'
+    dependsOn ':app:lintDebug', ':app:checkstyle'
+}
+
+tasks.register('qualityCheck') {
+    group = 'verification'
+    description = 'Runs formatter checks, Android lint, and Java style checks.'
+    dependsOn 'formatCheck', 'lintAll'
+}
+
+tasks.named('clean', Delete) {
     delete rootProject.buildDir
 }
