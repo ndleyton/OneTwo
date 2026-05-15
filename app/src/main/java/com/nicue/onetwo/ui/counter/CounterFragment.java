@@ -115,6 +115,20 @@ public class CounterFragment extends Fragment implements CounterListAdapter.List
         viewModel.deleteCounter(counterId);
     }
 
+    public static String sanitizeObjectName(String name) {
+        if (name == null) return "";
+        return name.replace("'", "\"");
+    }
+
+    public static int parseCountValue(String value) {
+        if (value == null) return 0;
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException exception) {
+            return 0;
+        }
+    }
+
     private void showAddDialog() {
         ActivityAlertDialogBinding dialogBinding = ActivityAlertDialogBinding.inflate(
                 getLayoutInflater()
@@ -124,17 +138,11 @@ public class CounterFragment extends Fragment implements CounterListAdapter.List
                 .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int which) {
-                        String title = dialogBinding.etToCount.getText().toString()
-                                .replace("'", "\"");
+                        String title = sanitizeObjectName(dialogBinding.etToCount.getText().toString());
                         if (title.trim().isEmpty()) {
                             return;
                         }
-                        int value;
-                        try {
-                            value = Integer.parseInt(dialogBinding.etNumber.getText().toString());
-                        } catch (NumberFormatException exception) {
-                            value = 0;
-                        }
+                        int value = parseCountValue(dialogBinding.etNumber.getText().toString());
                         viewModel.addCounter(title, value);
                     }
                 })

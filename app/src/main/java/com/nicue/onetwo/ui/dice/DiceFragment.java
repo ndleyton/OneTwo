@@ -121,6 +121,22 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
         viewModel.removeDie(position);
     }
 
+    public static String normalizeFacesInput(String input) {
+        if (input == null || input.trim().isEmpty()) {
+            return "6";
+        }
+        int faces;
+        try {
+            faces = Integer.parseInt(input.trim());
+        } catch (NumberFormatException exception) {
+            return "6";
+        }
+        if (faces < 2) {
+            return "2";
+        }
+        return String.valueOf(faces);
+    }
+
     private void showAddDieDialog() {
         DiceAlertDialogBinding dialogBinding = DiceAlertDialogBinding.inflate(getLayoutInflater());
         AlertDialog dialog = new AlertDialog.Builder(requireContext())
@@ -129,14 +145,8 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
                 .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int which) {
-                        String facesText = dialogBinding.etDice.getText().toString();
-                        int faces;
-                        try {
-                            faces = Integer.parseInt(facesText);
-                        } catch (NumberFormatException exception) {
-                            faces = 6;
-                        }
-                        viewModel.addDie(faces);
+                        String facesText = normalizeFacesInput(dialogBinding.etDice.getText().toString());
+                        viewModel.addDie(Integer.parseInt(facesText));
                     }
                 })
                 .setNegativeButton("Cancel", null)

@@ -9,9 +9,10 @@ import com.nicue.onetwo.core.TimerScheduler;
 import com.nicue.onetwo.data.timer.TimerSnapshot;
 import com.nicue.onetwo.data.timer.TimerStateStore;
 
+import com.nicue.onetwo.utils.TimerBackend;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class TimerViewModel extends ViewModel {
     private static final String KEY_REMAINING_TIMES = "timer_remaining_times";
@@ -233,14 +234,7 @@ public class TimerViewModel extends ViewModel {
     }
 
     private String formatTime(long milliseconds) {
-        long totalSeconds = milliseconds / 1000L;
-        long minutes = totalSeconds / 60L;
-        long seconds = totalSeconds % 60L;
-        if (milliseconds >= 10000L) {
-            return String.format(Locale.US, "%d:%02d", minutes, seconds);
-        }
-        long deciseconds = (milliseconds % 1000L) / 10L;
-        return String.format(Locale.US, "%d:%02d:%02d", minutes, seconds, deciseconds);
+        return TimerBackend.formatRemainingTime(milliseconds, 10000L);
     }
 
     private TimerSnapshot createSnapshot() {

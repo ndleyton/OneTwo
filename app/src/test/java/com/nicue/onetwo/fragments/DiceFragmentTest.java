@@ -1,5 +1,6 @@
 package com.nicue.onetwo.fragments;
 
+import com.nicue.onetwo.ui.dice.DiceFragment;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
