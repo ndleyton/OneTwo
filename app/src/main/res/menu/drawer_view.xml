@@ -4,22 +4,22 @@
         android:id="@+id/menu_top"
         android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_first_fragment"
+            android:id="@+id/nav_counter"
             android:icon="@drawable/counter"
             android:checked="true"
             android:title="@string/menu_counter" />
         <item
-            android:id="@+id/nav_second_fragment"
+            android:id="@+id/nav_dice"
             android:icon="@drawable/dice_multiple"
             android:title="@string/menu_dice" />
 
         <item
-            android:id="@+id/nav_third_fragment"
+            android:id="@+id/nav_chooser"
             android:icon="@drawable/fingerprint"
             android:title="@string/menu_chooser" />
 
         <item
-            android:id="@+id/nav_fourth_fragment"
+            android:id="@+id/nav_timer"
             android:icon="@drawable/timer_sand"
             android:title="@string/menu_timer" />
 
@@ -29,7 +29,7 @@
         android:id="@+id/menu_bottom"
         android:checkableBehavior="none">
     <item
-        android:id="@+id/nav_last_fragment"
+        android:id="@+id/nav_settings"
         android:icon="@drawable/settings_gear"
         android:title="@string/menu_settings" />
     </group>

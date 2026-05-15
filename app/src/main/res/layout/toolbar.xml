@@ -3,61 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar"
-    android:layout_height="wrap_content"
     android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorPrimary"
     android:fitsSystemWindows="true"
     android:minHeight="?attr/actionBarSize"
-    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-    android:background="?attr/colorPrimary">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    <TextView
-        android:id="@+id/custom_toolbar_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_alignParentStart="true"
-        style="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"/>
-
-
-    <Button
-        android:id="@+id/remove_timer_button"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:text="@string/remove_timer"
-        android:visibility="invisible" />
-
-    <Button
-        android:id="@+id/add_timer_button"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toStartOf="@id/remove_timer_button"
-        android:text="@string/add_timer"
-        android:visibility="invisible" />
-
-    <Button
-        android:id="@+id/roll_dices_button"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:text="@string/roll_all"
-        android:visibility="invisible" />
-
-        <Switch
-            android:id="@+id/toolbar_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:padding="8dp"
-            android:text="@string/order"
-            android:visibility="invisible" />
-    </RelativeLayout>
-</androidx.appcompat.widget.Toolbar>
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
