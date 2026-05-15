@@ -6,12 +6,12 @@ android {
         viewBinding true
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
     defaultConfig {
         applicationId "com.nicue.onetwo"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 34
         versionCode 17
         versionName "1.2.0"
@@ -20,7 +20,7 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     testOptions {
