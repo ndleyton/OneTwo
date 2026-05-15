@@ -22,6 +22,18 @@ public class TimerBackend {
     private VibratorInterface vibratorInterface;
     private long panicMiliSec = 10000;  // miliseconds to start to show deciseconds
 
+    static String formatRemainingTime(long millisUntilFinished, long panicMiliSec) {
+        long currentSec = millisUntilFinished / 1000;
+        long min = currentSec / 60;
+        long dim_secs = currentSec % 60;
+        if (millisUntilFinished >= panicMiliSec) {
+            return String.format("%d:%02d", min, dim_secs);
+        }
+
+        long deci_sec = (millisUntilFinished % 1000) / 10;
+        return String.format("%d:%02d:%02d", min, dim_secs, deci_sec);
+    }
+
     public interface VibratorInterface{
         void finishedTimer();
     }
@@ -36,18 +48,7 @@ public class TimerBackend {
             @Override
             public void onTick(long millisUntilFinished) {
                 pausedTime = millisUntilFinished;
-                long currentSec = pausedTime/1000;
-                long min = currentSec/60;
-                long dim_secs = currentSec%60;
-                String min_sec;
-                if (millisUntilFinished >= panicMiliSec ) {
-                    min_sec = String.format("%d:%02d", min, dim_secs);
-                }else{
-                    long deci_sec = (millisUntilFinished %1000)/10;
-                    min_sec = String.format("%d:%02d:%02d", min, dim_secs,deci_sec);
-                }
-
-                mButton.setText(min_sec);
+                mButton.setText(formatRemainingTime(millisUntilFinished, panicMiliSec));
             }
 
             @SuppressLint("SetTextI18n")
@@ -60,13 +61,7 @@ public class TimerBackend {
             }
         };
         pausedTime = defaultTime;
-        long currentSec = defaultTime/1000;
-        long min = currentSec/60;
-        //noinspection ConstantValue
-        long dim_secs = currentSec%60;
-        String min_sec = String.format("%d:%02d",min,dim_secs);
-
-        mButton.setText(min_sec);
+        mButton.setText(formatRemainingTime(defaultTime, panicMiliSec));
         setNonClickable();
     }
 
@@ -79,18 +74,7 @@ public class TimerBackend {
             @Override
             public void onTick(long millisUntilFinished) {
                 pausedTime = millisUntilFinished;
-                long currentSecs = millisUntilFinished/1000;
-                long min = currentSecs/60;
-                long dim_secs = currentSecs%60;
-                String min_sec;
-                if (millisUntilFinished >= panicMiliSec ) {
-                    min_sec = String.format("%d:%02d", min, dim_secs);
-                }else{
-                    long deci_sec = (millisUntilFinished %1000)/10;
-                    min_sec = String.format("%d:%02d:%02d", min, dim_secs,deci_sec);
-                }
-
-                mButton.setText(min_sec);
+                mButton.setText(formatRemainingTime(millisUntilFinished, panicMiliSec));
             }
 
             @SuppressLint("SetTextI18n")
@@ -105,11 +89,7 @@ public class TimerBackend {
         };
         setNonClickable();
         pausedTime = miliseconds;
-        long currentSecs = pausedTime /1000;
-        long min = currentSecs/60;
-        long dim_secs = currentSecs%60;
-        String min_sec = String.format("%d:%02d",min,dim_secs);
-        mButton.setText(min_sec);
+        mButton.setText(formatRemainingTime(pausedTime, panicMiliSec));
     }
     public void startTimer(){
         if (isPaused) {
@@ -127,18 +107,7 @@ public class TimerBackend {
                 @Override
                 public void onTick(long millisUntilFinished) {
                     pausedTime = millisUntilFinished;
-                    long currentSec = pausedTime /1000;
-                    long min = currentSec / 60;
-                    long dim_secs = currentSec % 60;
-                    String min_sec;
-                    if (millisUntilFinished >= panicMiliSec ) {
-                        min_sec = String.format("%d:%02d", min, dim_secs);
-                    }else{
-                        long deci_sec = (millisUntilFinished %1000)/10;
-                        min_sec = String.format("%d:%02d:%02d", min, dim_secs,deci_sec);
-                    }
-
-                    mButton.setText(min_sec);
+                    mButton.setText(formatRemainingTime(millisUntilFinished, panicMiliSec));
                 }
                 @SuppressLint("SetTextI18n")
                 @Override

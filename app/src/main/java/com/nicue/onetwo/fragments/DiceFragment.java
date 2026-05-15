@@ -40,6 +40,23 @@ public class DiceFragment extends Fragment implements View.OnClickListener,
     private Handler handler = new Handler();
     private Random rand = new Random();
 
+    static String normalizeFacesInput(String rawFaces) {
+        String faces = rawFaces == null ? "" : rawFaces.trim();
+        if (faces.isEmpty()) {
+            return "6";
+        }
+
+        try {
+            int intFaces = Integer.parseInt(faces);
+            if (intFaces < 2) {
+                return "2";
+            }
+            return String.valueOf(intFaces);
+        } catch (NumberFormatException e) {
+            return "6";
+        }
+    }
+
 
     @Nullable
     @Override
@@ -139,14 +156,7 @@ public class DiceFragment extends Fragment implements View.OnClickListener,
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        String faces = et_dice.getText().toString();
-                        if(faces.equals("")){
-                            faces = "6";
-                        }
-                        int int_faces = Integer.parseInt(faces);
-                        if (int_faces<2){
-                            faces ="2";
-                        }
+                        String faces = normalizeFacesInput(et_dice.getText().toString());
                         mFaces.add(faces);
                         mItems.add(faces);
                         mListAdapter.setmData(mItems,mFaces);
@@ -280,4 +290,3 @@ public class DiceFragment extends Fragment implements View.OnClickListener,
         }, milisec);
     }
 }
-
