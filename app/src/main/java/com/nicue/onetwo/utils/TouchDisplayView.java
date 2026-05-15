@@ -1,6 +1,7 @@
 package com.nicue.onetwo.utils;
 
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
@@ -12,6 +13,7 @@ import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.os.Vibrator;
 
 import com.nicue.onetwo.R;
@@ -28,9 +30,15 @@ public class TouchDisplayView extends View {
     private boolean choosingOrder = false;
     //private int fingers = 0;
     private Random random = new Random();
+    private static final long SELECTION_REVEAL_DURATION_MS = 650L;
     private int chosenColor = 0;
     private int chosenId = -1;
     private int[] randomArray = {};
+    private float selectionRevealProgress = 1f;
+    private float selectionRevealCenterX = 0f;
+    private float selectionRevealCenterY = 0f;
+    private float selectionRevealMaxRadius = 0f;
+    private ValueAnimator selectionRevealAnimator;
 
     private int backgroundColorOverride = getResources().getColor(R.color.overrideBackground);
 
@@ -56,6 +64,8 @@ public class TouchDisplayView extends View {
                 shuffleArray(randomArray);
                 chosenId = randomArray[0];
                 chosenColor = COLORS[chosenId % COLORS.length];
+                updateSelectionRevealBounds();
+                startSelectionRevealAnimation();
                 Vibrator v = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
                 long[] pattern = {0,20,10,50};
                 v.vibrate(pattern, -1);
@@ -222,14 +232,14 @@ public class TouchDisplayView extends View {
                 data.recycle();
 
                 mHasTouch = false;
+                resetSelection();
 
                 break;
             }
 
             case MotionEvent.ACTION_POINTER_UP: {
                 fingersDown = false;
-                alreadyChosen = false;
-                randomArray = new int[0];
+                resetSelection();
                 //fingers --;
                 handler.removeCallbacks(runnable);
                 /*
@@ -278,13 +288,14 @@ public class TouchDisplayView extends View {
 
         // Canvas background color depends on whether there is an active touch
         if (mHasTouch) {
-            canvas.drawColor(backgroundColorOverride);
             if (alreadyChosen){
                 canvas.drawColor(chosenColor);
+                drawSelectionReveal(canvas);
+            } else {
+                canvas.drawColor(backgroundColorOverride);
             }
         }else{
-            alreadyChosen = false;
-            randomArray = new int[0];
+            resetSelection();
         }
 
         // loop through all active touches and draw them
@@ -314,6 +325,7 @@ public class TouchDisplayView extends View {
     private Paint mTextPaint = new Paint();
     private Paint mStrokePaint = new Paint();
     private Paint mTransStrokePaint = new Paint();
+    private Paint mRevealPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
 
 
@@ -347,6 +359,7 @@ public class TouchDisplayView extends View {
         // select the color based on the id
         int color = COLORS[id % COLORS.length];
         mCirclePaint.setColor(color);
+        mCirclePaint.setAlpha(255);
         boolean drawBig = true;
 
 
@@ -403,6 +416,68 @@ public class TouchDisplayView extends View {
                     mCirclePaint);
         }
 
+    }
+
+    private void startSelectionRevealAnimation() {
+        if (selectionRevealAnimator != null) {
+            selectionRevealAnimator.cancel();
+        }
+        selectionRevealProgress = 0f;
+        selectionRevealAnimator = ValueAnimator.ofFloat(0f, 1f);
+        selectionRevealAnimator.setDuration(SELECTION_REVEAL_DURATION_MS);
+        selectionRevealAnimator.setInterpolator(new DecelerateInterpolator());
+        selectionRevealAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                selectionRevealProgress = (Float) animation.getAnimatedValue();
+                invalidate();
+            }
+        });
+        selectionRevealAnimator.start();
+    }
+
+    private void drawSelectionReveal(Canvas canvas) {
+        if (selectionRevealProgress >= 1f) {
+            return;
+        }
+
+        TouchHistory chosenTouch = mTouches.get(chosenId);
+        if (chosenTouch == null) {
+            return;
+        }
+
+        float radius = chosenTouch.pressure * mCircleRadius;
+        float centerX = chosenTouch.x;
+        float centerY = chosenTouch.y - (radius / 2f);
+        float revealRadius = maxDistanceToCorner(centerX, centerY) * (1f - selectionRevealProgress);
+
+        mRevealPaint.setColor(backgroundColorOverride);
+        canvas.drawCircle(centerX, centerY, revealRadius, mRevealPaint);
+    }
+
+    private float maxDistanceToCorner(float x, float y) {
+        float topLeft = distance(x, y, 0f, 0f);
+        float topRight = distance(x, y, getWidth(), 0f);
+        float bottomLeft = distance(x, y, 0f, getHeight());
+        float bottomRight = distance(x, y, getWidth(), getHeight());
+        return Math.max(Math.max(topLeft, topRight), Math.max(bottomLeft, bottomRight));
+    }
+
+    private float distance(float startX, float startY, float endX, float endY) {
+        float xDiff = startX - endX;
+        float yDiff = startY - endY;
+        return (float) Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
+    }
+
+    private void resetSelection() {
+        alreadyChosen = false;
+        chosenId = -1;
+        randomArray = new int[0];
+        selectionRevealProgress = 1f;
+        if (selectionRevealAnimator != null) {
+            selectionRevealAnimator.cancel();
+            selectionRevealAnimator = null;
+        }
     }
 
     public int indexInArray(int[] arr, int n){
