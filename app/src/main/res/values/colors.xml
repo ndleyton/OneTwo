@@ -40,9 +40,14 @@
     <color name="m3_error_container">#FFDAD6</color>
     <color name="m3_on_error_container">#410002</color>
 
-    <color name="diceColor0">#850009</color>
-    <color name="diceColor1">#b9d529</color>
-    <color name="diceColor2">#5DD8F4</color>
-    <color name="diceColor3">#F3BB21</color>
-    <color name="diceColor4">#B92130</color>
+    <color name="diceColor0">#083E64</color>
+    <color name="diceColor1">#F3BB21</color>
+    <color name="diceColor2">#BD2430</color>
+    <color name="diceColor3">#F65B59</color>
+    <color name="diceColor4">#416892</color>
+    <color name="diceColor5">#850009</color>
+    <color name="diceColor6">#083E64</color>
+    <color name="diceColor7">#F3BB21</color>
+    <color name="diceColor8">#BD2430</color>
+    <color name="diceColor9">#F65B59</color>
 </resources>

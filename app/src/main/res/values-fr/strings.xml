@@ -16,9 +16,15 @@
     <string name="drawer_close">Fermer la fenêtre de navigation</string>
     <string name="nav_header">UnDeux</string>
     <string name="dice_title">Nombre de faces du dé</string>
+    <string name="dice_hint">Nombre de faces</string>
     <string name="touch_me">Posez un doigt chacun pour choisir parmi vous</string>
     <string name="edit">Éditer</string>
+    <string name="roll">Lancer</string>
     <string name="roll_all">Tout lancer</string>
+    <string name="dice_total">Total</string>
+    <string name="dice_empty_results">Ajoutez des dés pour commencer</string>
+    <string name="dice_type_label" translatable="false">d%1$d</string>
+    <string name="dice_result_chip">d%1$d : %2$d</string>
     <string name="add_timer">Ajouter</string>
     <string name="remove_timer">Enlever</string>
     <string name="space">      </string>

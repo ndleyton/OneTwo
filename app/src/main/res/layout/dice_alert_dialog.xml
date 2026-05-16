@@ -1,16 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/space_m">
 
-    <EditText
-        android:id="@+id/et_dice"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:padding="8dp"
-        android:maxLength="5"
-        android:inputType="number"
-        android:minWidth="65dp"/>
+        android:text="Quick Add"
+        android:textAppearance="?attr/textAppearanceLabelLarge"
+        android:layout_marginBottom="@dimen/space_s" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="@dimen/space_m">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_d4"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="d4"
+            android:padding="0dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_d6"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="d6"
+            android:padding="0dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_d10"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="d10"
+            android:padding="0dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_d20"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="d20"
+            android:padding="0dp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Custom"
+        android:textAppearance="?attr/textAppearanceLabelLarge"
+        android:layout_marginBottom="@dimen/space_s" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/dice_hint"
+        app:startIconDrawable="@drawable/dice_multiple"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_dice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="3" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>

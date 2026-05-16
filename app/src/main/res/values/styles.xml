@@ -57,6 +57,16 @@
         <item name="cornerSize">@dimen/shape_corner_soft</item>
     </style>
 
+    <style name="ShapeAppearance.OneTwo.DiceSummary" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">18dp</item>
+    </style>
+
+    <style name="ShapeAppearance.OneTwo.DiceTile" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
     <style name="ShapeAppearance.OneTwo.Large" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">@dimen/shape_corner_large</item>

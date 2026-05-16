@@ -4,15 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
-
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.test.core.app.ApplicationProvider;
-
 import com.nicue.onetwo.LiveDataTestUtil;
 import com.nicue.onetwo.data.dice.DicePrefsDataSource;
 import com.nicue.onetwo.data.dice.DiceRepository;
-
+import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,13 +18,10 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import java.util.List;
-
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 34)
 public class DiceViewModelTest {
-    @Rule
-    public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
+    @Rule public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     private DiceViewModel viewModel;
 
@@ -37,10 +32,10 @@ public class DiceViewModelTest {
                 .edit()
                 .clear()
                 .commit();
-        viewModel = new DiceViewModel(
-                new DiceRepository(new DicePrefsDataSource(context)),
-                new SavedStateHandle()
-        );
+        viewModel =
+                new DiceViewModel(
+                        new DiceRepository(new DicePrefsDataSource(context)),
+                        new SavedStateHandle());
     }
 
     @Test
@@ -48,18 +43,24 @@ public class DiceViewModelTest {
         viewModel.addDie(6);
         viewModel.addDie(20);
 
-        List<DieUiModel> dice = LiveDataTestUtil.getValue(viewModel.getUiState()).getDice();
+        DiceUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        List<DieUiModel> dice = state.getDice();
         assertEquals(2, dice.size());
         assertEquals(6, dice.get(0).getFaces());
+        assertEquals(26, state.getTotal());
 
         viewModel.rollAllDice();
-        dice = LiveDataTestUtil.getValue(viewModel.getUiState()).getDice();
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        dice = state.getDice();
         assertTrue(dice.get(0).getValue() >= 1 && dice.get(0).getValue() <= 6);
         assertTrue(dice.get(1).getValue() >= 1 && dice.get(1).getValue() <= 20);
+        assertEquals(dice.get(0).getValue() + dice.get(1).getValue(), state.getTotal());
 
         viewModel.removeDie(0);
-        dice = LiveDataTestUtil.getValue(viewModel.getUiState()).getDice();
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        dice = state.getDice();
         assertEquals(1, dice.size());
         assertEquals(20, dice.get(0).getFaces());
+        assertEquals(dice.get(0).getValue(), state.getTotal());
     }
 }

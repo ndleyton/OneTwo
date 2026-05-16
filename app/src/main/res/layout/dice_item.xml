@@ -5,71 +5,59 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/space_xs"
-    android:minHeight="112dp"
+    android:minHeight="128dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
     app:cardBackgroundColor="?attr/colorSurfaceContainer"
-    app:cardElevation="3dp"
-    app:shapeAppearanceOverlay="@style/ShapeAppearance.OneTwo.Container">
+    app:cardElevation="0dp"
+    app:strokeColor="?attr/colorOutlineVariant"
+    app:strokeWidth="1dp"
+    app:shapeAppearanceOverlay="@style/ShapeAppearance.OneTwo.DiceTile">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="112dp"
-        android:paddingStart="@dimen/space_sm"
-        android:paddingEnd="@dimen/space_sm">
+        android:layout_height="140dp">
+
+        <!-- Die Type Badge -->
+        <TextView
+            android:id="@+id/tv_die_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/space_s"
+            android:background="@drawable/bg_dice_chip"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:textAppearance="?attr/textAppearanceLabelMedium"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_faces"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:visibility="gone"
+            android:id="@+id/tv_dice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:textAppearance="?attr/textAppearanceDisplayLarge"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <FrameLayout
-            android:id="@+id/dice_face_container"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_marginEnd="@dimen/space_sm"
+        <ImageView
+            android:id="@+id/iv_roll_indicator"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_margin="@dimen/space_s"
+            android:src="@drawable/dice_multiple"
+            android:alpha="0.4"
+            app:tint="#FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/throw_button"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/imageView_dice"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:adjustViewBounds="true"
-                android:contentDescription="@string/menu_dice"
-                android:scaleType="fitCenter"
-                android:src="@drawable/hexa" />
-
-            <TextView
-                android:id="@+id/tv_dice"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textColor="?attr/colorOnSurface" />
-
-        </FrameLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/throw_button"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:insetLeft="0dp"
-            android:insetRight="0dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:text="Roll"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/dice_face_container"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
