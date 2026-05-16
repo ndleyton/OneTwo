@@ -49,6 +49,15 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
         notifyDataSetChanged();
     }
 
+    public void animateAllVisibleItems(RecyclerView recyclerView) {
+        for (int i = 0; i < recyclerView.getChildCount(); i++) {
+            RecyclerView.ViewHolder holder = recyclerView.getChildViewHolder(recyclerView.getChildAt(i));
+            if (holder instanceof DiceViewHolder) {
+                ((DiceViewHolder) holder).animateRoll();
+            }
+        }
+    }
+
     class DiceViewHolder extends RecyclerView.ViewHolder {
         private final DiceItemBinding binding;
         private final int[] diceColors = {
@@ -83,11 +92,12 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
             });
         }
 
-        private void animateRoll() {
+        public void animateRoll() {
             binding.getRoot().animate()
                     .rotationBy(360f)
-                    .scaleX(0.8f)
-                    .scaleY(0.8f)
+                    .scaleX(1.1f)
+                    .scaleY(1.1f)
+                    .translationZ(12f)
                     .setDuration(150)
                     .withEndAction(new Runnable() {
                         @Override
@@ -95,6 +105,7 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
                             binding.getRoot().animate()
                                     .scaleX(1f)
                                     .scaleY(1f)
+                                    .translationZ(0f)
                                     .setDuration(150)
                                     .start();
                         }

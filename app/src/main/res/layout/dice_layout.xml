@@ -102,6 +102,7 @@
             android:layout_marginTop="@dimen/space_sm"
             android:layout_weight="1"
             android:clipToPadding="false"
+            android:clipChildren="false"
             android:paddingBottom="88dp" />
 
     </LinearLayout>

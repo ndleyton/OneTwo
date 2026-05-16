@@ -110,6 +110,7 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
         if (menuItem.getItemId() == R.id.action_roll_all) {
             vibrate(new long[]{0, 15, 10, 15, 10, 15, 10, 15});
             animateSummaryCard();
+            adapter.animateAllVisibleItems(binding.recyclerviewDice);
             viewModel.rollAllDice();
             return true;
         }
