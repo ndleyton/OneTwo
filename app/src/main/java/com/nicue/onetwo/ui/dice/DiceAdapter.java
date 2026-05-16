@@ -58,10 +58,9 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
 
             @Override
             public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                // Since dice don't have IDs, we compare positions if we must, but here 
-                // we can just return true if the list size is same, or use a better heuristic.
-                // However, for dice, position is usually the identity.
-                return oldItemPosition == newItemPosition;
+                DieUiModel oldItem = dice.get(oldItemPosition);
+                DieUiModel newItem = newDice.get(newItemPosition);
+                return oldItem.getId() == newItem.getId();
             }
 
             @Override
