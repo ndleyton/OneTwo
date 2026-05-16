@@ -116,7 +116,7 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
                 public void run() {
                     viewModel.rollAllDice();
                 }
-            }, 150);
+            }, 240);
             return true;
         }
         return false;

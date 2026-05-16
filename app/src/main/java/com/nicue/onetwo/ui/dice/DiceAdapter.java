@@ -102,13 +102,14 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
                     final int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         animateRoll();
-                        // Delay the roll slightly so the user sees the "lift" before the value changes
+                        // Delay the roll until the animation is nearly finished (150ms expansion + some shrink)
+                        // This prevents the "cut" when the data updates and rebinds the view.
                         v.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 listener.onRollDie(position);
                             }
-                        }, 100);
+                        }, 240);
                     }
                 }
             });
@@ -130,7 +131,7 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
                     .scaleX(1.15f)
                     .scaleY(1.15f)
                     .translationZ(16f)
-                    .setDuration(150)
+                    .setDuration(120)
                     .withEndAction(new Runnable() {
                         @Override
                         public void run() {
@@ -138,7 +139,7 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
                                     .scaleX(1f)
                                     .scaleY(1f)
                                     .translationZ(0f)
-                                    .setDuration(150)
+                                    .setDuration(120)
                                     .start();
                         }
                     })
@@ -150,6 +151,12 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
             int position = getAdapterPosition();
             int colorRes = diceColors[position % diceColors.length];
             int color = binding.getRoot().getContext().getResources().getColor(colorRes);
+
+            binding.getRoot().animate().cancel();
+            binding.getRoot().setRotation(0f);
+            binding.getRoot().setScaleX(1f);
+            binding.getRoot().setScaleY(1f);
+            binding.getRoot().setTranslationZ(0f);
 
             binding.diceCv.setCardBackgroundColor(color);
 
