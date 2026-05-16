@@ -50,14 +50,16 @@
 
         <ImageView
             android:id="@+id/iv_roll_indicator"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_margin="@dimen/space_s"
-            android:src="@drawable/dice_multiple"
-            android:alpha="0.4"
-            app:tint="#FFFFFF"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_margin="@dimen/space_sm"
+            android:alpha="0.55"
+            android:contentDescription="@null"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_die_custom_wheel"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tint="#FFFFFF" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
