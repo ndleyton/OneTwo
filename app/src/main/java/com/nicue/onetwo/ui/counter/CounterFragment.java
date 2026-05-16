@@ -10,6 +10,10 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.textfield.TextInputEditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -155,7 +159,7 @@ public class CounterFragment extends Fragment implements CounterListAdapter.List
         ActivityAlertDialogBinding dialogBinding = ActivityAlertDialogBinding.inflate(
                 getLayoutInflater()
         );
-        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setView(dialogBinding.getRoot())
                 .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                     @Override
@@ -180,17 +184,30 @@ public class CounterFragment extends Fragment implements CounterListAdapter.List
     }
 
     private void showAdjustmentDialog(final long counterId, final int currentValue, final boolean add) {
-        final EditText amountInput = new EditText(requireContext());
-        amountInput.setHint(R.string.counter_amount_hint);
+        FrameLayout container = new FrameLayout(requireContext());
+        float density = getResources().getDisplayMetrics().density;
+        int paddingHorizontal = (int) (24 * density);
+        int paddingVertical = (int) (8 * density);
+        container.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
+
+        TextInputLayout inputLayout = new TextInputLayout(requireContext());
+        inputLayout.setHint(getString(R.string.counter_amount_hint));
+        inputLayout.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_OUTLINE);
+        inputLayout.setBoxCornerRadius(12f * density, 12f * density, 12f * density, 12f * density);
+
+        final TextInputEditText amountInput = new TextInputEditText(inputLayout.getContext());
         amountInput.setInputType(InputType.TYPE_CLASS_NUMBER);
         amountInput.setMaxLines(1);
         amountInput.setSelectAllOnFocus(true);
 
+        inputLayout.addView(amountInput);
+        container.addView(inputLayout);
+
         int titleRes = add ? R.string.counter_add_amount_title : R.string.counter_subtract_amount_title;
         int positiveRes = add ? R.string.add : R.string.subtract;
-        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(titleRes)
-                .setView(amountInput)
+                .setView(container)
                 .setPositiveButton(positiveRes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int which) {
