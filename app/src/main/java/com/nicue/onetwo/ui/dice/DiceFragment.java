@@ -37,6 +37,7 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
     private DiceLayoutBinding binding;
     private DiceAdapter adapter;
     private DiceViewModel viewModel;
+    private Runnable pendingRollAllRunnable;
 
     @Nullable
     @Override
@@ -96,6 +97,15 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
 
     @Override
     public void onDestroyView() {
+        if (binding != null) {
+            if (pendingRollAllRunnable != null) {
+                binding.recyclerviewDice.removeCallbacks(pendingRollAllRunnable);
+                pendingRollAllRunnable = null;
+            }
+            binding.fabDice.animate().cancel();
+            binding.diceSummaryCard.animate().cancel();
+            binding.recyclerviewDice.setAdapter(null);
+        }
         binding = null;
         super.onDestroyView();
     }
@@ -111,12 +121,19 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
             vibrate(new long[]{0, 15, 10, 15, 10, 15, 10, 15});
             animateSummaryCard();
             adapter.animateAllVisibleItems(binding.recyclerviewDice);
-            binding.recyclerviewDice.postDelayed(new Runnable() {
+            if (pendingRollAllRunnable != null) {
+                binding.recyclerviewDice.removeCallbacks(pendingRollAllRunnable);
+            }
+            pendingRollAllRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    viewModel.rollAllDice();
+                    pendingRollAllRunnable = null;
+                    if (binding != null) {
+                        viewModel.rollAllDice();
+                    }
                 }
-            }, 240);
+            };
+            binding.recyclerviewDice.postDelayed(pendingRollAllRunnable, 240);
             return true;
         }
         return false;
@@ -131,6 +148,9 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
                 .withEndAction(new Runnable() {
                     @Override
                     public void run() {
+                        if (binding == null) {
+                            return;
+                        }
                         binding.diceSummaryCard.animate()
                                 .scaleX(1f)
                                 .scaleY(1f)
@@ -144,6 +164,9 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
 
     @Override
     public void onRollDie(int position) {
+        if (binding == null) {
+            return;
+        }
         vibrate(new long[]{0, 15, 10, 15, 10, 15});
         viewModel.rollDie(position);
     }

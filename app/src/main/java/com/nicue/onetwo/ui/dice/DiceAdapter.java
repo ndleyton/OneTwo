@@ -99,15 +99,17 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
+                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                         animateRoll();
                         // Delay the roll until the animation is nearly finished (150ms expansion + some shrink)
                         // This prevents the "cut" when the data updates and rebinds the view.
                         v.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                listener.onRollDie(position);
+                                int position = getAdapterPosition();
+                                if (position != RecyclerView.NO_POSITION) {
+                                    listener.onRollDie(position);
+                                }
                             }
                         }, 240);
                     }
