@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -24,13 +23,11 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nicue.onetwo.OneTwoApplication;
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.databinding.DiceAlertDialogBinding;
 import com.nicue.onetwo.databinding.DiceLayoutBinding;
-
 import java.util.List;
 
 public class DiceFragment extends Fragment implements DiceAdapter.Listener, MenuProvider {

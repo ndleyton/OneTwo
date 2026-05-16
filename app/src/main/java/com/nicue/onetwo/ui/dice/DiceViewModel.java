@@ -4,9 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
-
 import com.nicue.onetwo.data.dice.DiceRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
