@@ -4,13 +4,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.test.core.app.ApplicationProvider;
+
 import com.nicue.onetwo.LiveDataTestUtil;
 import com.nicue.onetwo.data.dice.DicePrefsDataSource;
 import com.nicue.onetwo.data.dice.DiceRepository;
-import java.util.List;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,11 +20,12 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.util.List;
+
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 34)
 public class DiceViewModelTest {
-    @Rule
-    public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
+    @Rule public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     private DiceViewModel viewModel;
 
@@ -33,7 +36,10 @@ public class DiceViewModelTest {
                 .edit()
                 .clear()
                 .commit();
-        viewModel = new DiceViewModel(new DiceRepository(new DicePrefsDataSource(context)), new SavedStateHandle());
+        viewModel =
+                new DiceViewModel(
+                        new DiceRepository(new DicePrefsDataSource(context)),
+                        new SavedStateHandle());
     }
 
     @Test
