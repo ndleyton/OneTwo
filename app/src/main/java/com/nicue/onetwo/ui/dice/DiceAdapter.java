@@ -74,11 +74,32 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
         diffResult.dispatchUpdatesTo(this);
     }
 
-    public void animateAllVisibleItems(RecyclerView recyclerView) {
+    public void animateAllVisibleItems(RecyclerView recyclerView, final Runnable endAction) {
+        int animatedItemCount = 0;
         for (int i = 0; i < recyclerView.getChildCount(); i++) {
             RecyclerView.ViewHolder holder = recyclerView.getChildViewHolder(recyclerView.getChildAt(i));
             if (holder instanceof DiceViewHolder) {
-                ((DiceViewHolder) holder).animateRoll();
+                animatedItemCount++;
+            }
+        }
+        if (animatedItemCount == 0) {
+            endAction.run();
+            return;
+        }
+
+        final int[] remainingAnimations = {animatedItemCount};
+        for (int i = 0; i < recyclerView.getChildCount(); i++) {
+            RecyclerView.ViewHolder holder = recyclerView.getChildViewHolder(recyclerView.getChildAt(i));
+            if (holder instanceof DiceViewHolder) {
+                ((DiceViewHolder) holder).animateRoll(new Runnable() {
+                    @Override
+                    public void run() {
+                        remainingAnimations[0]--;
+                        if (remainingAnimations[0] == 0) {
+                            endAction.run();
+                        }
+                    }
+                });
             }
         }
     }
@@ -99,10 +120,7 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
                 @Override
                 public void onClick(View v) {
                     if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                        animateRoll();
-                        // Delay the roll until the animation is nearly finished (150ms expansion + some shrink)
-                        // This prevents the "cut" when the data updates and rebinds the view.
-                        v.postDelayed(new Runnable() {
+                        animateRoll(new Runnable() {
                             @Override
                             public void run() {
                                 int position = getAdapterPosition();
@@ -110,7 +128,7 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
                                     listener.onRollDie(position);
                                 }
                             }
-                        }, 240);
+                        });
                     }
                 }
             });
@@ -126,7 +144,13 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
             });
         }
 
-        public void animateRoll() {
+        public void animateRoll(final Runnable endAction) {
+            binding.getRoot().animate().cancel();
+            binding.getRoot().setRotation(0f);
+            binding.getRoot().setScaleX(1f);
+            binding.getRoot().setScaleY(1f);
+            binding.getRoot().setTranslationZ(0f);
+
             binding.getRoot().animate()
                     .rotationBy(360f)
                     .scaleX(1.15f)
@@ -141,6 +165,18 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
                                     .scaleY(1f)
                                     .translationZ(0f)
                                     .setDuration(120)
+                                    .withEndAction(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            binding.getRoot().setRotation(0f);
+                                            binding.getRoot().setScaleX(1f);
+                                            binding.getRoot().setScaleY(1f);
+                                            binding.getRoot().setTranslationZ(0f);
+                                            if (endAction != null) {
+                                                endAction.run();
+                                            }
+                                        }
+                                    })
                                     .start();
                         }
                     })

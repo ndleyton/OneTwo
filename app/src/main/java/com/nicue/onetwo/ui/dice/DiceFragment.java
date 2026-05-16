@@ -37,7 +37,6 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
     private DiceLayoutBinding binding;
     private DiceAdapter adapter;
     private DiceViewModel viewModel;
-    private Runnable pendingRollAllRunnable;
 
     @Nullable
     @Override
@@ -98,10 +97,6 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
     @Override
     public void onDestroyView() {
         if (binding != null) {
-            if (pendingRollAllRunnable != null) {
-                binding.recyclerviewDice.removeCallbacks(pendingRollAllRunnable);
-                pendingRollAllRunnable = null;
-            }
             binding.fabDice.animate().cancel();
             binding.diceSummaryCard.animate().cancel();
             binding.recyclerviewDice.setAdapter(null);
@@ -120,20 +115,14 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
         if (menuItem.getItemId() == R.id.action_roll_all) {
             vibrate(new long[]{0, 15, 10, 15, 10, 15, 10, 15});
             animateSummaryCard();
-            adapter.animateAllVisibleItems(binding.recyclerviewDice);
-            if (pendingRollAllRunnable != null) {
-                binding.recyclerviewDice.removeCallbacks(pendingRollAllRunnable);
-            }
-            pendingRollAllRunnable = new Runnable() {
+            adapter.animateAllVisibleItems(binding.recyclerviewDice, new Runnable() {
                 @Override
                 public void run() {
-                    pendingRollAllRunnable = null;
                     if (binding != null) {
                         viewModel.rollAllDice();
                     }
                 }
-            };
-            binding.recyclerviewDice.postDelayed(pendingRollAllRunnable, 240);
+            });
             return true;
         }
         return false;
