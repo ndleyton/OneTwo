@@ -82,4 +82,9 @@
         <item name="backgroundTint">?attr/colorSecondaryContainer</item>
     </style>
 
+    <style name="Widget.OneTwo.DeleteIconButton" parent="Widget.Material3.Button.IconButton.Filled">
+        <item name="iconTint">@color/m3_on_tertiary</item>
+        <item name="backgroundTint">@color/secondAccent</item>
+    </style>
+
 </resources>

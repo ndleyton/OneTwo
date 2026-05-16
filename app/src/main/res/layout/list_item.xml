@@ -2,17 +2,22 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:paddingStart="@dimen/space_m"
-    android:paddingEnd="@dimen/space_s">
+    android:layout_height="100dp">
+
+    <View
+        android:id="@+id/delete_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/colorSurfaceVariant" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/remove_button"
-        style="@style/Widget.OneTwo.FilledIconButton"
+        style="@style/Widget.OneTwo.DeleteIconButton"
         android:layout_width="48dp"
         android:minWidth="48dp"
         android:layout_height="48dp"
         android:layout_gravity="center_vertical|start"
+        android:layout_marginStart="@dimen/space_s"
         android:gravity="center"
         app:icon="@android:drawable/ic_menu_delete"
         app:iconGravity="textStart"
@@ -23,7 +28,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?attr/colorSurface"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/space_s"
+        android:paddingEnd="@dimen/space_s">
+
+        <ImageView
+            android:id="@+id/grip_dots"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_grip_dots_24"
+            app:tint="?attr/colorOnSurfaceVariant" />
 
         <TextView
             android:id="@+id/tv_object_data"
