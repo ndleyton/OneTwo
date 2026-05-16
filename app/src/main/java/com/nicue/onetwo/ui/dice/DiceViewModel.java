@@ -4,9 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
-
 import com.nicue.onetwo.data.dice.DiceRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -60,12 +58,14 @@ public class DiceViewModel extends ViewModel {
         ArrayList<Integer> dieValues = getValues();
         ArrayList<Long> dieIds = getIds();
         Long nextId = savedStateHandle.get(KEY_NEXT_ID);
-        if (nextId == null) nextId = 0L;
+        if (nextId == null) {
+            nextId = 0L;
+        }
 
         dieFaces.add(Math.max(2, faces));
         dieValues.add(Math.max(2, faces));
         dieIds.add(nextId);
-        
+
         savedStateHandle.set(KEY_NEXT_ID, nextId + 1);
         persistFaces(dieFaces);
         updateState(dieFaces, dieValues, dieIds);

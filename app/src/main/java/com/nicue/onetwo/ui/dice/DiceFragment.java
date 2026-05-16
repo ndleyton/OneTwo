@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -23,14 +22,12 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import androidx.recyclerview.widget.GridLayoutManager;
-
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nicue.onetwo.OneTwoApplication;
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.databinding.DiceAlertDialogBinding;
 import com.nicue.onetwo.databinding.DiceLayoutBinding;
-
 import java.util.List;
 
 public class DiceFragment extends Fragment implements DiceAdapter.Listener, MenuProvider {
@@ -40,8 +37,8 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(
+            @NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DiceLayoutBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -55,20 +52,27 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
 
         binding.fabDice.setScaleX(0f);
         binding.fabDice.setScaleY(0f);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (binding == null) {
-                    return;
-                }
-                binding.fabDice.animate().scaleX(1f)
-                        .setInterpolator(new DecelerateInterpolator(2))
-                        .start();
-                binding.fabDice.animate().scaleY(1f)
-                        .setInterpolator(new DecelerateInterpolator(2))
-                        .start();
-            }
-        }, 300);
+        new Handler()
+                .postDelayed(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                if (binding == null) {
+                                    return;
+                                }
+                                binding.fabDice
+                                        .animate()
+                                        .scaleX(1f)
+                                        .setInterpolator(new DecelerateInterpolator(2))
+                                        .start();
+                                binding.fabDice
+                                        .animate()
+                                        .scaleY(1f)
+                                        .setInterpolator(new DecelerateInterpolator(2))
+                                        .start();
+                            }
+                        },
+                        300);
         binding.fabDice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,11 +80,10 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
             }
         });
 
-        DiceViewModelFactory factory = new DiceViewModelFactory(
-                ((OneTwoApplication) requireActivity().getApplication())
+        DiceViewModelFactory factory =
+                new DiceViewModelFactory(((OneTwoApplication) requireActivity().getApplication())
                         .getAppContainer()
-                        .getDiceRepository()
-        );
+                        .getDiceRepository());
         viewModel = new ViewModelProvider(this, factory).get(DiceViewModel.class);
         viewModel.getUiState().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<DiceUiState>() {
             @Override
@@ -113,7 +116,7 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.action_roll_all) {
-            vibrate(new long[]{0, 15, 10, 15, 10, 15, 10, 15});
+            vibrate(new long[] {0, 15, 10, 15, 10, 15, 10, 15});
             animateSummaryCard();
             adapter.animateAllVisibleItems(binding.recyclerviewDice, new Runnable() {
                 @Override
@@ -129,7 +132,8 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
     }
 
     private void animateSummaryCard() {
-        binding.diceSummaryCard.animate()
+        binding.diceSummaryCard
+                .animate()
                 .scaleX(1.05f)
                 .scaleY(1.05f)
                 .translationZ(8f)
@@ -140,7 +144,8 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
                         if (binding == null) {
                             return;
                         }
-                        binding.diceSummaryCard.animate()
+                        binding.diceSummaryCard
+                                .animate()
                                 .scaleX(1f)
                                 .scaleY(1f)
                                 .translationZ(0f)
@@ -156,7 +161,7 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
         if (binding == null) {
             return;
         }
-        vibrate(new long[]{0, 15, 10, 15, 10, 15});
+        vibrate(new long[] {0, 15, 10, 15, 10, 15});
         viewModel.rollDie(position);
     }
 
@@ -189,7 +194,8 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
                 .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int which) {
-                        String facesText = normalizeFacesInput(dialogBinding.etDice.getText().toString());
+                        String facesText = normalizeFacesInput(
+                                dialogBinding.etDice.getText().toString());
                         viewModel.addDie(Integer.parseInt(facesText));
                     }
                 })
@@ -226,10 +232,9 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
         });
 
         if (dialog.getWindow() != null) {
-            dialog.getWindow().setSoftInputMode(
-                    WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
-                            | WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE
-            );
+            dialog.getWindow()
+                    .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
+                            | WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
         dialog.show();
     }
@@ -240,11 +245,8 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
         binding.tvDiceEmpty.setVisibility(dice.isEmpty() ? View.VISIBLE : View.GONE);
         binding.chipGroupDiceResults.removeAllViews();
         for (DieUiModel die : dice) {
-            TextView chip = (TextView) getLayoutInflater().inflate(
-                    R.layout.dice_result_chip,
-                    binding.chipGroupDiceResults,
-                    false
-            );
+            TextView chip = (TextView)
+                    getLayoutInflater().inflate(R.layout.dice_result_chip, binding.chipGroupDiceResults, false);
             chip.setText(getString(R.string.dice_result_chip, die.getFaces(), die.getValue()));
             binding.chipGroupDiceResults.addView(chip);
         }

@@ -3,13 +3,11 @@ package com.nicue.onetwo.ui.dice;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.databinding.DiceItemBinding;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +43,7 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
     }
 
     public void submitList(final List<DieUiModel> newDice) {
-        androidx.recyclerview.widget.DiffUtil.DiffResult diffResult = androidx.recyclerview.widget.DiffUtil.calculateDiff(new androidx.recyclerview.widget.DiffUtil.Callback() {
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
             @Override
             public int getOldListSize() {
                 return dice.size();
@@ -107,10 +105,10 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
     class DiceViewHolder extends RecyclerView.ViewHolder {
         private final DiceItemBinding binding;
         private final int[] diceColors = {
-                R.color.diceColor0, R.color.diceColor1, R.color.diceColor2,
-                R.color.diceColor3, R.color.diceColor4, R.color.diceColor5,
-                R.color.diceColor6, R.color.diceColor7, R.color.diceColor8,
-                R.color.diceColor9
+            R.color.diceColor0, R.color.diceColor1, R.color.diceColor2,
+            R.color.diceColor3, R.color.diceColor4, R.color.diceColor5,
+            R.color.diceColor6, R.color.diceColor7, R.color.diceColor8,
+            R.color.diceColor9
         };
 
         DiceViewHolder(DiceItemBinding binding) {
@@ -151,7 +149,8 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
             binding.getRoot().setScaleY(1f);
             binding.getRoot().setTranslationZ(0f);
 
-            binding.getRoot().animate()
+            binding.getRoot()
+                    .animate()
                     .rotationBy(360f)
                     .scaleX(1.15f)
                     .scaleY(1.15f)
@@ -160,7 +159,8 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
                     .withEndAction(new Runnable() {
                         @Override
                         public void run() {
-                            binding.getRoot().animate()
+                            binding.getRoot()
+                                    .animate()
                                     .scaleX(1f)
                                     .scaleY(1f)
                                     .translationZ(0f)
@@ -199,7 +199,6 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
 
             boolean isDark = androidx.core.graphics.ColorUtils.calculateLuminance(color) < 0.5;
             int textColor = isDark ? 0xFFFFFFFF : 0xFF000000;
-            int secondaryTextColor = isDark ? 0xCCFFFFFF : 0x99000000;
             int iconTint = isDark ? 0x88FFFFFF : 0x66000000;
 
             binding.tvDice.setTextColor(textColor);
@@ -207,9 +206,7 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
             binding.ivRollIndicator.setColorFilter(iconTint);
 
             binding.tvDice.setText(String.valueOf(dieUiModel.getValue()));
-            binding.tvDieType.setText(
-                    binding.getRoot().getContext().getString(R.string.dice_type_label, faces)
-            );
+            binding.tvDieType.setText(binding.getRoot().getContext().getString(R.string.dice_type_label, faces));
         }
     }
 }
