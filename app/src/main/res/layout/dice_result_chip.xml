@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="32dp"
+    android:layout_height="28dp"
     android:layout_marginEnd="@dimen/space_s"
     android:background="@drawable/bg_dice_chip"
     android:gravity="center"
-    android:minWidth="64dp"
-    android:paddingStart="@dimen/space_m"
-    android:paddingEnd="@dimen/space_m"
-    android:textAppearance="?attr/textAppearanceLabelLarge"
+    android:minWidth="56dp"
+    android:paddingStart="@dimen/space_s"
+    android:paddingEnd="@dimen/space_s"
+    android:textAppearance="?attr/textAppearanceLabelSmall"
     android:textColor="#FFFFFFFF" />
