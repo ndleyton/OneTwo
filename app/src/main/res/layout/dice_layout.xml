@@ -7,27 +7,30 @@
     android:layout_height="match_parent"
     android:layout_alignParentBottom="true"
     android:focusable="true"
-    android:focusableInTouchMode="true">
+    android:focusableInTouchMode="true"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="@dimen/space_m">
+        android:padding="@dimen/space_m"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/dice_summary_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
-            app:cardElevation="0dp"
-            app:strokeColor="?attr/colorOutlineVariant"
-            app:strokeWidth="1dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="0dp"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.OneTwo.DiceSummary">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="112dp"
+                android:layout_height="120dp"
+                android:background="@drawable/bg_dice_summary"
                 android:padding="@dimen/space_m">
 
                 <TextView
@@ -35,8 +38,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/dice_total"
-                    android:textAppearance="?attr/textAppearanceLabelLarge"
-                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:alpha="0.8"
                     app:layout_constraintBottom_toTopOf="@id/tv_dice_total"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -47,8 +51,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
-                    android:textAppearance="?attr/textAppearanceDisplayMedium"
-                    android:textColor="?attr/colorOnSurface"
+                    android:textAppearance="?attr/textAppearanceDisplayLarge"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_dice_total_label" />
@@ -60,7 +65,8 @@
                     android:layout_marginStart="@dimen/space_l"
                     android:text="@string/dice_empty_results"
                     android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:alpha="0.7"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/tv_dice_total"

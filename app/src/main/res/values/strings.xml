@@ -17,6 +17,7 @@
     <string name="drawer_close">Close navigation drawer</string>
     <string name="nav_header">OneTwo</string>
     <string name="dice_title">Dice\'s faces</string>
+    <string name="dice_hint">Number of faces</string>
     <string name="touch_me">Place a finger each to choose among you</string>
     <string name="edit">Edit</string>
     <string name="roll">Roll</string>

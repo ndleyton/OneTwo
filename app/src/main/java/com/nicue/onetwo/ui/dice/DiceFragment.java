@@ -23,6 +23,7 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.nicue.onetwo.OneTwoApplication;
@@ -108,10 +109,31 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.action_roll_all) {
             vibrate(new long[]{0, 15, 10, 15, 10, 15, 10, 15});
+            animateSummaryCard();
             viewModel.rollAllDice();
             return true;
         }
         return false;
+    }
+
+    private void animateSummaryCard() {
+        binding.diceSummaryCard.animate()
+                .scaleX(1.05f)
+                .scaleY(1.05f)
+                .translationZ(8f)
+                .setDuration(150)
+                .withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        binding.diceSummaryCard.animate()
+                                .scaleX(1f)
+                                .scaleY(1f)
+                                .translationZ(0f)
+                                .setDuration(150)
+                                .start();
+                    }
+                })
+                .start();
     }
 
     @Override
@@ -143,7 +165,7 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
 
     private void showAddDieDialog() {
         DiceAlertDialogBinding dialogBinding = DiceAlertDialogBinding.inflate(getLayoutInflater());
-        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setView(dialogBinding.getRoot())
                 .setTitle(getString(R.string.dice_title))
                 .setPositiveButton("Add", new DialogInterface.OnClickListener() {

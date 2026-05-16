@@ -51,6 +51,12 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
 
     class DiceViewHolder extends RecyclerView.ViewHolder {
         private final DiceItemBinding binding;
+        private final int[] diceColors = {
+                R.color.diceColor0, R.color.diceColor1, R.color.diceColor2,
+                R.color.diceColor3, R.color.diceColor4, R.color.diceColor5,
+                R.color.diceColor6, R.color.diceColor7, R.color.diceColor8,
+                R.color.diceColor9
+        };
 
         DiceViewHolder(DiceItemBinding binding) {
             super(binding.getRoot());
@@ -60,15 +66,7 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
                 public void onClick(View v) {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
-                        listener.onRollDie(position);
-                    }
-                }
-            });
-            binding.throwButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
+                        animateRoll();
                         listener.onRollDie(position);
                     }
                 }
@@ -85,8 +83,42 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
             });
         }
 
+        private void animateRoll() {
+            binding.getRoot().animate()
+                    .rotationBy(360f)
+                    .scaleX(0.8f)
+                    .scaleY(0.8f)
+                    .setDuration(150)
+                    .withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            binding.getRoot().animate()
+                                    .scaleX(1f)
+                                    .scaleY(1f)
+                                    .setDuration(150)
+                                    .start();
+                        }
+                    })
+                    .start();
+        }
+
         void bind(DieUiModel dieUiModel) {
             int faces = dieUiModel.getFaces();
+            int position = getAdapterPosition();
+            int colorRes = diceColors[position % diceColors.length];
+            int color = binding.getRoot().getContext().getResources().getColor(colorRes);
+
+            binding.diceCv.setCardBackgroundColor(color);
+
+            boolean isDark = androidx.core.graphics.ColorUtils.calculateLuminance(color) < 0.5;
+            int textColor = isDark ? 0xFFFFFFFF : 0xFF000000;
+            int secondaryTextColor = isDark ? 0xCCFFFFFF : 0x99000000;
+            int iconTint = isDark ? 0x88FFFFFF : 0x66000000;
+
+            binding.tvDice.setTextColor(textColor);
+            binding.tvDieType.setTextColor(secondaryTextColor);
+            binding.ivRollIndicator.setColorFilter(iconTint);
+
             binding.tvDice.setText(String.valueOf(dieUiModel.getValue()));
             binding.tvDieType.setText(
                     binding.getRoot().getContext().getString(R.string.dice_type_label, faces)
