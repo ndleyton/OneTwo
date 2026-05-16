@@ -161,7 +161,7 @@ public class CounterFragment extends Fragment implements CounterListAdapter.List
         );
         AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setView(dialogBinding.getRoot())
-                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int which) {
                         String title = sanitizeObjectName(dialogBinding.etToCount.getText().toString());
@@ -172,7 +172,7 @@ public class CounterFragment extends Fragment implements CounterListAdapter.List
                         viewModel.addCounter(title, value);
                     }
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.cancel, null)
                 .create();
         if (dialog.getWindow() != null) {
             dialog.getWindow().setSoftInputMode(
