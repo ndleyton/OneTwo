@@ -1,44 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:orientation="horizontal"
-    android:paddingStart="@dimen/space_m"
-    android:paddingEnd="@dimen/space_s">
+    android:layout_height="100dp">
 
-    <NumberPicker
-        android:id="@+id/number_picker"
-        android:layout_width="54dp"
-        android:minWidth="48dp"
+    <View
+        android:id="@+id/delete_background"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="0.3" />
-
-    <TextView
-        android:id="@+id/tv_object_data"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:layout_gravity="center_vertical"
-        android:paddingStart="@dimen/space_s"
-        android:layout_weight="8.7"/>
-
-    <TextView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:id="@+id/db_id" />
+        android:background="?attr/colorSurfaceVariant" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/remove_button"
-        style="@style/Widget.OneTwo.FilledIconButton"
+        style="@style/Widget.OneTwo.DeleteIconButton"
         android:layout_width="48dp"
         android:minWidth="48dp"
         android:layout_height="48dp"
-        android:layout_gravity="center_vertical|end"
-        android:layout_weight="0.3"
+        android:layout_gravity="center_vertical|start"
+        android:layout_marginStart="@dimen/space_s"
         android:gravity="center"
         app:icon="@android:drawable/ic_menu_delete"
         app:iconGravity="textStart"
         app:iconPadding="0dp" />
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/item_foreground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/colorSurface"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/space_s"
+        android:paddingEnd="@dimen/space_s">
+
+        <ImageView
+            android:id="@+id/grip_dots"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_grip_dots_24"
+            app:tint="?attr/colorOnSurfaceVariant" />
+
+        <TextView
+            android:id="@+id/tv_object_data"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="@dimen/space_s"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:id="@+id/db_id" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/subtract_button"
+            style="@style/Widget.OneTwo.FilledIconButton"
+            android:layout_width="48dp"
+            android:minWidth="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical|end"
+            android:contentDescription="@string/counter_subtract_amount_content_description"
+            android:gravity="center"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:icon="@drawable/ic_remove_24"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp" />
+
+        <NumberPicker
+            android:id="@+id/number_picker"
+            android:layout_width="54dp"
+            android:minWidth="48dp"
+            android:layout_height="match_parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/add_button"
+            style="@style/Widget.OneTwo.FilledIconButton"
+            android:layout_width="48dp"
+            android:minWidth="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical|end"
+            android:contentDescription="@string/counter_add_amount_content_description"
+            android:gravity="center"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:icon="@drawable/ic_add_24"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp" />
+
+    </LinearLayout>
+
+</FrameLayout>

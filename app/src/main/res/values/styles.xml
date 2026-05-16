@@ -78,8 +78,17 @@
     </style>
 
     <style name="Widget.OneTwo.FilledIconButton" parent="Widget.Material3.Button.IconButton.Filled.Tonal">
-        <item name="iconTint">?attr/colorOnSecondaryContainer</item>
-        <item name="backgroundTint">?attr/colorSecondaryContainer</item>
+        <item name="iconTint">?attr/colorPrimary</item>
+        <item name="backgroundTint">#26FFE08A</item>
+    </style>
+
+    <style name="Widget.OneTwo.DeleteIconButton" parent="Widget.Material3.Button.IconButton.Filled">
+        <item name="iconTint">@color/m3_on_tertiary</item>
+        <item name="backgroundTint">@color/secondAccent</item>
+    </style>
+
+    <style name="Widget.OneTwo.FilledBoxInput" parent="Widget.Material3.TextInputLayout.FilledBox">
+        <item name="boxBackgroundColor">@color/m3_surface_container</item>
     </style>
 
 </resources>

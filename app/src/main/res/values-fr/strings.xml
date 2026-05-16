@@ -2,6 +2,16 @@
     <string name="app_name">UnDeux</string>
     <string name="instruction">Appuyez sur le bouton pour ajouter un score</string>
     <string name="add_counter">Ajouter un score</string>
+    <string name="add">Ajouter</string>
+    <string name="subtract">Soustraire</string>
+    <string name="cancel">Annuler</string>
+    <string name="plus_sign" translatable="false">+</string>
+    <string name="minus_sign" translatable="false">-</string>
+    <string name="counter_add_amount_title">Ajouter au score</string>
+    <string name="counter_subtract_amount_title">Soustraire du score</string>
+    <string name="counter_amount_hint">Quantité</string>
+    <string name="counter_add_amount_content_description">Ajouter une quantité au score</string>
+    <string name="counter_subtract_amount_content_description">Soustraire une quantité du score</string>
     <string name="alert_tv_object">Qui joue?</string>
     <string name="alert_tv_number">Vies/Score</string>
     <string name="menu_counter">Score</string>

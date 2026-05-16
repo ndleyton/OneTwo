@@ -1,44 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="8dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
     android:id="@+id/alert_layout">
 
-    <TextView
-        android:id="@+id/tv_to_add_msg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/alert_tv_object"
-        android:textAppearance="?attr/textAppearanceTitleMedium" />
-
-    <EditText
-        android:id="@+id/et_to_count"
-        android:maxLines="1"
-        android:inputType="textCapSentences"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <LinearLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="8dp">
+        android:hint="@string/alert_tv_object"
+        style="@style/Widget.OneTwo.FilledBoxInput"
+        android:layout_marginBottom="16dp">
 
-        <TextView
-            android:id="@+id/tv_numbre_alert"
-            android:layout_width="wrap_content"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_to_count"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/alert_tv_number"
-            android:layout_gravity="center_horizontal|center_vertical" />
+            android:maxLines="1"
+            android:inputType="textCapSentences" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/alert_tv_number"
+        style="@style/Widget.OneTwo.FilledBoxInput">
+
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_number"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minWidth="60dp"
             android:inputType="number"
-            android:maxLength="5"/>
-    </LinearLayout>
+            android:maxLength="5" />
+    </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>

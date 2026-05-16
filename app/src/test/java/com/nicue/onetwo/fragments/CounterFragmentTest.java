@@ -1,9 +1,9 @@
 package com.nicue.onetwo.fragments;
 
+import static org.junit.Assert.assertEquals;
+
 import com.nicue.onetwo.ui.counter.CounterFragment;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 public class CounterFragmentTest {
 
@@ -21,5 +21,21 @@ public class CounterFragmentTest {
     public void parseCountValueFallsBackToZeroForInvalidInput() {
         assertEquals(0, CounterFragment.parseCountValue("abc"));
         assertEquals(0, CounterFragment.parseCountValue(""));
+    }
+
+    @Test
+    public void calculateAdjustedCounterValueAddsAmount() {
+        assertEquals(15, CounterFragment.calculateAdjustedCounterValue(10, 5, true));
+    }
+
+    @Test
+    public void calculateAdjustedCounterValueSubtractsAmount() {
+        assertEquals(5, CounterFragment.calculateAdjustedCounterValue(10, 5, false));
+    }
+
+    @Test
+    public void calculateAdjustedCounterValueClampsToPickerBounds() {
+        assertEquals(99999, CounterFragment.calculateAdjustedCounterValue(99990, 20, true));
+        assertEquals(0, CounterFragment.calculateAdjustedCounterValue(3, 5, false));
     }
 }

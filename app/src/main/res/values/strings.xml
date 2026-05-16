@@ -2,6 +2,16 @@
     <string name="app_name">OneTwo</string>
     <string name="instruction">Press button to add counter</string>
     <string name="add_counter">Add counter</string>
+    <string name="add">Add</string>
+    <string name="subtract">Subtract</string>
+    <string name="cancel">Cancel</string>
+    <string name="plus_sign" translatable="false">+</string>
+    <string name="minus_sign" translatable="false">-</string>
+    <string name="counter_add_amount_title">Add to counter</string>
+    <string name="counter_subtract_amount_title">Subtract from counter</string>
+    <string name="counter_amount_hint">Amount</string>
+    <string name="counter_add_amount_content_description">Add amount to counter</string>
+    <string name="counter_subtract_amount_content_description">Subtract amount from counter</string>
     <string name="alert_tv_object">Who\'s Playing?</string>
     <string name="alert_tv_number">Lives/Score: </string>
     <string name="menu_counter">Counter</string>
