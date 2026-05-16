@@ -190,9 +190,13 @@ public class CounterFragment extends Fragment implements CounterListAdapter.List
         int paddingVertical = (int) (8 * density);
         container.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
 
-        TextInputLayout inputLayout = new TextInputLayout(requireContext());
+        android.view.ContextThemeWrapper themedContext = new android.view.ContextThemeWrapper(
+                requireContext(),
+                R.style.Widget_OneTwo_FilledBoxInput
+        );
+        TextInputLayout inputLayout = new TextInputLayout(themedContext);
         inputLayout.setHint(getString(R.string.counter_amount_hint));
-        inputLayout.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_OUTLINE);
+        inputLayout.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_FILLED);
 
         final TextInputEditText amountInput = new TextInputEditText(inputLayout.getContext());
         amountInput.setInputType(InputType.TYPE_CLASS_NUMBER);

@@ -14,11 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/alert_tv_object"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        app:boxCornerRadiusTopStart="12dp"
-        app:boxCornerRadiusTopEnd="12dp"
-        app:boxCornerRadiusBottomStart="12dp"
-        app:boxCornerRadiusBottomEnd="12dp"
+        style="@style/Widget.OneTwo.FilledBoxInput"
         android:layout_marginBottom="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -33,11 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/alert_tv_number"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        app:boxCornerRadiusTopStart="12dp"
-        app:boxCornerRadiusTopEnd="12dp"
-        app:boxCornerRadiusBottomStart="12dp"
-        app:boxCornerRadiusBottomEnd="12dp">
+        style="@style/Widget.OneTwo.FilledBoxInput">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_number"
