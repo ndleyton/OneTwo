@@ -77,9 +77,8 @@
         <item name="cornerSize">@dimen/shape_corner_extra_large</item>
     </style>
 
-    <style name="Widget.OneTwo.FilledIconButton" parent="Widget.Material3.Button.IconButton.Filled.Tonal">
-        <item name="iconTint">?attr/colorOnSecondaryContainer</item>
-        <item name="backgroundTint">?attr/colorSecondaryContainer</item>
+    <style name="Widget.OneTwo.FilledIconButton" parent="Widget.Material3.Button.IconButton">
+        <item name="iconTint">?attr/colorPrimary</item>
     </style>
 
     <style name="Widget.OneTwo.DeleteIconButton" parent="Widget.Material3.Button.IconButton.Filled">
