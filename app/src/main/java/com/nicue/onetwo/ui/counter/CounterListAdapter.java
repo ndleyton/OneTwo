@@ -5,13 +5,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.NumberPicker;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.nicue.onetwo.data.counter.CounterEntity;
 import com.nicue.onetwo.databinding.ListItemBinding;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,8 +30,7 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
         this.listener = listener;
     }
 
-    @NonNull
-    @Override
+    @NonNull @Override
     public CounterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         return new CounterViewHolder(ListItemBinding.inflate(inflater, parent, false));
@@ -68,56 +64,60 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
         CounterViewHolder(ListItemBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
-            deleteRevealDistance = DELETE_REVEAL_DISTANCE_DP
-                    * binding.getRoot().getResources().getDisplayMetrics().density;
+            deleteRevealDistance =
+                    DELETE_REVEAL_DISTANCE_DP
+                            * binding.getRoot().getResources().getDisplayMetrics().density;
             binding.numberPicker.setMaxValue(99999);
             binding.numberPicker.setMinValue(0);
             binding.numberPicker.setOnScrollListener(this);
-            binding.numberPicker.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    v.performClick();
-                    return true;
-                }
-            });
-            binding.removeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (currentCounter != null) {
-                        listener.onDeleteClicked(currentCounter.getId());
-                    }
-                }
-            });
-            binding.itemForeground.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    return handleForegroundTouch(event);
-                }
-            });
-            binding.subtractButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (currentCounter != null) {
-                        listener.onAdjustmentClicked(
-                                currentCounter.getId(),
-                                binding.numberPicker.getValue(),
-                                false
-                        );
-                    }
-                }
-            });
-            binding.addButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (currentCounter != null) {
-                        listener.onAdjustmentClicked(
-                                currentCounter.getId(),
-                                binding.numberPicker.getValue(),
-                                true
-                        );
-                    }
-                }
-            });
+            binding.numberPicker.setOnLongClickListener(
+                    new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            v.performClick();
+                            return true;
+                        }
+                    });
+            binding.removeButton.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (currentCounter != null) {
+                                listener.onDeleteClicked(currentCounter.getId());
+                            }
+                        }
+                    });
+            binding.itemForeground.setOnTouchListener(
+                    new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            return handleForegroundTouch(event);
+                        }
+                    });
+            binding.subtractButton.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (currentCounter != null) {
+                                listener.onAdjustmentClicked(
+                                        currentCounter.getId(),
+                                        binding.numberPicker.getValue(),
+                                        false);
+                            }
+                        }
+                    });
+            binding.addButton.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (currentCounter != null) {
+                                listener.onAdjustmentClicked(
+                                        currentCounter.getId(),
+                                        binding.numberPicker.getValue(),
+                                        true);
+                            }
+                        }
+                    });
         }
 
         void bind(CounterEntity counterEntity) {
@@ -155,10 +155,12 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
                     float distance = event.getRawX() - downX;
                     if (distance > 0 || foregroundStartTranslation > 0f) {
                         draggingForeground = true;
-                        float translation = Math.max(
-                                0f,
-                                Math.min(deleteRevealDistance, foregroundStartTranslation + distance)
-                        );
+                        float translation =
+                                Math.max(
+                                        0f,
+                                        Math.min(
+                                                deleteRevealDistance,
+                                                foregroundStartTranslation + distance));
                         binding.itemForeground.setTranslationX(translation);
                         return true;
                     }
@@ -167,10 +169,12 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
                 case MotionEvent.ACTION_CANCEL:
                     if (draggingForeground) {
                         float openThreshold = deleteRevealDistance / 2f;
-                        float targetTranslation = binding.itemForeground.getTranslationX() >= openThreshold
-                                ? deleteRevealDistance
-                                : 0f;
-                        binding.itemForeground.animate()
+                        float targetTranslation =
+                                binding.itemForeground.getTranslationX() >= openThreshold
+                                        ? deleteRevealDistance
+                                        : 0f;
+                        binding.itemForeground
+                                .animate()
                                 .translationX(targetTranslation)
                                 .setDuration(120)
                                 .start();
