@@ -167,7 +167,7 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
             int iconTint = isDark ? 0x88FFFFFF : 0x66000000;
 
             binding.tvDice.setTextColor(textColor);
-            binding.tvDieType.setTextColor(secondaryTextColor);
+            binding.tvDieType.setTextColor(textColor);
             binding.ivRollIndicator.setColorFilter(iconTint);
 
             binding.tvDice.setText(String.valueOf(dieUiModel.getValue()));

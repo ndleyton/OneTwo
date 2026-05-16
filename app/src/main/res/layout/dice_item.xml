@@ -17,16 +17,20 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="140dp"
-        android:padding="@dimen/space_sm">
+        android:layout_height="140dp">
 
+        <!-- Die Type Badge -->
         <TextView
             android:id="@+id/tv_die_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceLabelSmall"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:alpha="0.7"
+            android:layout_margin="@dimen/space_s"
+            android:background="@drawable/bg_dice_chip"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:textAppearance="?attr/textAppearanceLabelMedium"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,7 +41,7 @@
             android:gravity="center"
             android:includeFontPadding="false"
             android:textAppearance="?attr/textAppearanceDisplayLarge"
-            android:textColor="?attr/colorOnSurface"
+            android:textColor="#FFFFFF"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -48,9 +52,10 @@
             android:id="@+id/iv_roll_indicator"
             android:layout_width="20dp"
             android:layout_height="20dp"
+            android:layout_margin="@dimen/space_s"
             android:src="@drawable/dice_multiple"
-            android:alpha="0.3"
-            app:tint="?attr/colorOnSurfaceVariant"
+            android:alpha="0.4"
+            app:tint="#FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
