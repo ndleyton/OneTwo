@@ -22,4 +22,20 @@ public class CounterFragmentTest {
         assertEquals(0, CounterFragment.parseCountValue("abc"));
         assertEquals(0, CounterFragment.parseCountValue(""));
     }
+
+    @Test
+    public void calculateAdjustedCounterValueAddsAmount() {
+        assertEquals(15, CounterFragment.calculateAdjustedCounterValue(10, 5, true));
+    }
+
+    @Test
+    public void calculateAdjustedCounterValueSubtractsAmount() {
+        assertEquals(5, CounterFragment.calculateAdjustedCounterValue(10, 5, false));
+    }
+
+    @Test
+    public void calculateAdjustedCounterValueClampsToPickerBounds() {
+        assertEquals(99999, CounterFragment.calculateAdjustedCounterValue(99990, 20, true));
+        assertEquals(0, CounterFragment.calculateAdjustedCounterValue(3, 5, false));
+    }
 }

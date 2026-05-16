@@ -3,11 +3,13 @@ package com.nicue.onetwo.ui.counter;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,10 +20,14 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.nicue.onetwo.OneTwoApplication;
+import com.nicue.onetwo.R;
 import com.nicue.onetwo.databinding.ActivityAlertDialogBinding;
 import com.nicue.onetwo.databinding.CounterLayoutBinding;
 
 public class CounterFragment extends Fragment implements CounterListAdapter.Listener {
+    private static final int MIN_COUNTER_VALUE = 0;
+    private static final int MAX_COUNTER_VALUE = 99999;
+
     private CounterLayoutBinding binding;
     private CounterListAdapter adapter;
     private CounterViewModel viewModel;
@@ -111,6 +117,11 @@ public class CounterFragment extends Fragment implements CounterListAdapter.List
     }
 
     @Override
+    public void onAdjustmentClicked(long counterId, int currentValue, boolean add) {
+        showAdjustmentDialog(counterId, currentValue, add);
+    }
+
+    @Override
     public void onDeleteClicked(long counterId) {
         viewModel.deleteCounter(counterId);
     }
@@ -127,6 +138,17 @@ public class CounterFragment extends Fragment implements CounterListAdapter.List
         } catch (NumberFormatException exception) {
             return 0;
         }
+    }
+
+    public static int calculateAdjustedCounterValue(int currentValue, int amount, boolean add) {
+        long result = add ? (long) currentValue + amount : (long) currentValue - amount;
+        if (result < MIN_COUNTER_VALUE) {
+            return MIN_COUNTER_VALUE;
+        }
+        if (result > MAX_COUNTER_VALUE) {
+            return MAX_COUNTER_VALUE;
+        }
+        return (int) result;
     }
 
     private void showAddDialog() {
@@ -147,6 +169,37 @@ public class CounterFragment extends Fragment implements CounterListAdapter.List
                     }
                 })
                 .setNegativeButton("Cancel", null)
+                .create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setSoftInputMode(
+                    WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
+                            | WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE
+            );
+        }
+        dialog.show();
+    }
+
+    private void showAdjustmentDialog(final long counterId, final int currentValue, final boolean add) {
+        final EditText amountInput = new EditText(requireContext());
+        amountInput.setHint(R.string.counter_amount_hint);
+        amountInput.setInputType(InputType.TYPE_CLASS_NUMBER);
+        amountInput.setMaxLines(1);
+        amountInput.setSelectAllOnFocus(true);
+
+        int titleRes = add ? R.string.counter_add_amount_title : R.string.counter_subtract_amount_title;
+        int positiveRes = add ? R.string.add : R.string.subtract;
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setTitle(titleRes)
+                .setView(amountInput)
+                .setPositiveButton(positiveRes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int which) {
+                        int amount = parseCountValue(amountInput.getText().toString());
+                        int newValue = calculateAdjustedCounterValue(currentValue, amount, add);
+                        viewModel.updateCounterValue(counterId, newValue);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null)
                 .create();
         if (dialog.getWindow() != null) {
             dialog.getWindow().setSoftInputMode(

@@ -2,6 +2,16 @@
     <string name="app_name">OneTwo</string>
     <string name="instruction">ボタンを押してカウンターを追加します</string>
     <string name="add_counter">カウンターを追加</string>
+    <string name="add">追加</string>
+    <string name="subtract">減算</string>
+    <string name="cancel">キャンセル</string>
+    <string name="plus_sign" translatable="false">+</string>
+    <string name="minus_sign" translatable="false">-</string>
+    <string name="counter_add_amount_title">カウンターに追加</string>
+    <string name="counter_subtract_amount_title">カウンターから減算</string>
+    <string name="counter_amount_hint">量</string>
+    <string name="counter_add_amount_content_description">カウンターに量を追加</string>
+    <string name="counter_subtract_amount_content_description">カウンターから量を減算</string>
     <string name="alert_tv_object">誰がプレイ中ですか?</string>
     <string name="alert_tv_number">ライフ/スコア: </string>
     <string name="menu_counter">カウンター</string>
