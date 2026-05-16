@@ -55,6 +55,15 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
         DiceViewHolder(DiceItemBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
+            binding.getRoot().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        listener.onRollDie(position);
+                    }
+                }
+            });
             binding.throwButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

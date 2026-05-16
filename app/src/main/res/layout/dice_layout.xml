@@ -19,15 +19,16 @@
             android:id="@+id/dice_summary_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="?attr/colorPrimaryContainer"
+            app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
             app:cardElevation="0dp"
-            app:shapeAppearanceOverlay="@style/ShapeAppearance.OneTwo.Container">
+            app:strokeColor="?attr/colorOutlineVariant"
+            app:strokeWidth="1dp"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.OneTwo.DiceSummary">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/space_l">
+                android:layout_height="112dp"
+                android:padding="@dimen/space_m">
 
                 <TextView
                     android:id="@+id/tv_dice_total_label"
@@ -35,44 +36,57 @@
                     android:layout_height="wrap_content"
                     android:text="@string/dice_total"
                     android:textAppearance="?attr/textAppearanceLabelLarge"
-                    android:textColor="?attr/colorOnPrimaryContainer" />
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    app:layout_constraintBottom_toTopOf="@id/tv_dice_total"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed" />
 
                 <TextView
                     android:id="@+id/tv_dice_total"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/space_xs"
                     android:text="0"
-                    android:textAppearance="?attr/textAppearanceDisplayLarge"
-                    android:textColor="?attr/colorOnPrimaryContainer" />
+                    android:textAppearance="?attr/textAppearanceDisplayMedium"
+                    android:textColor="?attr/colorOnSurface"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_dice_total_label" />
 
                 <TextView
                     android:id="@+id/tv_dice_empty"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/space_s"
+                    android:layout_marginStart="@dimen/space_l"
                     android:text="@string/dice_empty_results"
                     android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textColor="?attr/colorOnPrimaryContainer" />
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/tv_dice_total"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <HorizontalScrollView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/space_s"
+                    android:layout_marginStart="@dimen/space_l"
                     android:clipToPadding="false"
                     android:fillViewport="false"
                     android:overScrollMode="never"
-                    android:scrollbars="none">
+                    android:scrollbars="none"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/tv_dice_total"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    <com.google.android.material.chip.ChipGroup
+                    <LinearLayout
                         android:id="@+id/chip_group_dice_results"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:chipSpacingHorizontal="@dimen/space_s"
-                        app:singleLine="true" />
+                        android:orientation="horizontal" />
                 </HorizontalScrollView>
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <androidx.recyclerview.widget.RecyclerView

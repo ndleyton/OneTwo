@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,7 +29,6 @@ import com.nicue.onetwo.OneTwoApplication;
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.databinding.DiceAlertDialogBinding;
 import com.nicue.onetwo.databinding.DiceLayoutBinding;
-import com.google.android.material.chip.Chip;
 
 import java.util.List;
 
@@ -170,10 +170,12 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
         binding.tvDiceEmpty.setVisibility(dice.isEmpty() ? View.VISIBLE : View.GONE);
         binding.chipGroupDiceResults.removeAllViews();
         for (DieUiModel die : dice) {
-            Chip chip = new Chip(requireContext());
+            TextView chip = (TextView) getLayoutInflater().inflate(
+                    R.layout.dice_result_chip,
+                    binding.chipGroupDiceResults,
+                    false
+            );
             chip.setText(getString(R.string.dice_result_chip, die.getFaces(), die.getValue()));
-            chip.setCheckable(false);
-            chip.setClickable(false);
             binding.chipGroupDiceResults.addView(chip);
         }
     }
