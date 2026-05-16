@@ -206,6 +206,36 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
                 })
                 .setNegativeButton("Cancel", null)
                 .create();
+
+        dialogBinding.btnD4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewModel.addDie(4);
+                dialog.dismiss();
+            }
+        });
+        dialogBinding.btnD6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewModel.addDie(6);
+                dialog.dismiss();
+            }
+        });
+        dialogBinding.btnD10.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewModel.addDie(10);
+                dialog.dismiss();
+            }
+        });
+        dialogBinding.btnD20.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewModel.addDie(20);
+                dialog.dismiss();
+            }
+        });
+
         if (dialog.getWindow() != null) {
             dialog.getWindow().setSoftInputMode(
                     WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
