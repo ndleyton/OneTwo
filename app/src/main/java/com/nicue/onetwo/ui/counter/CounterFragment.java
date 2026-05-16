@@ -193,7 +193,6 @@ public class CounterFragment extends Fragment implements CounterListAdapter.List
         TextInputLayout inputLayout = new TextInputLayout(requireContext());
         inputLayout.setHint(getString(R.string.counter_amount_hint));
         inputLayout.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_OUTLINE);
-        inputLayout.setBoxCornerRadius(12f * density, 12f * density, 12f * density, 12f * density);
 
         final TextInputEditText amountInput = new TextInputEditText(inputLayout.getContext());
         amountInput.setInputType(InputType.TYPE_CLASS_NUMBER);
