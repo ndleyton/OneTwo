@@ -44,9 +44,35 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
         return dice.size();
     }
 
-    public void submitList(List<DieUiModel> dice) {
-        this.dice = dice == null ? new ArrayList<DieUiModel>() : dice;
-        notifyDataSetChanged();
+    public void submitList(final List<DieUiModel> newDice) {
+        androidx.recyclerview.widget.DiffUtil.DiffResult diffResult = androidx.recyclerview.widget.DiffUtil.calculateDiff(new androidx.recyclerview.widget.DiffUtil.Callback() {
+            @Override
+            public int getOldListSize() {
+                return dice.size();
+            }
+
+            @Override
+            public int getNewListSize() {
+                return newDice == null ? 0 : newDice.size();
+            }
+
+            @Override
+            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                // Since dice don't have IDs, we compare positions if we must, but here 
+                // we can just return true if the list size is same, or use a better heuristic.
+                // However, for dice, position is usually the identity.
+                return oldItemPosition == newItemPosition;
+            }
+
+            @Override
+            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                DieUiModel oldItem = dice.get(oldItemPosition);
+                DieUiModel newItem = newDice.get(newItemPosition);
+                return oldItem.getFaces() == newItem.getFaces() && oldItem.getValue() == newItem.getValue();
+            }
+        });
+        this.dice = newDice == null ? new ArrayList<DieUiModel>() : new ArrayList<>(newDice);
+        diffResult.dispatchUpdatesTo(this);
     }
 
     public void animateAllVisibleItems(RecyclerView recyclerView) {
@@ -73,10 +99,16 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int position = getAdapterPosition();
+                    final int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         animateRoll();
-                        listener.onRollDie(position);
+                        // Delay the roll slightly so the user sees the "lift" before the value changes
+                        v.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onRollDie(position);
+                            }
+                        }, 100);
                     }
                 }
             });
@@ -95,9 +127,9 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
         public void animateRoll() {
             binding.getRoot().animate()
                     .rotationBy(360f)
-                    .scaleX(1.1f)
-                    .scaleY(1.1f)
-                    .translationZ(12f)
+                    .scaleX(1.15f)
+                    .scaleY(1.15f)
+                    .translationZ(16f)
                     .setDuration(150)
                     .withEndAction(new Runnable() {
                         @Override
