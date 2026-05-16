@@ -52,8 +52,9 @@
             android:insetRight="0dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:text="@string/minus_sign"
-            android:textSize="22sp" />
+            app:icon="@drawable/ic_remove_24"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp" />
 
         <NumberPicker
             android:id="@+id/number_picker"
@@ -74,8 +75,9 @@
             android:insetRight="0dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:text="@string/plus_sign"
-            android:textSize="22sp" />
+            app:icon="@drawable/ic_add_24"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp" />
 
     </LinearLayout>
 
