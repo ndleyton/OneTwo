@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.NumberPicker;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import com.nicue.onetwo.data.counter.CounterEntity;
 import com.nicue.onetwo.databinding.ListItemBinding;
@@ -21,6 +22,8 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
         void onAdjustmentClicked(long counterId, int currentValue, boolean add);
 
         void onDeleteClicked(long counterId);
+
+        void onDragHandleTouched(RecyclerView.ViewHolder viewHolder);
     }
 
     private final Listener listener;
@@ -46,9 +49,33 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
         return counters.size();
     }
 
-    public void submitList(List<CounterEntity> counters) {
-        this.counters = counters == null ? new ArrayList<CounterEntity>() : counters;
-        notifyDataSetChanged();
+    public void submitList(List<CounterEntity> newCounters) {
+        if (newCounters == null) newCounters = new ArrayList<>();
+        DiffUtil.DiffResult diffResult =
+                DiffUtil.calculateDiff(new CounterDiffCallback(this.counters, newCounters));
+        this.counters = new ArrayList<>(newCounters);
+        diffResult.dispatchUpdatesTo(this);
+    }
+
+    public boolean moveItem(int fromPosition, int toPosition) {
+        if (fromPosition < 0
+                || toPosition < 0
+                || fromPosition >= counters.size()
+                || toPosition >= counters.size()) {
+            return false;
+        }
+        CounterEntity movedCounter = counters.remove(fromPosition);
+        counters.add(toPosition, movedCounter);
+        notifyItemMoved(fromPosition, toPosition);
+        return true;
+    }
+
+    public List<Long> getCounterIds() {
+        List<Long> counterIds = new ArrayList<>();
+        for (CounterEntity counter : counters) {
+            counterIds.add(counter.getId());
+        }
+        return counterIds;
     }
 
     class CounterViewHolder extends RecyclerView.ViewHolder
@@ -76,6 +103,17 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
                         public boolean onLongClick(View v) {
                             v.performClick();
                             return true;
+                        }
+                    });
+            binding.gripDots.setOnTouchListener(
+                    new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                                listener.onDragHandleTouched(CounterViewHolder.this);
+                                return true;
+                            }
+                            return false;
                         }
                     });
             binding.removeButton.setOnClickListener(
@@ -185,6 +223,40 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
                 default:
                     return false;
             }
+        }
+    }
+
+    private static class CounterDiffCallback extends DiffUtil.Callback {
+        private final List<CounterEntity> oldList;
+        private final List<CounterEntity> newList;
+
+        CounterDiffCallback(List<CounterEntity> oldList, List<CounterEntity> newList) {
+            this.oldList = oldList;
+            this.newList = newList;
+        }
+
+        @Override
+        public int getOldListSize() {
+            return oldList.size();
+        }
+
+        @Override
+        public int getNewListSize() {
+            return newList.size();
+        }
+
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            return oldList.get(oldItemPosition).getId() == newList.get(newItemPosition).getId();
+        }
+
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            CounterEntity oldItem = oldList.get(oldItemPosition);
+            CounterEntity newItem = newList.get(newItemPosition);
+            return oldItem.getValue() == newItem.getValue()
+                    && oldItem.getTitle().equals(newItem.getTitle())
+                    && oldItem.getSortOrder() == newItem.getSortOrder();
         }
     }
 }

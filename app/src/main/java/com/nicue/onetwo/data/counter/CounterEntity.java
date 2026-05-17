@@ -16,6 +16,9 @@ public class CounterEntity {
     @ColumnInfo(name = "numbers")
     private int value;
 
+    @ColumnInfo(name = "sort_order")
+    private int sortOrder;
+
     public CounterEntity(String title, int value) {
         this.title = title;
         this.value = value;
@@ -35,5 +38,13 @@ public class CounterEntity {
 
     public int getValue() {
         return value;
+    }
+
+    public int getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(int sortOrder) {
+        this.sortOrder = sortOrder;
     }
 }
