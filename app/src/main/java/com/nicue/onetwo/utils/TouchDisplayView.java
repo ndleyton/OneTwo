@@ -182,6 +182,12 @@ public class TouchDisplayView extends View {
         super.onDetachedFromWindow();
     }
 
+    @Override
+    public boolean performClick() {
+        super.performClick();
+        return true;
+    }
+
     // BEGIN_INCLUDE(onTouchEvent)
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -256,6 +262,8 @@ public class TouchDisplayView extends View {
 
                 mHasTouch = false;
                 resetSelection();
+                
+                performClick();
 
                 break;
             }

@@ -55,5 +55,16 @@
     <string name="chooser_order_title">Chooser order</string>
     <string name="chooser_order_summary">Choose fingers in placement order</string>
 
+    <string name="quick_add">Quick Add</string>
+    <string name="d4" translatable="false">d4</string>
+    <string name="d6" translatable="false">d6</string>
+    <string name="d10" translatable="false">d10</string>
+    <string name="d20" translatable="false">d20</string>
+    <string name="custom">Custom</string>
+    <string name="zero" translatable="false">0</string>
+    <string name="colon" translatable="false">:</string>
+    <string name="content_desc_add_counter">Add Counter</string>
+    <string name="content_desc_roll_dice">Roll Dice</string>
+    <string name="content_desc_header_icon">App Icon</string>
 
 </resources>

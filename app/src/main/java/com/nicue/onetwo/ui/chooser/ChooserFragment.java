@@ -61,6 +61,8 @@ public class ChooserFragment extends Fragment {
                 int action = event.getActionMasked();
                 if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
                     scheduleInstructionHide();
+                } else if (action == MotionEvent.ACTION_UP) {
+                    touchedView.performClick();
                 }
                 return false;
             }

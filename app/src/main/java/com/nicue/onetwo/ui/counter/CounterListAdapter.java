@@ -112,6 +112,8 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
                             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                                 listener.onDragHandleTouched(CounterViewHolder.this);
                                 return true;
+                            } else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+                                v.performClick();
                             }
                             return false;
                         }
@@ -129,7 +131,7 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
                     new View.OnTouchListener() {
                         @Override
                         public boolean onTouch(View v, MotionEvent event) {
-                            return handleForegroundTouch(event);
+                            return handleForegroundTouch(v, event);
                         }
                     });
             binding.subtractButton.setOnClickListener(
@@ -182,7 +184,7 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
             }
         }
 
-        private boolean handleForegroundTouch(MotionEvent event) {
+        private boolean handleForegroundTouch(View v, MotionEvent event) {
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
                     downX = event.getRawX();
@@ -218,6 +220,8 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
                                 .start();
                         draggingForeground = false;
                         return true;
+                    } else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+                        v.performClick();
                     }
                     return false;
                 default:
