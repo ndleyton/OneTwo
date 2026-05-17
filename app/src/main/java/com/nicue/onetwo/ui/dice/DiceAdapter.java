@@ -3,6 +3,7 @@ package com.nicue.onetwo.ui.dice;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
@@ -218,11 +219,32 @@ public class DiceAdapter extends RecyclerView.Adapter<DiceAdapter.DiceViewHolder
 
             binding.tvDice.setTextColor(textColor);
             binding.tvDieType.setTextColor(textColor);
+            binding.ivRollIndicator.setImageResource(getDieIconRes(faces));
             binding.ivRollIndicator.setColorFilter(iconTint);
 
             binding.tvDice.setText(String.valueOf(dieUiModel.getValue()));
             binding.tvDieType.setText(
                     binding.getRoot().getContext().getString(R.string.dice_type_label, faces));
+        }
+
+        @DrawableRes
+        private int getDieIconRes(int faces) {
+            switch (faces) {
+                case 4:
+                    return R.drawable.ic_die_d4_line;
+                case 6:
+                    return R.drawable.ic_die_d6_line;
+                case 8:
+                    return R.drawable.ic_die_d8_line;
+                case 10:
+                    return R.drawable.ic_die_d10_line;
+                case 12:
+                    return R.drawable.ic_die_d12_line;
+                case 20:
+                    return R.drawable.ic_die_d20_line;
+                default:
+                    return R.drawable.ic_die_custom_wheel;
+            }
         }
     }
 }
