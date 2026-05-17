@@ -16,7 +16,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -32,6 +34,8 @@ public class CounterFragment extends Fragment implements CounterListAdapter.List
     private CounterLayoutBinding binding;
     private CounterListAdapter adapter;
     private CounterViewModel viewModel;
+    private ItemTouchHelper itemTouchHelper;
+    private boolean counterOrderChanged;
     private int lastCounterCount = -1;
 
     @Nullable @Override
@@ -56,6 +60,44 @@ public class CounterFragment extends Fragment implements CounterListAdapter.List
                 new DividerItemDecoration(
                         binding.recyclerviewCounters.getContext(), layoutManager.getOrientation()));
         binding.recyclerviewCounters.setAdapter(adapter);
+        itemTouchHelper =
+                new ItemTouchHelper(
+                        new ItemTouchHelper.SimpleCallback(
+                                ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
+                            @Override
+                            public boolean isLongPressDragEnabled() {
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onMove(
+                                    @NonNull RecyclerView recyclerView,
+                                    @NonNull RecyclerView.ViewHolder viewHolder,
+                                    @NonNull RecyclerView.ViewHolder target) {
+                                boolean moved =
+                                        adapter.moveItem(
+                                                viewHolder.getAdapterPosition(),
+                                                target.getAdapterPosition());
+                                counterOrderChanged = counterOrderChanged || moved;
+                                return moved;
+                            }
+
+                            @Override
+                            public void onSwiped(
+                                    @NonNull RecyclerView.ViewHolder viewHolder, int direction) {}
+
+                            @Override
+                            public void clearView(
+                                    @NonNull RecyclerView recyclerView,
+                                    @NonNull RecyclerView.ViewHolder viewHolder) {
+                                super.clearView(recyclerView, viewHolder);
+                                if (counterOrderChanged) {
+                                    viewModel.reorderCounters(adapter.getCounterIds());
+                                    counterOrderChanged = false;
+                                }
+                            }
+                        });
+        itemTouchHelper.attachToRecyclerView(binding.recyclerviewCounters);
 
         binding.fab.setScaleX(0f);
         binding.fab.setScaleY(0f);
@@ -122,6 +164,8 @@ public class CounterFragment extends Fragment implements CounterListAdapter.List
     @Override
     public void onDestroyView() {
         binding = null;
+        itemTouchHelper = null;
+        counterOrderChanged = false;
         super.onDestroyView();
     }
 
@@ -138,6 +182,13 @@ public class CounterFragment extends Fragment implements CounterListAdapter.List
     @Override
     public void onDeleteClicked(long counterId) {
         viewModel.deleteCounter(counterId);
+    }
+
+    @Override
+    public void onDragHandleTouched(RecyclerView.ViewHolder viewHolder) {
+        if (itemTouchHelper != null) {
+            itemTouchHelper.startDrag(viewHolder);
+        }
     }
 
     public static String sanitizeObjectName(String name) {

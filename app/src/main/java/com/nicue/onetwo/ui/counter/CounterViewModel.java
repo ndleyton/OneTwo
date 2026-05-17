@@ -32,4 +32,8 @@ public class CounterViewModel extends ViewModel {
     public void deleteCounter(long counterId) {
         counterRepository.deleteCounter(counterId);
     }
+
+    public void reorderCounters(List<Long> orderedCounterIds) {
+        counterRepository.reorderCounters(orderedCounterIds);
+    }
 }

@@ -23,11 +23,11 @@ public class AppContainer {
     private final TimerStateStore timerStateStore;
 
     public AppContainer(Application application) {
-        this(application, Room.databaseBuilder(
-                application,
-                CounterDatabase.class,
-                TaskContract.DB_NAME
-        ).build(), Executors.newSingleThreadExecutor());
+        this(application,
+                Room.databaseBuilder(application, CounterDatabase.class, TaskContract.DB_NAME)
+                        .addMigrations(CounterDatabase.MIGRATION_2_3)
+                        .build(),
+                Executors.newSingleThreadExecutor());
     }
 
     public AppContainer(Application application, CounterDatabase counterDatabase, Executor executor) {

@@ -22,7 +22,9 @@ public class CounterRepository {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                counterDao.insert(new CounterEntity(title, value));
+                CounterEntity counterEntity = new CounterEntity(title, value);
+                counterEntity.setSortOrder(counterDao.getNextSortOrder());
+                counterDao.insert(counterEntity);
             }
         });
     }
@@ -41,6 +43,15 @@ public class CounterRepository {
             @Override
             public void run() {
                 counterDao.deleteById(counterId);
+            }
+        });
+    }
+
+    public void reorderCounters(final List<Long> orderedCounterIds) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                counterDao.updateSortOrders(orderedCounterIds);
             }
         });
     }

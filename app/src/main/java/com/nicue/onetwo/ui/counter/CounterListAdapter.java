@@ -21,6 +21,8 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
         void onAdjustmentClicked(long counterId, int currentValue, boolean add);
 
         void onDeleteClicked(long counterId);
+
+        void onDragHandleTouched(RecyclerView.ViewHolder viewHolder);
     }
 
     private final Listener listener;
@@ -51,6 +53,27 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
         notifyDataSetChanged();
     }
 
+    public boolean moveItem(int fromPosition, int toPosition) {
+        if (fromPosition < 0
+                || toPosition < 0
+                || fromPosition >= counters.size()
+                || toPosition >= counters.size()) {
+            return false;
+        }
+        CounterEntity movedCounter = counters.remove(fromPosition);
+        counters.add(toPosition, movedCounter);
+        notifyItemMoved(fromPosition, toPosition);
+        return true;
+    }
+
+    public List<Long> getCounterIds() {
+        List<Long> counterIds = new ArrayList<>();
+        for (CounterEntity counter : counters) {
+            counterIds.add(counter.getId());
+        }
+        return counterIds;
+    }
+
     class CounterViewHolder extends RecyclerView.ViewHolder
             implements NumberPicker.OnValueChangeListener, NumberPicker.OnScrollListener {
         private final ListItemBinding binding;
@@ -76,6 +99,17 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
                         public boolean onLongClick(View v) {
                             v.performClick();
                             return true;
+                        }
+                    });
+            binding.gripDots.setOnTouchListener(
+                    new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                                listener.onDragHandleTouched(CounterViewHolder.this);
+                                return true;
+                            }
+                            return false;
                         }
                     });
             binding.removeButton.setOnClickListener(

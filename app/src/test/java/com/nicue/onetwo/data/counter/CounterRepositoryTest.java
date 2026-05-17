@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -55,7 +56,8 @@ public class CounterRepositoryTest {
         counterRepository.addCounter("Alpha", 3);
         counterRepository.addCounter("Beta", 7);
 
-        List<CounterEntity> counters = LiveDataTestUtil.getValue(counterRepository.observeCounters());
+        List<CounterEntity> counters =
+                LiveDataTestUtil.getValue(counterRepository.observeCounters());
         assertEquals(2, counters.size());
         assertEquals("Alpha", counters.get(0).getTitle());
         assertEquals(3, counters.get(0).getValue());
@@ -68,5 +70,26 @@ public class CounterRepositoryTest {
         counters = LiveDataTestUtil.getValue(counterRepository.observeCounters());
         assertEquals(1, counters.size());
         assertEquals("Alpha", counters.get(0).getTitle());
+    }
+
+    @Test
+    public void reorderCounters_updatesObservedOrder() throws Exception {
+        counterRepository.addCounter("Alpha", 1);
+        counterRepository.addCounter("Beta", 2);
+        counterRepository.addCounter("Gamma", 3);
+
+        List<CounterEntity> counters =
+                LiveDataTestUtil.getValue(counterRepository.observeCounters());
+
+        counterRepository.reorderCounters(
+                Arrays.asList(
+                        counters.get(2).getId(),
+                        counters.get(0).getId(),
+                        counters.get(1).getId()));
+
+        counters = LiveDataTestUtil.getValue(counterRepository.observeCounters());
+        assertEquals("Gamma", counters.get(0).getTitle());
+        assertEquals("Alpha", counters.get(1).getTitle());
+        assertEquals("Beta", counters.get(2).getTitle());
     }
 }
