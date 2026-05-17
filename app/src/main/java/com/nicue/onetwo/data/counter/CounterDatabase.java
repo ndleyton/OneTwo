@@ -5,7 +5,10 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {CounterEntity.class}, version = 3, exportSchema = false)
+@Database(
+        entities = {CounterEntity.class},
+        version = 3,
+        exportSchema = false)
 public abstract class CounterDatabase extends RoomDatabase {
     public static final Migration MIGRATION_2_3 =
             new Migration(2, 3) {

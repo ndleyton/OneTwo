@@ -2,10 +2,8 @@ package com.nicue.onetwo.ui.counter;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
-
 import com.nicue.onetwo.data.counter.CounterEntity;
 import com.nicue.onetwo.data.counter.CounterRepository;
-
 import java.util.List;
 
 public class CounterViewModel extends ViewModel {

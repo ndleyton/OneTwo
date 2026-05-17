@@ -1,7 +1,6 @@
 package com.nicue.onetwo.data.counter;
 
 import androidx.lifecycle.LiveData;
-
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -19,40 +18,44 @@ public class CounterRepository {
     }
 
     public void addCounter(String title, int value) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                CounterEntity counterEntity = new CounterEntity(title, value);
-                counterEntity.setSortOrder(counterDao.getNextSortOrder());
-                counterDao.insert(counterEntity);
-            }
-        });
+        executor.execute(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        CounterEntity counterEntity = new CounterEntity(title, value);
+                        counterEntity.setSortOrder(counterDao.getNextSortOrder());
+                        counterDao.insert(counterEntity);
+                    }
+                });
     }
 
     public void updateCounterValue(long counterId, int value) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                counterDao.updateValue(counterId, value);
-            }
-        });
+        executor.execute(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        counterDao.updateValue(counterId, value);
+                    }
+                });
     }
 
     public void deleteCounter(long counterId) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                counterDao.deleteById(counterId);
-            }
-        });
+        executor.execute(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        counterDao.deleteById(counterId);
+                    }
+                });
     }
 
     public void reorderCounters(final List<Long> orderedCounterIds) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                counterDao.updateSortOrders(orderedCounterIds);
-            }
-        });
+        executor.execute(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        counterDao.updateSortOrders(orderedCounterIds);
+                    }
+                });
     }
 }

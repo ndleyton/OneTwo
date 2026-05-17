@@ -1,6 +1,5 @@
 package com.nicue.onetwo.db;
 
-
 import android.provider.BaseColumns;
 
 public class TaskContract {
@@ -15,6 +14,5 @@ public class TaskContract {
         public static final String COL_NUM_TITLE = "numbers";
 
         public static final String COL_SORT_ORDER = "sort_order";
-
     }
 }
