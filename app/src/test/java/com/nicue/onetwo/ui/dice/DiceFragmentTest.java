@@ -38,7 +38,8 @@ public class DiceFragmentTest {
                     View emptyText = fragment.getView().findViewById(R.id.tv_dice_empty);
                     assertEquals(View.VISIBLE, emptyText.getVisibility());
 
-                    RecyclerView recyclerView = fragment.getView().findViewById(R.id.recyclerview_dice);
+                    RecyclerView recyclerView =
+                            fragment.getView().findViewById(R.id.recyclerview_dice);
                     assertEquals(0, recyclerView.getAdapter().getItemCount());
 
                     TextView totalText = fragment.getView().findViewById(R.id.tv_dice_total);
@@ -65,7 +66,8 @@ public class DiceFragmentTest {
 
         scenario.onFragment(
                 fragment -> {
-                    RecyclerView recyclerView = fragment.getView().findViewById(R.id.recyclerview_dice);
+                    RecyclerView recyclerView =
+                            fragment.getView().findViewById(R.id.recyclerview_dice);
                     assertEquals(1, recyclerView.getAdapter().getItemCount());
 
                     View emptyText = fragment.getView().findViewById(R.id.tv_dice_empty);

@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.NumberPicker;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -22,14 +21,12 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
-
 import com.nicue.onetwo.OneTwoApplication;
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.core.HandlerTimerScheduler;
 import com.nicue.onetwo.databinding.ListItemTimerBinding;
 import com.nicue.onetwo.databinding.MinutesAlertDialogBinding;
 import com.nicue.onetwo.databinding.TimerLayoutBinding;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,10 +40,11 @@ public class TimerFragment extends Fragment implements MenuProvider {
     private TimerViewModel viewModel;
     private int lastFinishEventCount;
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    @Nullable @Override
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         binding = TimerLayoutBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -54,41 +52,47 @@ public class TimerFragment extends Fragment implements MenuProvider {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        TimerViewModelFactory factory = new TimerViewModelFactory(
-                ((OneTwoApplication) requireActivity().getApplication())
-                        .getAppContainer()
-                        .getTimerStateStore(),
-                new HandlerTimerScheduler()
-        );
+        TimerViewModelFactory factory =
+                new TimerViewModelFactory(
+                        ((OneTwoApplication) requireActivity().getApplication())
+                                .getAppContainer()
+                                .getTimerStateStore(),
+                        new HandlerTimerScheduler());
         viewModel = new ViewModelProvider(this, factory).get(TimerViewModel.class);
         viewModel.setMaxTimers(maxTimers());
 
-        binding.playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                vibrate(30L);
-                viewModel.togglePlayPause();
-            }
-        });
-        binding.editButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                vibrate(30L);
-                showEditDialog();
-            }
-        });
+        binding.playButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        vibrate(30L);
+                        viewModel.togglePlayPause();
+                    }
+                });
+        binding.editButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        vibrate(30L);
+                        showEditDialog();
+                    }
+                });
 
         viewModel.getUiState().observe(getViewLifecycleOwner(), this::renderState);
-        viewModel.getFinishEvents().observe(getViewLifecycleOwner(), new androidx.lifecycle.Observer<Integer>() {
-            @Override
-            public void onChanged(Integer eventCount) {
-                if (eventCount == null || eventCount <= lastFinishEventCount) {
-                    return;
-                }
-                lastFinishEventCount = eventCount;
-                vibrate(300L);
-            }
-        });
+        viewModel
+                .getFinishEvents()
+                .observe(
+                        getViewLifecycleOwner(),
+                        new androidx.lifecycle.Observer<Integer>() {
+                            @Override
+                            public void onChanged(Integer eventCount) {
+                                if (eventCount == null || eventCount <= lastFinishEventCount) {
+                                    return;
+                                }
+                                lastFinishEventCount = eventCount;
+                                vibrate(300L);
+                            }
+                        });
 
         MenuHost menuHost = requireActivity();
         menuHost.addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
@@ -144,7 +148,8 @@ public class TimerFragment extends Fragment implements MenuProvider {
             itemBinding.chrono.setText(timer.getDisplayTime());
             itemBinding.chrono.setEnabled(timer.isEnabled());
             itemBinding.chrono.setClickable(timer.isEnabled());
-            itemBinding.chrono.setBackgroundTintList(ColorStateList.valueOf(resolveButtonColor(timer)));
+            itemBinding.chrono.setBackgroundTintList(
+                    ColorStateList.valueOf(resolveButtonColor(timer)));
             itemBinding.cvTimer.setCardElevation(timer.isActive() && !state.isPaused() ? 30f : 2f);
             itemBinding.getRoot().setRotation(i == 0 && timers.size() == 2 ? 180f : 0f);
         }
@@ -155,18 +160,16 @@ public class TimerFragment extends Fragment implements MenuProvider {
         binding.linearTimers.removeAllViews();
         LayoutInflater inflater = LayoutInflater.from(binding.getRoot().getContext());
         for (int i = 0; i < count; i++) {
-            ListItemTimerBinding itemBinding = ListItemTimerBinding.inflate(
-                    inflater,
-                    binding.linearTimers,
-                    false
-            );
-            itemBinding.chrono.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    vibrate(30L);
-                    viewModel.advanceTimer();
-                }
-            });
+            ListItemTimerBinding itemBinding =
+                    ListItemTimerBinding.inflate(inflater, binding.linearTimers, false);
+            itemBinding.chrono.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            vibrate(30L);
+                            viewModel.advanceTimer();
+                        }
+                    });
             timerBindings.add(itemBinding);
             binding.linearTimers.addView(itemBinding.getRoot());
         }
@@ -175,7 +178,8 @@ public class TimerFragment extends Fragment implements MenuProvider {
     private void showEditDialog() {
         TimerUiState state = viewModel.getUiState().getValue();
         long configuredDuration = state == null ? 300000L : state.getConfiguredDurationMs();
-        MinutesAlertDialogBinding dialogBinding = MinutesAlertDialogBinding.inflate(getLayoutInflater());
+        MinutesAlertDialogBinding dialogBinding =
+                MinutesAlertDialogBinding.inflate(getLayoutInflater());
         NumberPicker minutePicker = dialogBinding.minutePicker;
         NumberPicker secondPicker = dialogBinding.secondsPicker;
         minutePicker.setMinValue(0);
@@ -184,23 +188,28 @@ public class TimerFragment extends Fragment implements MenuProvider {
         secondPicker.setMinValue(0);
         secondPicker.setMaxValue(59);
         secondPicker.setValue((int) ((configuredDuration / 1000L) % 60L));
-        secondPicker.setFormatter(new NumberPicker.Formatter() {
-            @Override
-            public String format(int value) {
-                return String.format(java.util.Locale.getDefault(), "%02d", value);
-            }
-        });
+        secondPicker.setFormatter(
+                new NumberPicker.Formatter() {
+                    @Override
+                    public String format(int value) {
+                        return String.format(java.util.Locale.getDefault(), "%02d", value);
+                    }
+                });
 
         new AlertDialog.Builder(requireContext())
                 .setView(dialogBinding.getRoot())
                 .setTitle("Set Time:")
-                .setPositiveButton("Set", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        long durationMs = (minutePicker.getValue() * 60L + secondPicker.getValue()) * 1000L;
-                        viewModel.editDuration(durationMs);
-                    }
-                })
+                .setPositiveButton(
+                        "Set",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                long durationMs =
+                                        (minutePicker.getValue() * 60L + secondPicker.getValue())
+                                                * 1000L;
+                                viewModel.editDuration(durationMs);
+                            }
+                        })
                 .setNegativeButton("Cancel", null)
                 .show();
     }

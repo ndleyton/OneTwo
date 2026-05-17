@@ -35,11 +35,13 @@ public class TimerFragmentTest {
 
         scenario.onFragment(
                 fragment -> {
-                    LinearLayout timerContainer = fragment.getView().findViewById(R.id.linear_timers);
+                    LinearLayout timerContainer =
+                            fragment.getView().findViewById(R.id.linear_timers);
                     assertTrue(timerContainer.getChildCount() > 0);
 
                     Button playButton = fragment.getView().findViewById(R.id.play_button);
-                    assertEquals(fragment.getString(R.string.play), playButton.getText().toString());
+                    assertEquals(
+                            fragment.getString(R.string.play), playButton.getText().toString());
                 });
     }
 
@@ -56,11 +58,13 @@ public class TimerFragmentTest {
                     Button playButton = fragment.getView().findViewById(R.id.play_button);
 
                     // Initially Play
-                    assertEquals(fragment.getString(R.string.play), playButton.getText().toString());
+                    assertEquals(
+                            fragment.getString(R.string.play), playButton.getText().toString());
 
                     // Toggle
                     viewModel.togglePlayPause();
-                    assertEquals(fragment.getString(R.string.pause), playButton.getText().toString());
+                    assertEquals(
+                            fragment.getString(R.string.pause), playButton.getText().toString());
                 });
     }
 }
