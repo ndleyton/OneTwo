@@ -78,6 +78,7 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
         return counterIds;
     }
 
+    @android.annotation.SuppressLint("ClickableViewAccessibility")
     class CounterViewHolder extends RecyclerView.ViewHolder
             implements NumberPicker.OnValueChangeListener, NumberPicker.OnScrollListener {
         private final ListItemBinding binding;

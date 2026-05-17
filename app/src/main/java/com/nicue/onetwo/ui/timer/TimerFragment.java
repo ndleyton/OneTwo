@@ -187,7 +187,7 @@ public class TimerFragment extends Fragment implements MenuProvider {
         secondPicker.setFormatter(new NumberPicker.Formatter() {
             @Override
             public String format(int value) {
-                return String.format("%02d", value);
+                return String.format(Locale.getDefault(), "%02d", value);
             }
         });
 
