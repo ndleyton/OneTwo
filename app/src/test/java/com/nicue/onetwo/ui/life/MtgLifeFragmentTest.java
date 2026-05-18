@@ -364,7 +364,8 @@ public class MtgLifeFragmentTest {
                         // Col 0: Player 1 (source seat 0) -> visible
                         // Col 1: Player 2 (source seat 1) -> visible
                         // Col 2: Player 5 (source seat 4, self) -> invisible
-                        android.widget.LinearLayout row0 = (android.widget.LinearLayout) dialogContent.getChildAt(0);
+                        android.widget.LinearLayout row0 =
+                                (android.widget.LinearLayout) dialogContent.getChildAt(0);
                         View cell0 = row0.getChildAt(0);
                         View cell1 = row0.getChildAt(1);
                         View cell2 = row0.getChildAt(2);
@@ -374,10 +375,16 @@ public class MtgLifeFragmentTest {
                         assertEquals(View.INVISIBLE, cell2.getVisibility());
 
                         // Verify increment zones exist in cell0 and cell1
-                        View incZone0 = findViewWithContentDescription(
-                                cell0, fragment.getString(R.string.mtg_commander_damage_increase_desc, 1, 5));
-                        View incZone1 = findViewWithContentDescription(
-                                cell1, fragment.getString(R.string.mtg_commander_damage_increase_desc, 2, 5));
+                        View incZone0 =
+                                findViewWithContentDescription(
+                                        cell0,
+                                        fragment.getString(
+                                                R.string.mtg_commander_damage_increase_desc, 1, 5));
+                        View incZone1 =
+                                findViewWithContentDescription(
+                                        cell1,
+                                        fragment.getString(
+                                                R.string.mtg_commander_damage_increase_desc, 2, 5));
                         assertNotNull(incZone0);
                         assertNotNull(incZone1);
 
@@ -385,7 +392,8 @@ public class MtgLifeFragmentTest {
                         // Col 0: Player 3 (source seat 2) -> visible
                         // Col 1: Player 4 (source seat 3) -> visible
                         // Col 2: Spacer (seat 5) -> invisible
-                        android.widget.LinearLayout row1 = (android.widget.LinearLayout) dialogContent.getChildAt(1);
+                        android.widget.LinearLayout row1 =
+                                (android.widget.LinearLayout) dialogContent.getChildAt(1);
                         View cell3 = row1.getChildAt(0);
                         View cell4 = row1.getChildAt(1);
                         View cell5 = row1.getChildAt(2);
@@ -394,10 +402,16 @@ public class MtgLifeFragmentTest {
                         assertEquals(View.VISIBLE, cell4.getVisibility());
                         assertEquals(View.INVISIBLE, cell5.getVisibility());
 
-                        View incZone3 = findViewWithContentDescription(
-                                cell3, fragment.getString(R.string.mtg_commander_damage_increase_desc, 3, 5));
-                        View incZone4 = findViewWithContentDescription(
-                                cell4, fragment.getString(R.string.mtg_commander_damage_increase_desc, 4, 5));
+                        View incZone3 =
+                                findViewWithContentDescription(
+                                        cell3,
+                                        fragment.getString(
+                                                R.string.mtg_commander_damage_increase_desc, 3, 5));
+                        View incZone4 =
+                                findViewWithContentDescription(
+                                        cell4,
+                                        fragment.getString(
+                                                R.string.mtg_commander_damage_increase_desc, 4, 5));
                         assertNotNull(incZone3);
                         assertNotNull(incZone4);
                     });
