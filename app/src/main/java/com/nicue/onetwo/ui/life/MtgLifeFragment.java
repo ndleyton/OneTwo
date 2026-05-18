@@ -400,7 +400,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         FrameLayout rotatedGrid = new FrameLayout(requireContext());
         FrameLayout.LayoutParams rotatedGridParams =
                 new FrameLayout.LayoutParams(
-                        dpToPx(rows == 1 ? 176 : 228), dpToPx(rows == 1 ? 176 : 228));
+                        dpToPx(rows == 1 ? 224 : 288), dpToPx(rows == 1 ? 224 : 288));
         rotatedGridParams.gravity = Gravity.CENTER;
         rotatedGrid.setLayoutParams(rotatedGridParams);
         rotatedGrid.setRotation(defender.getRotationDegrees());
@@ -483,7 +483,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
 
         TextView valueTextView = new TextView(requireContext());
         valueTextView.setText(String.valueOf(damage.getAmount()));
-        valueTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        valueTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
         valueTextView.setTypeface(null, Typeface.BOLD);
         valueTextView.setGravity(Gravity.CENTER);
         valueTextView.setTextColor(foregroundColor);
@@ -553,8 +553,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     }
 
     private LinearLayout.LayoutParams createLargeGridLayoutParams() {
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, dpToPx(64), 1f);
-        int margin = dpToPx(4);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, dpToPx(80), 1f);
+        int margin = dpToPx(8);
         params.setMargins(margin, margin, margin, margin);
         return params;
     }
