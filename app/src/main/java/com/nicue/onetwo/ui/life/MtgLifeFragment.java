@@ -9,6 +9,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.core.view.MenuHost;
+import androidx.core.view.MenuProvider;
+import androidx.lifecycle.Lifecycle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.databinding.LifeFragmentBinding;
@@ -21,7 +27,7 @@ import com.nicue.onetwo.databinding.LifeBoard5Binding;
 import com.nicue.onetwo.databinding.LifeBoard6Binding;
 import com.nicue.onetwo.databinding.LifePlayerCellBinding;
 
-public class MtgLifeFragment extends Fragment {
+public class MtgLifeFragment extends Fragment implements MenuProvider {
 
     private LifeFragmentBinding binding;
     private MtgLifeViewModel viewModel;
@@ -44,6 +50,8 @@ public class MtgLifeFragment extends Fragment {
         LifeSetupContentBinding setupBinding = LifeSetupContentBinding.bind(binding.setupContent.getRoot());
 
         viewModel.getUiState().observe(getViewLifecycleOwner(), uiState -> {
+            requireActivity().invalidateOptionsMenu();
+
             if (uiState.isShowingSetup()) {
                 binding.setupContent.getRoot().setVisibility(View.VISIBLE);
                 binding.boardContainer.setVisibility(View.GONE);
@@ -146,6 +154,27 @@ public class MtgLifeFragment extends Fragment {
             String lifeStr = setupBinding.lifeInput.getText().toString();
             viewModel.validateAndStartGame(playersStr, lifeStr);
         });
+
+        MenuHost menuHost = requireActivity();
+        menuHost.addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+    }
+
+    @Override
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+        menuInflater.inflate(R.menu.life_actions, menu);
+        MenuItem newGameItem = menu.findItem(R.id.action_new_game);
+        if (newGameItem != null && viewModel != null && viewModel.getUiState().getValue() != null) {
+            newGameItem.setVisible(!viewModel.getUiState().getValue().isShowingSetup());
+        }
+    }
+
+    @Override
+    public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+        if (menuItem.getItemId() == R.id.action_new_game) {
+            viewModel.resetToSetup();
+            return true;
+        }
+        return false;
     }
 
     @Override
