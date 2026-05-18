@@ -290,13 +290,15 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         cellBinding.lifeDecrementZone.setOnLongClickListener(
                 v -> {
                     viewModel.decrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
-                    startLifeHoldRepeat(v, () -> viewModel.decrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA));
+                    startLifeHoldRepeat(
+                            v, () -> viewModel.decrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA));
                     return true;
                 });
         cellBinding.lifeIncrementZone.setOnLongClickListener(
                 v -> {
                     viewModel.incrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
-                    startLifeHoldRepeat(v, () -> viewModel.incrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA));
+                    startLifeHoldRepeat(
+                            v, () -> viewModel.incrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA));
                     return true;
                 });
         cellBinding.lifeDecrementZone.setOnTouchListener(this::handleLifeHoldTouch);
