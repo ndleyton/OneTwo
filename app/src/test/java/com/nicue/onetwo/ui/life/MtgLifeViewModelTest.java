@@ -219,26 +219,31 @@ public class MtgLifeViewModelTest {
     @Test
     public void testCommanderDamageIncrementAndDecrement() throws Exception {
         viewModel.validateAndStartGame("2", "40", true);
-        
+
         // Increment player 0 damage from source player 1
         viewModel.incrementCommanderDamage(0, 1);
         MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
         assertEquals(1, state.getPlayers().getFirst().getCommanderDamages().get(1).getAmount());
+        assertEquals(39, state.getPlayers().getFirst().getLifeTotal());
+        assertEquals(40, state.getPlayers().get(1).getLifeTotal());
 
         // Self damage changes should be ignored
         viewModel.incrementCommanderDamage(0, 0);
         state = LiveDataTestUtil.getValue(viewModel.getUiState());
         assertEquals(0, state.getPlayers().getFirst().getCommanderDamages().getFirst().getAmount());
+        assertEquals(39, state.getPlayers().getFirst().getLifeTotal());
 
         // Decrement player 0 damage from source player 1
         viewModel.decrementCommanderDamage(0, 1);
         state = LiveDataTestUtil.getValue(viewModel.getUiState());
         assertEquals(0, state.getPlayers().getFirst().getCommanderDamages().get(1).getAmount());
+        assertEquals(40, state.getPlayers().getFirst().getLifeTotal());
 
         // Decrement below 0 floor should be ignored
         viewModel.decrementCommanderDamage(0, 1);
         state = LiveDataTestUtil.getValue(viewModel.getUiState());
         assertEquals(0, state.getPlayers().getFirst().getCommanderDamages().get(1).getAmount());
+        assertEquals(40, state.getPlayers().getFirst().getLifeTotal());
     }
 
     @Test

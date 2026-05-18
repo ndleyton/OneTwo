@@ -18,6 +18,12 @@ public class MtgLifeViewModel extends ViewModel {
     private static final String KEY_COMMANDER_DAMAGE_ENABLED = "commanderDamageEnabled";
     private static final String KEY_COMMANDER_DAMAGE_MATRIX = "commanderDamageMatrix";
 
+    private static final int DEFAULT_PLAYER_COUNT = 4;
+    private static final int DEFAULT_STARTING_LIFE = 40;
+    private static final int MIN_PLAYER_COUNT = 1;
+    private static final int MAX_PLAYER_COUNT = 6;
+    private static final int COMMANDER_LETHAL_DAMAGE = 21;
+
     private final SavedStateHandle savedStateHandle;
     private final MutableLiveData<MtgLifeUiState> uiState = new MutableLiveData<>();
 
@@ -25,14 +31,7 @@ public class MtgLifeViewModel extends ViewModel {
         this.savedStateHandle = savedStateHandle;
 
         if (!savedStateHandle.contains(KEY_SHOWING_SETUP)) {
-            savedStateHandle.set(KEY_SHOWING_SETUP, true);
-            savedStateHandle.set(KEY_PLAYER_COUNT, 4);
-            savedStateHandle.set(KEY_STARTING_LIFE, 40);
-            savedStateHandle.set(KEY_CURRENT_LIVES, new ArrayList<Integer>());
-            savedStateHandle.set(KEY_PLAYERS_ERROR_RES_ID, null);
-            savedStateHandle.set(KEY_LIFE_ERROR_RES_ID, null);
-            savedStateHandle.set(KEY_COMMANDER_DAMAGE_ENABLED, true);
-            savedStateHandle.set(KEY_COMMANDER_DAMAGE_MATRIX, new ArrayList<ArrayList<Integer>>());
+            initializeDefaultState();
         }
 
         updateUiState();
@@ -43,120 +42,51 @@ public class MtgLifeViewModel extends ViewModel {
     }
 
     public void validateAndStartGame(String playersStr, String lifeStr) {
-        Boolean lastEnabled = savedStateHandle.get(KEY_COMMANDER_DAMAGE_ENABLED);
-        validateAndStartGame(playersStr, lifeStr, lastEnabled == null || lastEnabled);
+        validateAndStartGame(playersStr, lifeStr, getCommanderDamageEnabled());
     }
 
-    public void validateAndStartGame(String playersStr, String lifeStr, boolean commanderDamageEnabled) {
-        boolean valid = true;
-        Integer playersError = null;
-        Integer lifeError = null;
+    public void validateAndStartGame(
+            String playersStr, String lifeStr, boolean commanderDamageEnabled) {
+        Integer parsedPlayerCount = parsePlayerCount(playersStr);
+        Integer parsedStartingLife = parseStartingLife(lifeStr);
 
-        int players = 0;
-        try {
-            players = Integer.parseInt(playersStr);
-            if (players < 1 || players > 6) {
-                playersError = R.string.mtg_setup_players_error;
-                valid = false;
-            }
-        } catch (NumberFormatException e) {
-            playersError = R.string.mtg_setup_players_error;
-            valid = false;
+        savedStateHandle.set(
+                KEY_PLAYERS_ERROR_RES_ID,
+                parsedPlayerCount == null ? R.string.mtg_setup_players_error : null);
+        savedStateHandle.set(
+                KEY_LIFE_ERROR_RES_ID,
+                parsedStartingLife == null ? R.string.mtg_setup_life_error : null);
+
+        if (parsedPlayerCount == null || parsedStartingLife == null) {
+            updateUiState();
+            return;
         }
 
-        int life = 0;
-        try {
-            life = Integer.parseInt(lifeStr);
-            if (life <= 0) {
-                lifeError = R.string.mtg_setup_life_error;
-                valid = false;
-            }
-        } catch (NumberFormatException e) {
-            lifeError = R.string.mtg_setup_life_error;
-            valid = false;
-        }
-
-        savedStateHandle.set(KEY_PLAYERS_ERROR_RES_ID, playersError);
-        savedStateHandle.set(KEY_LIFE_ERROR_RES_ID, lifeError);
-
-        if (valid) {
-            savedStateHandle.set(KEY_PLAYER_COUNT, players);
-            savedStateHandle.set(KEY_STARTING_LIFE, life);
-
-            ArrayList<Integer> lives = new ArrayList<>();
-            for (int i = 0; i < players; i++) {
-                lives.add(life);
-            }
-            savedStateHandle.set(KEY_CURRENT_LIVES, lives);
-            savedStateHandle.set(KEY_COMMANDER_DAMAGE_ENABLED, commanderDamageEnabled);
-
-            ArrayList<ArrayList<Integer>> matrix = new ArrayList<>();
-            for (int d = 0; d < players; d++) {
-                ArrayList<Integer> row = new ArrayList<>();
-                for (int s = 0; s < players; s++) {
-                    row.add(0);
-                }
-                matrix.add(row);
-            }
-            savedStateHandle.set(KEY_COMMANDER_DAMAGE_MATRIX, matrix);
-
-            savedStateHandle.set(KEY_SHOWING_SETUP, false);
-        }
+        savedStateHandle.set(KEY_PLAYER_COUNT, parsedPlayerCount);
+        savedStateHandle.set(KEY_STARTING_LIFE, parsedStartingLife);
+        savedStateHandle.set(
+                KEY_CURRENT_LIVES, createInitialLives(parsedPlayerCount, parsedStartingLife));
+        savedStateHandle.set(KEY_COMMANDER_DAMAGE_ENABLED, commanderDamageEnabled);
+        savedStateHandle.set(KEY_COMMANDER_DAMAGE_MATRIX, createCommanderDamageMatrix(parsedPlayerCount));
+        savedStateHandle.set(KEY_SHOWING_SETUP, false);
 
         updateUiState();
     }
 
     public void incrementLife(int seatIndex) {
-        List<Integer> currentLives = new ArrayList<>(savedStateHandle.get(KEY_CURRENT_LIVES));
-        if (seatIndex >= 0 && seatIndex < currentLives.size()) {
-            currentLives.set(seatIndex, currentLives.get(seatIndex) + 1);
-            savedStateHandle.set(KEY_CURRENT_LIVES, currentLives);
-            updateUiState();
-        }
+        updateLifeTotal(seatIndex, 1);
     }
 
     public void decrementLife(int seatIndex) {
-        List<Integer> currentLives = new ArrayList<>(savedStateHandle.get(KEY_CURRENT_LIVES));
-        if (seatIndex >= 0 && seatIndex < currentLives.size()) {
-            currentLives.set(seatIndex, currentLives.get(seatIndex) - 1);
-            savedStateHandle.set(KEY_CURRENT_LIVES, currentLives);
-            updateUiState();
-        }
+        updateLifeTotal(seatIndex, -1);
     }
 
     public void incrementCommanderDamage(int defenderSeatIndex, int sourceSeatIndex) {
-        ArrayList<ArrayList<Integer>> matrix = savedStateHandle.get(KEY_COMMANDER_DAMAGE_MATRIX);
-        if (matrix != null && defenderSeatIndex >= 0 && defenderSeatIndex < matrix.size()) {
-            ArrayList<Integer> row = new ArrayList<>(matrix.get(defenderSeatIndex));
-            if (sourceSeatIndex >= 0 && sourceSeatIndex < row.size()) {
-                if (defenderSeatIndex != sourceSeatIndex) {
-                    row.set(sourceSeatIndex, row.get(sourceSeatIndex) + 1);
-                    ArrayList<ArrayList<Integer>> newMatrix = new ArrayList<>(matrix);
-                    newMatrix.set(defenderSeatIndex, row);
-                    savedStateHandle.set(KEY_COMMANDER_DAMAGE_MATRIX, newMatrix);
-                    updateUiState();
-                }
-            }
-        }
+        updateCommanderDamage(defenderSeatIndex, sourceSeatIndex, 1);
     }
 
     public void decrementCommanderDamage(int defenderSeatIndex, int sourceSeatIndex) {
-        ArrayList<ArrayList<Integer>> matrix = savedStateHandle.get(KEY_COMMANDER_DAMAGE_MATRIX);
-        if (matrix != null && defenderSeatIndex >= 0 && defenderSeatIndex < matrix.size()) {
-            ArrayList<Integer> row = new ArrayList<>(matrix.get(defenderSeatIndex));
-            if (sourceSeatIndex >= 0 && sourceSeatIndex < row.size()) {
-                if (defenderSeatIndex != sourceSeatIndex) {
-                    int val = row.get(sourceSeatIndex);
-                    if (val > 0) {
-                        row.set(sourceSeatIndex, val - 1);
-                        ArrayList<ArrayList<Integer>> newMatrix = new ArrayList<>(matrix);
-                        newMatrix.set(defenderSeatIndex, row);
-                        savedStateHandle.set(KEY_COMMANDER_DAMAGE_MATRIX, newMatrix);
-                        updateUiState();
-                    }
-                }
-            }
-        }
+        updateCommanderDamage(defenderSeatIndex, sourceSeatIndex, -1);
     }
 
     public void resetToSetup() {
@@ -167,126 +97,252 @@ public class MtgLifeViewModel extends ViewModel {
     }
 
     public void dismissSetup() {
-        Boolean showing = savedStateHandle.get(KEY_SHOWING_SETUP);
-        List<Integer> currentLives = savedStateHandle.get(KEY_CURRENT_LIVES);
-        if (showing != null && showing && currentLives != null && !currentLives.isEmpty()) {
+        if (!isShowingSetup()) {
+            return;
+        }
+
+        List<Integer> currentLives = getCurrentLives();
+        if (currentLives != null && !currentLives.isEmpty()) {
             savedStateHandle.set(KEY_SHOWING_SETUP, false);
             updateUiState();
         }
     }
 
-    private int getRotationForSeat(int seatIndex, int totalPlayers) {
-        switch (totalPlayers) {
-            case 1:
-                return 0;
-            case 2:
-                return (seatIndex == 0) ? 180 : 0;
-            case 3:
-                if (seatIndex == 0) return 180;
-                if (seatIndex == 1) return 90;
-                return 270;
-            case 4:
-                return (seatIndex % 2 == 0) ? 90 : 270;
-            case 5:
-                if (seatIndex == 4) return 0;
-                return (seatIndex % 2 == 0) ? 90 : 270;
-            case 6:
-                return (seatIndex % 2 == 0) ? 90 : 270;
-            default:
-                return 0;
+    private void initializeDefaultState() {
+        savedStateHandle.set(KEY_SHOWING_SETUP, true);
+        savedStateHandle.set(KEY_PLAYER_COUNT, DEFAULT_PLAYER_COUNT);
+        savedStateHandle.set(KEY_STARTING_LIFE, DEFAULT_STARTING_LIFE);
+        savedStateHandle.set(KEY_CURRENT_LIVES, new ArrayList<Integer>());
+        savedStateHandle.set(KEY_PLAYERS_ERROR_RES_ID, null);
+        savedStateHandle.set(KEY_LIFE_ERROR_RES_ID, null);
+        savedStateHandle.set(KEY_COMMANDER_DAMAGE_ENABLED, true);
+        savedStateHandle.set(KEY_COMMANDER_DAMAGE_MATRIX, new ArrayList<ArrayList<Integer>>());
+    }
+
+    private Integer parsePlayerCount(String playersStr) {
+        try {
+            int players = Integer.parseInt(playersStr);
+            return players >= MIN_PLAYER_COUNT && players <= MAX_PLAYER_COUNT ? players : null;
+        } catch (NumberFormatException e) {
+            return null;
         }
+    }
+
+    private Integer parseStartingLife(String lifeStr) {
+        try {
+            int life = Integer.parseInt(lifeStr);
+            return life > 0 ? life : null;
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private ArrayList<Integer> createInitialLives(int playerCount, int startingLife) {
+        ArrayList<Integer> lives = new ArrayList<>();
+        for (int i = 0; i < playerCount; i++) {
+            lives.add(startingLife);
+        }
+        return lives;
+    }
+
+    private ArrayList<ArrayList<Integer>> createCommanderDamageMatrix(int playerCount) {
+        ArrayList<ArrayList<Integer>> matrix = new ArrayList<>();
+        for (int defenderIndex = 0; defenderIndex < playerCount; defenderIndex++) {
+            ArrayList<Integer> row = new ArrayList<>();
+            for (int sourceIndex = 0; sourceIndex < playerCount; sourceIndex++) {
+                row.add(0);
+            }
+            matrix.add(row);
+        }
+        return matrix;
+    }
+
+    private void updateLifeTotal(int seatIndex, int delta) {
+        List<Integer> currentLives = getCurrentLives();
+        if (!isValidSeatIndex(currentLives, seatIndex)) {
+            return;
+        }
+
+        ArrayList<Integer> updatedLives = new ArrayList<>(currentLives);
+        updatedLives.set(seatIndex, updatedLives.get(seatIndex) + delta);
+        savedStateHandle.set(KEY_CURRENT_LIVES, updatedLives);
+        updateUiState();
+    }
+
+    private void updateCommanderDamage(int defenderSeatIndex, int sourceSeatIndex, int delta) {
+        ArrayList<ArrayList<Integer>> matrix = getCommanderDamageMatrix();
+        if (matrix == null
+                || !isValidSeatIndex(matrix, defenderSeatIndex)
+                || defenderSeatIndex == sourceSeatIndex) {
+            return;
+        }
+
+        ArrayList<Integer> defenderRow = new ArrayList<>(matrix.get(defenderSeatIndex));
+        if (!isValidSeatIndex(defenderRow, sourceSeatIndex)) {
+            return;
+        }
+
+        int currentAmount = defenderRow.get(sourceSeatIndex);
+        int updatedAmount = currentAmount + delta;
+        if (updatedAmount < 0) {
+            return;
+        }
+
+        defenderRow.set(sourceSeatIndex, updatedAmount);
+        ArrayList<ArrayList<Integer>> updatedMatrix = new ArrayList<>(matrix);
+        updatedMatrix.set(defenderSeatIndex, defenderRow);
+        savedStateHandle.set(KEY_COMMANDER_DAMAGE_MATRIX, updatedMatrix);
+
+        updateLifeTotalForCommanderDamage(defenderSeatIndex, -delta);
+        updateUiState();
+    }
+
+    private void updateLifeTotalForCommanderDamage(int defenderSeatIndex, int delta) {
+        List<Integer> currentLives = getCurrentLives();
+        if (!isValidSeatIndex(currentLives, defenderSeatIndex)) {
+            return;
+        }
+
+        ArrayList<Integer> updatedLives = new ArrayList<>(currentLives);
+        updatedLives.set(defenderSeatIndex, updatedLives.get(defenderSeatIndex) + delta);
+        savedStateHandle.set(KEY_CURRENT_LIVES, updatedLives);
+    }
+
+    private boolean isShowingSetup() {
+        return Boolean.TRUE.equals(savedStateHandle.get(KEY_SHOWING_SETUP));
+    }
+
+    private boolean getCommanderDamageEnabled() {
+        Boolean enabled = savedStateHandle.get(KEY_COMMANDER_DAMAGE_ENABLED);
+        return enabled == null || enabled;
+    }
+
+    private int getPlayerCount() {
+        Integer playerCount = savedStateHandle.get(KEY_PLAYER_COUNT);
+        return playerCount != null ? playerCount : DEFAULT_PLAYER_COUNT;
+    }
+
+    private int getStartingLife() {
+        Integer startingLife = savedStateHandle.get(KEY_STARTING_LIFE);
+        return startingLife != null ? startingLife : DEFAULT_STARTING_LIFE;
+    }
+
+    private List<Integer> getCurrentLives() {
+        return savedStateHandle.get(KEY_CURRENT_LIVES);
+    }
+
+    private ArrayList<ArrayList<Integer>> getCommanderDamageMatrix() {
+        return savedStateHandle.get(KEY_COMMANDER_DAMAGE_MATRIX);
+    }
+
+    private boolean isValidSeatIndex(List<?> list, int seatIndex) {
+        return list != null && seatIndex >= 0 && seatIndex < list.size();
+    }
+
+    private int getRotationForSeat(int seatIndex, int totalPlayers) {
+        return switch (totalPlayers) {
+            case 1 -> 0;
+            case 2 -> seatIndex == 0 ? 180 : 0;
+            case 3 -> switch (seatIndex) {
+                case 0 -> 180;
+                case 1 -> 90;
+                default -> 270;
+            };
+            case 4 -> seatIndex % 2 == 0 ? 90 : 270;
+            case 5 -> seatIndex == 4 ? 0 : (seatIndex % 2 == 0 ? 90 : 270);
+            case 6 -> seatIndex % 2 == 0 ? 90 : 270;
+            default -> 0;
+        };
     }
 
     private int getBackgroundColorResForSeat(int seatIndex) {
-        switch (seatIndex) {
-            case 0:
-                return R.color.lifeCounterPlayer1;
-            case 1:
-                return R.color.lifeCounterPlayer2;
-            case 2:
-                return R.color.lifeCounterPlayer3;
-            case 3:
-                return R.color.lifeCounterPlayer4;
-            case 4:
-                return R.color.lifeCounterPlayer5;
-            case 5:
-                return R.color.lifeCounterPlayer6;
-            default:
-                return R.color.lifeCounterPlayer1;
-        }
+        return switch (seatIndex) {
+            case 0 -> R.color.lifeCounterPlayer1;
+            case 1 -> R.color.lifeCounterPlayer2;
+            case 2 -> R.color.lifeCounterPlayer3;
+            case 3 -> R.color.lifeCounterPlayer4;
+            case 4 -> R.color.lifeCounterPlayer5;
+            case 5 -> R.color.lifeCounterPlayer6;
+            default -> R.color.lifeCounterPlayer1;
+        };
     }
 
     private int getForegroundColorResForSeat(int seatIndex) {
-        switch (seatIndex) {
-            case 0:
-                return R.color.lifeCounterOnPlayer1;
-            case 1:
-                return R.color.lifeCounterOnPlayer2;
-            case 2:
-                return R.color.lifeCounterOnPlayer3;
-            case 3:
-                return R.color.lifeCounterOnPlayer4;
-            case 4:
-                return R.color.lifeCounterOnPlayer5;
-            case 5:
-                return R.color.lifeCounterOnPlayer6;
-            default:
-                return R.color.lifeCounterOnPlayer1;
-        }
+        return switch (seatIndex) {
+            case 0 -> R.color.lifeCounterOnPlayer1;
+            case 1 -> R.color.lifeCounterOnPlayer2;
+            case 2 -> R.color.lifeCounterOnPlayer3;
+            case 3 -> R.color.lifeCounterOnPlayer4;
+            case 4 -> R.color.lifeCounterOnPlayer5;
+            case 5 -> R.color.lifeCounterOnPlayer6;
+            default -> R.color.lifeCounterOnPlayer1;
+        };
     }
 
-    private List<CommanderDamageUiModel> buildCommanderDamages(int defenderIndex, ArrayList<ArrayList<Integer>> matrix, int totalPlayers) {
-        List<CommanderDamageUiModel> list = new ArrayList<>();
-        ArrayList<Integer> row = (matrix != null && defenderIndex < matrix.size()) ? matrix.get(defenderIndex) : null;
-        for (int sourceIndex = 0; sourceIndex < totalPlayers; sourceIndex++) {
-            int amount = 0;
-            if (row != null && sourceIndex < row.size()) {
-                amount = row.get(sourceIndex);
-            }
-            boolean self = (sourceIndex == defenderIndex);
-            boolean lethal = amount >= 21;
+    private List<CommanderDamageUiModel> buildCommanderDamages(
+            int defenderSeatIndex, ArrayList<ArrayList<Integer>> matrix, int totalPlayers) {
+        List<CommanderDamageUiModel> damages = new ArrayList<>();
+        ArrayList<Integer> defenderRow =
+                matrix != null && defenderSeatIndex < matrix.size() ? matrix.get(defenderSeatIndex) : null;
 
-            int bg;
-            int fg;
-            if (self) {
-                bg = android.R.color.transparent;
-                fg = R.color.m3_outline;
-            } else if (lethal) {
-                bg = R.color.secondAccent;
-                fg = android.R.color.white;
-            } else {
-                bg = getBackgroundColorResForSeat(sourceIndex);
-                fg = getForegroundColorResForSeat(sourceIndex);
-            }
+        for (int sourceSeatIndex = 0; sourceSeatIndex < totalPlayers; sourceSeatIndex++) {
+            int amount =
+                    defenderRow != null && sourceSeatIndex < defenderRow.size()
+                            ? defenderRow.get(sourceSeatIndex)
+                            : 0;
+            boolean self = sourceSeatIndex == defenderSeatIndex;
+            boolean lethal = amount >= COMMANDER_LETHAL_DAMAGE;
 
-            list.add(new CommanderDamageUiModel(sourceIndex, amount, self, lethal, bg, fg));
+            int backgroundColorRes =
+                    self
+                            ? android.R.color.transparent
+                            : lethal
+                                    ? R.color.secondAccent
+                                    : getBackgroundColorResForSeat(sourceSeatIndex);
+            int foregroundColorRes =
+                    self
+                            ? R.color.m3_outline
+                            : lethal
+                                    ? android.R.color.white
+                                    : getForegroundColorResForSeat(sourceSeatIndex);
+
+            damages.add(
+                    new CommanderDamageUiModel(
+                            sourceSeatIndex,
+                            amount,
+                            self,
+                            lethal,
+                            backgroundColorRes,
+                            foregroundColorRes));
         }
-        return list;
+
+        return damages;
     }
 
     private void updateUiState() {
-        boolean showingSetup = savedStateHandle.get(KEY_SHOWING_SETUP);
-        int playerCount = savedStateHandle.get(KEY_PLAYER_COUNT);
-        int startingLife = savedStateHandle.get(KEY_STARTING_LIFE);
-        List<Integer> currentLives = savedStateHandle.get(KEY_CURRENT_LIVES);
+        boolean showingSetup = isShowingSetup();
+        int playerCount = getPlayerCount();
+        int startingLife = getStartingLife();
+        List<Integer> currentLives = getCurrentLives();
         Integer playersErrorResId = savedStateHandle.get(KEY_PLAYERS_ERROR_RES_ID);
         Integer lifeErrorResId = savedStateHandle.get(KEY_LIFE_ERROR_RES_ID);
+        boolean commanderDamageEnabled = getCommanderDamageEnabled();
+        ArrayList<ArrayList<Integer>> commanderDamageMatrix = getCommanderDamageMatrix();
 
-        Boolean enabled = savedStateHandle.get(KEY_COMMANDER_DAMAGE_ENABLED);
-        boolean isEnabled = (enabled != null) ? enabled : true;
-
-        ArrayList<ArrayList<Integer>> matrix = savedStateHandle.get(KEY_COMMANDER_DAMAGE_MATRIX);
-
-        List<LifePlayerUiModel> playerModels = new ArrayList<>();
+        List<LifePlayerUiModel> players = new ArrayList<>();
         if (!showingSetup && currentLives != null) {
-            int size = currentLives.size();
-            for (int i = 0; i < size; i++) {
-                int rotation = getRotationForSeat(i, size);
-                int bg = getBackgroundColorResForSeat(i);
-                int fg = getForegroundColorResForSeat(i);
-                boolean isVisible = isEnabled && (size > 1);
-                List<CommanderDamageUiModel> damages = buildCommanderDamages(i, matrix, size);
-                playerModels.add(new LifePlayerUiModel(i, currentLives.get(i), rotation, bg, fg, isVisible, damages));
+            int totalPlayers = currentLives.size();
+            for (int seatIndex = 0; seatIndex < totalPlayers; seatIndex++) {
+                players.add(
+                        new LifePlayerUiModel(
+                                seatIndex,
+                                currentLives.get(seatIndex),
+                                getRotationForSeat(seatIndex, totalPlayers),
+                                getBackgroundColorResForSeat(seatIndex),
+                                getForegroundColorResForSeat(seatIndex),
+                                commanderDamageEnabled && totalPlayers > 1,
+                                buildCommanderDamages(
+                                        seatIndex, commanderDamageMatrix, totalPlayers)));
             }
         }
 
@@ -295,9 +351,9 @@ public class MtgLifeViewModel extends ViewModel {
                         showingSetup,
                         playerCount,
                         startingLife,
-                        playerModels,
+                        players,
                         playersErrorResId,
                         lifeErrorResId,
-                        isEnabled));
+                        commanderDamageEnabled));
     }
 }
