@@ -55,6 +55,27 @@ public class TimerViewModelTest {
         assertEquals(0L, state.getTimers().get(1).getRemainingTimeMs());
     }
 
+    @Test
+    public void advanceTimer_appliesIncrementToCompletedTurn() throws Exception {
+        FakeTimerScheduler scheduler = new FakeTimerScheduler();
+        TimerViewModel viewModel = new TimerViewModel(
+                new SavedStateHandle(),
+                new TimerStateStore(),
+                scheduler
+        );
+
+        viewModel.editDuration(10_000L, 2_000L);
+        viewModel.togglePlayPause();
+        scheduler.advanceBy(3_000L);
+
+        viewModel.advanceTimer();
+
+        TimerUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertEquals(9_000L, state.getTimers().get(0).getRemainingTimeMs());
+        assertEquals(2_000L, state.getConfiguredIncrementMs());
+        assertTrue(state.getTimers().get(1).isActive());
+    }
+
     private static class FakeTimerScheduler implements TimerScheduler {
         private TickListener tickListener;
         private long nowMs;

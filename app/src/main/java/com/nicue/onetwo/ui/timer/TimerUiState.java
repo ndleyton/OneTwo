@@ -7,11 +7,14 @@ public class TimerUiState {
     private final ArrayList<TimerItemUiModel> timers;
     private final boolean paused;
     private final long configuredDurationMs;
+    private final long configuredIncrementMs;
 
-    public TimerUiState(List<TimerItemUiModel> timers, boolean paused, long configuredDurationMs) {
+    public TimerUiState(List<TimerItemUiModel> timers, boolean paused, long configuredDurationMs,
+                        long configuredIncrementMs) {
         this.timers = new ArrayList<>(timers);
         this.paused = paused;
         this.configuredDurationMs = configuredDurationMs;
+        this.configuredIncrementMs = configuredIncrementMs;
     }
 
     public ArrayList<TimerItemUiModel> getTimers() {
@@ -24,5 +27,9 @@ public class TimerUiState {
 
     public long getConfiguredDurationMs() {
         return configuredDurationMs;
+    }
+
+    public long getConfiguredIncrementMs() {
+        return configuredIncrementMs;
     }
 }

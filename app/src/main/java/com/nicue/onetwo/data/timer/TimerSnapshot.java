@@ -8,13 +8,15 @@ public class TimerSnapshot {
     private final int runningIndex;
     private final boolean paused;
     private final long configuredDurationMs;
+    private final long configuredIncrementMs;
 
     public TimerSnapshot(List<Long> remainingTimes, int runningIndex, boolean paused,
-                         long configuredDurationMs) {
+                         long configuredDurationMs, long configuredIncrementMs) {
         this.remainingTimes = new ArrayList<>(remainingTimes);
         this.runningIndex = runningIndex;
         this.paused = paused;
         this.configuredDurationMs = configuredDurationMs;
+        this.configuredIncrementMs = configuredIncrementMs;
     }
 
     public ArrayList<Long> getRemainingTimes() {
@@ -31,5 +33,9 @@ public class TimerSnapshot {
 
     public long getConfiguredDurationMs() {
         return configuredDurationMs;
+    }
+
+    public long getConfiguredIncrementMs() {
+        return configuredIncrementMs;
     }
 }
