@@ -190,4 +190,103 @@ public class MtgLifeViewModelTest {
         assertEquals(90, state.getPlayers().get(4).getRotationDegrees());
         assertEquals(270, state.getPlayers().get(5).getRotationDegrees());
     }
+
+    @Test
+    public void testDefaultCommanderDamageState() throws Exception {
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertTrue(state.isCommanderDamageEnabled());
+
+        viewModel.validateAndStartGame("2", "40", true);
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertTrue(state.isCommanderDamageEnabled());
+
+        // Check that player 0 has 2 commander damage items (for player 0 and player 1)
+        List<CommanderDamageUiModel> damages = state.getPlayers().get(0).getCommanderDamages();
+        assertEquals(2, damages.size());
+
+        // Self damage should be self = true, amount = 0
+        assertTrue(damages.get(0).isSelf());
+        assertEquals(0, damages.get(0).getAmount());
+
+        // Opponent damage should be self = false, amount = 0
+        assertFalse(damages.get(1).isSelf());
+        assertEquals(0, damages.get(1).getAmount());
+    }
+
+    @Test
+    public void testCommanderDamageIncrementAndDecrement() throws Exception {
+        viewModel.validateAndStartGame("2", "40", true);
+        
+        // Increment player 0 damage from source player 1
+        viewModel.incrementCommanderDamage(0, 1);
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertEquals(1, state.getPlayers().get(0).getCommanderDamages().get(1).getAmount());
+
+        // Self damage changes should be ignored
+        viewModel.incrementCommanderDamage(0, 0);
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertEquals(0, state.getPlayers().get(0).getCommanderDamages().get(0).getAmount());
+
+        // Decrement player 0 damage from source player 1
+        viewModel.decrementCommanderDamage(0, 1);
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertEquals(0, state.getPlayers().get(0).getCommanderDamages().get(1).getAmount());
+
+        // Decrement below 0 floor should be ignored
+        viewModel.decrementCommanderDamage(0, 1);
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertEquals(0, state.getPlayers().get(0).getCommanderDamages().get(1).getAmount());
+    }
+
+    @Test
+    public void testCommanderDamageVisibilityByPlayerCount() throws Exception {
+        // Player count = 1: strip must be hidden even if enabled
+        viewModel.validateAndStartGame("1", "40", true);
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertFalse(state.getPlayers().get(0).isCommanderDamageVisible());
+
+        // Player count = 2: strip should be visible
+        viewModel.validateAndStartGame("2", "40", true);
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertTrue(state.getPlayers().get(0).isCommanderDamageVisible());
+
+        // If explicitly disabled: strip should be hidden
+        viewModel.validateAndStartGame("2", "40", false);
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertFalse(state.getPlayers().get(0).isCommanderDamageVisible());
+    }
+
+    @Test
+    public void testLethalCommanderDamageTreatment() throws Exception {
+        viewModel.validateAndStartGame("2", "40", true);
+
+        // Increment to 20
+        for (int i = 0; i < 20; i++) {
+            viewModel.incrementCommanderDamage(0, 1);
+        }
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertFalse(state.getPlayers().get(0).getCommanderDamages().get(1).isLethal());
+
+        // 21st point -> lethal
+        viewModel.incrementCommanderDamage(0, 1);
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        CommanderDamageUiModel model = state.getPlayers().get(0).getCommanderDamages().get(1);
+        assertTrue(model.isLethal());
+        assertEquals(R.color.secondAccent, model.getBackgroundColorRes());
+        assertEquals(android.R.color.white, model.getForegroundColorRes());
+    }
+
+    @Test
+    public void testNewGamePreservesToggle() throws Exception {
+        // Disable commander damage and start game
+        viewModel.validateAndStartGame("3", "40", false);
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertFalse(state.isCommanderDamageEnabled());
+
+        // Reset to setup
+        viewModel.resetToSetup();
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertTrue(state.isShowingSetup());
+        assertFalse(state.isCommanderDamageEnabled());
+    }
 }

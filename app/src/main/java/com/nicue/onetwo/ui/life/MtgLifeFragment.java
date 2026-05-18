@@ -317,7 +317,6 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                                             cellBinding.commanderDamageGrid.setRowCount(rows);
                                             cellBinding.commanderDamageGrid.setColumnCount(cols);
 
-                                            final int seatIndex = player.getSeatIndex();
                                             java.util.List<CommanderDamageUiModel> damages = player.getCommanderDamages();
                                             for (int idx = 0; idx < damages.size(); idx++) {
                                                 CommanderDamageUiModel damage = damages.get(idx);
@@ -333,19 +332,19 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                                                     cellViewText.setText(String.valueOf(damage.getAmount()));
                                                 }
 
-                                                int bgColor = ContextCompat.getColor(requireContext(), damage.getBackgroundColorRes());
-                                                int fgColor = ContextCompat.getColor(requireContext(), damage.getForegroundColorRes());
+                                                int cellBgColor = ContextCompat.getColor(requireContext(), damage.getBackgroundColorRes());
+                                                int cellFgColor = ContextCompat.getColor(requireContext(), damage.getForegroundColorRes());
 
                                                 android.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable();
                                                 gd.setCornerRadius(4 * getResources().getDisplayMetrics().density);
                                                 if (damage.isSelf()) {
-                                                    gd.setStroke((int) (1 * getResources().getDisplayMetrics().density), fgColor);
+                                                    gd.setStroke((int) (1 * getResources().getDisplayMetrics().density), cellFgColor);
                                                     gd.setColor(android.graphics.Color.TRANSPARENT);
                                                 } else {
-                                                    gd.setColor(bgColor);
+                                                    gd.setColor(cellBgColor);
                                                 }
                                                 cellViewText.setBackground(gd);
-                                                cellViewText.setTextColor(fgColor);
+                                                cellViewText.setTextColor(cellFgColor);
 
                                                 int r = idx / cols;
                                                 int c = idx % cols;
