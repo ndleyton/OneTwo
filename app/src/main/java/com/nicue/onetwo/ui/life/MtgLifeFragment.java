@@ -8,6 +8,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -15,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -47,6 +51,8 @@ import java.util.Map;
 
 public class MtgLifeFragment extends Fragment implements MenuProvider {
     private static final int PREVIEW_PLAYER_COUNT = 4;
+    private static final int LIFE_LONG_PRESS_DELTA = 10;
+    private static final long LIFE_HOLD_REPEAT_INTERVAL_MS = 1000L;
 
     private LifeFragmentBinding binding;
     private MtgLifeViewModel viewModel;
@@ -54,6 +60,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     private int currentBoardPlayerCount = -1;
     private Integer activeDialogDefenderSeatIndex = null;
     private final Map<Integer, TextView> activeDialogDamageTextViews = new HashMap<>();
+    private final Handler holdRepeatHandler = new Handler(Looper.getMainLooper());
+    private final Map<View, Runnable> activeLifeHoldRunnables = new HashMap<>();
 
     @Nullable @Override
     public View onCreateView(
@@ -265,15 +273,36 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         cellBinding.tvLifeCount.setContentDescription(String.valueOf(player.getLifeTotal()));
         cellBinding.tvLifeCount.setTextColor(foregroundColor);
         cellBinding.playerCellContainer.setBackgroundColor(backgroundColor);
+        bindRecentLifeChange(
+                cellBinding,
+                player.getRecentLifeChange(),
+                player.getRecentLifeChangeTimestampMs(),
+                foregroundColor);
 
         cellBinding.btnMinus.setIconTint(ColorStateList.valueOf(foregroundColor));
         cellBinding.btnPlus.setIconTint(ColorStateList.valueOf(foregroundColor));
-        cellBinding.btnMinus.setContentDescription(
+        cellBinding.lifeDecrementZone.setContentDescription(
                 getString(R.string.mtg_btn_minus_desc, seatIndex + 1));
-        cellBinding.btnPlus.setContentDescription(
+        cellBinding.lifeIncrementZone.setContentDescription(
                 getString(R.string.mtg_btn_plus_desc, seatIndex + 1));
-        cellBinding.btnMinus.setOnClickListener(v -> viewModel.decrementLife(seatIndex));
-        cellBinding.btnPlus.setOnClickListener(v -> viewModel.incrementLife(seatIndex));
+        cellBinding.lifeDecrementZone.setOnClickListener(v -> viewModel.decrementLife(seatIndex));
+        cellBinding.lifeIncrementZone.setOnClickListener(v -> viewModel.incrementLife(seatIndex));
+        cellBinding.lifeDecrementZone.setOnLongClickListener(
+                v -> {
+                    viewModel.decrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
+                    startLifeHoldRepeat(
+                            v, () -> viewModel.decrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA));
+                    return true;
+                });
+        cellBinding.lifeIncrementZone.setOnLongClickListener(
+                v -> {
+                    viewModel.incrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
+                    startLifeHoldRepeat(
+                            v, () -> viewModel.incrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA));
+                    return true;
+                });
+        cellBinding.lifeDecrementZone.setOnTouchListener(this::handleLifeHoldTouch);
+        cellBinding.lifeIncrementZone.setOnTouchListener(this::handleLifeHoldTouch);
 
         bindCommanderDamageSummary(cellBinding, player, playerCount);
 
@@ -357,6 +386,41 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                         damage.getAmount()));
 
         return summaryCell;
+    }
+
+    private void bindRecentLifeChange(
+            LifePlayerCellBinding cellBinding,
+            int recentLifeChange,
+            long recentLifeChangeTimestampMs,
+            int foregroundColor) {
+        long ageMs = SystemClock.elapsedRealtime() - recentLifeChangeTimestampMs;
+        if (recentLifeChange == 0
+                || recentLifeChangeTimestampMs <= 0
+                || ageMs >= MtgLifeViewModel.RECENT_LIFE_CHANGE_WINDOW_MS) {
+            cellBinding.tvRecentLifeChange.setVisibility(View.GONE);
+            cellBinding.tvRecentLifeChange.setText(null);
+            cellBinding.tvRecentLifeChange.setContentDescription(null);
+            cellBinding.tvRecentLifeChange.setTag(null);
+            return;
+        }
+
+        String indicatorText =
+                recentLifeChange > 0 ? "+" + recentLifeChange : String.valueOf(recentLifeChange);
+        cellBinding.tvRecentLifeChange.setVisibility(View.VISIBLE);
+        cellBinding.tvRecentLifeChange.setText(indicatorText);
+        cellBinding.tvRecentLifeChange.setTextColor(foregroundColor);
+        cellBinding.tvRecentLifeChange.setContentDescription(indicatorText);
+        cellBinding.tvRecentLifeChange.setTag(recentLifeChangeTimestampMs);
+
+        long remainingMs = MtgLifeViewModel.RECENT_LIFE_CHANGE_WINDOW_MS - ageMs;
+        cellBinding.tvRecentLifeChange.postDelayed(
+                () -> {
+                    Object tag = cellBinding.tvRecentLifeChange.getTag();
+                    if (tag instanceof Long timestamp && timestamp == recentLifeChangeTimestampMs) {
+                        cellBinding.tvRecentLifeChange.setVisibility(View.GONE);
+                    }
+                },
+                remainingMs);
     }
 
     private View createCommanderSummarySpacer() {
@@ -654,6 +718,45 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         return (int) (dp * getResources().getDisplayMetrics().density);
     }
 
+    private void startLifeHoldRepeat(View view, Runnable action) {
+        stopLifeHoldRepeat(view);
+
+        Runnable repeatRunnable =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Runnable activeRunnable = activeLifeHoldRunnables.get(view);
+                        if (activeRunnable != this || !view.isPressed()) {
+                            stopLifeHoldRepeat(view);
+                            return;
+                        }
+
+                        action.run();
+                        holdRepeatHandler.postDelayed(this, LIFE_HOLD_REPEAT_INTERVAL_MS);
+                    }
+                };
+
+        activeLifeHoldRunnables.put(view, repeatRunnable);
+        holdRepeatHandler.postDelayed(repeatRunnable, LIFE_HOLD_REPEAT_INTERVAL_MS);
+    }
+
+    private boolean handleLifeHoldTouch(View view, MotionEvent event) {
+        int action = event.getActionMasked();
+        if (action == MotionEvent.ACTION_UP
+                || action == MotionEvent.ACTION_CANCEL
+                || action == MotionEvent.ACTION_OUTSIDE) {
+            stopLifeHoldRepeat(view);
+        }
+        return false;
+    }
+
+    private void stopLifeHoldRepeat(View view) {
+        Runnable repeatRunnable = activeLifeHoldRunnables.remove(view);
+        if (repeatRunnable != null) {
+            holdRepeatHandler.removeCallbacks(repeatRunnable);
+        }
+    }
+
     private int getSourceSeatForGridSlot(int slotIndex, int defenderSeatIndex, int totalPlayers) {
         int[] mapping =
                 switch (totalPlayers) {
@@ -691,6 +794,10 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        for (Runnable repeatRunnable : activeLifeHoldRunnables.values()) {
+            holdRepeatHandler.removeCallbacks(repeatRunnable);
+        }
+        activeLifeHoldRunnables.clear();
         binding = null;
         inputsInitialized = false;
         currentBoardPlayerCount = -1;

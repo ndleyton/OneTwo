@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.app.Dialog;
 import android.os.Looper;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.fragment.app.testing.FragmentScenario;
 import com.nicue.onetwo.R;
+import java.util.concurrent.TimeUnit;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -98,18 +100,22 @@ public class MtgLifeFragmentTest {
                         // Verify starting life totals are 40
                         TextView life1 = player1.findViewById(R.id.tv_life_count);
                         TextView life2 = player2.findViewById(R.id.tv_life_count);
+                        TextView recentChange1 = player1.findViewById(R.id.tv_recent_life_change);
+                        TextView recentChange2 = player2.findViewById(R.id.tv_recent_life_change);
                         assertEquals("40", life1.getText().toString());
                         assertEquals("40", life2.getText().toString());
+                        assertEquals(View.GONE, recentChange1.getVisibility());
+                        assertEquals(View.GONE, recentChange2.getVisibility());
 
-                        // Tap PLUS button for player 1
-                        View btnPlus1 = player1.findViewById(R.id.btn_plus);
-                        assertNotNull(btnPlus1);
-                        btnPlus1.performClick();
+                        // Tap right half for player 1
+                        View incrementZone1 = player1.findViewById(R.id.life_increment_zone);
+                        assertNotNull(incrementZone1);
+                        incrementZone1.performClick();
 
-                        // Tap MINUS button for player 2
-                        View btnMinus2 = player2.findViewById(R.id.btn_minus);
-                        assertNotNull(btnMinus2);
-                        btnMinus2.performClick();
+                        // Tap left half for player 2
+                        View decrementZone2 = player2.findViewById(R.id.life_decrement_zone);
+                        assertNotNull(decrementZone2);
+                        decrementZone2.performClick();
                     });
 
             // 3. Verify life totals are updated accordingly
@@ -124,9 +130,15 @@ public class MtgLifeFragmentTest {
                         assertNotNull(player2);
                         TextView life1 = player1.findViewById(R.id.tv_life_count);
                         TextView life2 = player2.findViewById(R.id.tv_life_count);
+                        TextView recentChange1 = player1.findViewById(R.id.tv_recent_life_change);
+                        TextView recentChange2 = player2.findViewById(R.id.tv_recent_life_change);
 
                         assertEquals("41", life1.getText().toString());
                         assertEquals("39", life2.getText().toString());
+                        assertEquals(View.VISIBLE, recentChange1.getVisibility());
+                        assertEquals("+1", recentChange1.getText().toString());
+                        assertEquals(View.VISIBLE, recentChange2.getVisibility());
+                        assertEquals("-1", recentChange2.getText().toString());
                     });
         }
     }
@@ -315,6 +327,57 @@ public class MtgLifeFragmentTest {
     }
 
     @Test
+    public void testLongPressLifeZonesAdjustByTen() {
+        try (FragmentScenario<MtgLifeFragment> scenario =
+                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
+
+            scenario.onFragment(
+                    fragment -> {
+                        View view = fragment.getView();
+                        assertNotNull(view);
+                        Button startButton = view.findViewById(R.id.start_game_button);
+                        assertNotNull(startButton);
+                        startButton.performClick();
+                    });
+
+            scenario.onFragment(
+                    fragment -> {
+                        View view = fragment.requireView();
+                        View player1 = view.findViewById(R.id.player_1);
+                        View player2 = view.findViewById(R.id.player_2);
+                        assertNotNull(player1);
+                        assertNotNull(player2);
+
+                        View incrementZone1 = player1.findViewById(R.id.life_increment_zone);
+                        View decrementZone2 = player2.findViewById(R.id.life_decrement_zone);
+                        assertNotNull(incrementZone1);
+                        assertNotNull(decrementZone2);
+
+                        incrementZone1.performLongClick();
+                        decrementZone2.performLongClick();
+                    });
+
+            scenario.onFragment(
+                    fragment -> {
+                        View view = fragment.requireView();
+                        View player1 = view.findViewById(R.id.player_1);
+                        View player2 = view.findViewById(R.id.player_2);
+                        assertNotNull(player1);
+                        assertNotNull(player2);
+
+                        TextView life1 = player1.findViewById(R.id.tv_life_count);
+                        TextView life2 = player2.findViewById(R.id.tv_life_count);
+                        TextView recentChange1 = player1.findViewById(R.id.tv_recent_life_change);
+                        TextView recentChange2 = player2.findViewById(R.id.tv_recent_life_change);
+                        assertEquals("50", life1.getText().toString());
+                        assertEquals("30", life2.getText().toString());
+                        assertEquals("+10", recentChange1.getText().toString());
+                        assertEquals("-10", recentChange2.getText().toString());
+                    });
+        }
+    }
+
+    @Test
     public void testFivePlayerCommanderDamageLayoutForPlayer5MatchesFragment() {
         try (FragmentScenario<MtgLifeFragment> scenario =
                 FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
@@ -414,6 +477,53 @@ public class MtgLifeFragmentTest {
                                                 R.string.mtg_commander_damage_increase_desc, 4, 5));
                         assertNotNull(incZone3);
                         assertNotNull(incZone4);
+                    });
+        }
+    }
+
+    @Test
+    public void testHoldingLifeZoneRepeatsTenPointChangeEveryOnePointFiveSeconds() {
+        try (FragmentScenario<MtgLifeFragment> scenario =
+                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
+
+            scenario.onFragment(
+                    fragment -> {
+                        View view = fragment.getView();
+                        assertNotNull(view);
+                        Button startButton = view.findViewById(R.id.start_game_button);
+                        assertNotNull(startButton);
+                        startButton.performClick();
+                    });
+
+            scenario.onFragment(
+                    fragment -> {
+                        View player1 = fragment.requireView().findViewById(R.id.player_1);
+                        assertNotNull(player1);
+
+                        View incrementZone = player1.findViewById(R.id.life_increment_zone);
+                        assertNotNull(incrementZone);
+
+                        incrementZone.setPressed(true);
+                        incrementZone.performLongClick();
+                        Shadows.shadowOf(Looper.getMainLooper())
+                                .idleFor(1500, TimeUnit.MILLISECONDS);
+                        incrementZone.setPressed(false);
+
+                        MotionEvent cancelEvent =
+                                MotionEvent.obtain(0L, 0L, MotionEvent.ACTION_CANCEL, 0f, 0f, 0);
+                        incrementZone.dispatchTouchEvent(cancelEvent);
+                        cancelEvent.recycle();
+                    });
+
+            scenario.onFragment(
+                    fragment -> {
+                        View player1 = fragment.requireView().findViewById(R.id.player_1);
+                        assertNotNull(player1);
+
+                        TextView life1 = player1.findViewById(R.id.tv_life_count);
+                        TextView recentChange1 = player1.findViewById(R.id.tv_recent_life_change);
+                        assertEquals("60", life1.getText().toString());
+                        assertEquals("+20", recentChange1.getText().toString());
                     });
         }
     }
