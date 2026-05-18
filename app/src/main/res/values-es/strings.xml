@@ -69,4 +69,14 @@
     <string name="mtg_player_label">Jugador %1$d</string>
     <string name="mtg_btn_minus_desc">Disminuir vida para el jugador %1$d</string>
     <string name="mtg_btn_plus_desc">Aumentar vida para el jugador %1$d</string>
+    <string name="mtg_setup_commander_damage">Daño de Comandante</string>
+    <string name="mtg_commander_damage_cell_desc">Daño de comandante del jugador %1$d al jugador %2$d: %3$d</string>
+    <string name="mtg_commander_damage_self_desc">Tu propia ranura de daño de comandante</string>
+    <string name="mtg_commander_damage_dialog_title">Daño de Comandante al Jugador %1$d</string>
+    <string name="mtg_commander_damage_player_label">Del Jugador %1$d</string>
+    <string name="mtg_btn_minus_default_desc">Disminuir vida</string>
+    <string name="mtg_btn_plus_default_desc">Aumentar vida</string>
+    <string name="default_mtg_life">40</string>
+    <string name="mtg_commander_damage_self_label">yo</string>
+    <string name="mtg_commander_damage_manage_desc">Haz clic para gestionar el daño de comandante del jugador %1$d</string>
 </resources>

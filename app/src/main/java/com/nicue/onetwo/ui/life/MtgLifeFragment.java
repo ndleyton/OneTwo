@@ -147,7 +147,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                                             cellBinding.playerCellContainer.setBackgroundColor(
                                                     bgColor);
                                             cellBinding.tvLifeCount.setTextColor(fgColor);
-                                            cellBinding.tvLifeCount.setText("40");
+                                            cellBinding.tvLifeCount.setText(getString(R.string.default_mtg_life));
 
                                             cellBinding.btnMinus.setIconTint(
                                                     android.content.res.ColorStateList.valueOf(
@@ -333,15 +333,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                                             cellBinding.commanderDamageGrid.removeAllViews();
 
                                             int totalPlayers = uiState.getPlayerCount();
-                                            int rows = 1;
-                                            int cols = 2;
-                                            if (totalPlayers == 3 || totalPlayers == 4) {
-                                                rows = 2;
-                                                cols = 2;
-                                            } else if (totalPlayers >= 5) {
-                                                rows = 2;
-                                                cols = 3;
-                                            }
+                                            int rows = totalPlayers > 2 ? 2 : 1;
+                                            int cols = totalPlayers > 4 ? 3 : 2;
 
                                             java.util.List<CommanderDamageUiModel> damages = player.getCommanderDamages();
                                             for (int r = 0; r < rows; r++) {
@@ -363,7 +356,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                                                         cellViewText.setTypeface(null, android.graphics.Typeface.BOLD);
 
                                                         if (damage.isSelf()) {
-                                                            cellViewText.setText("me");
+                                                            cellViewText.setText(getString(R.string.mtg_commander_damage_self_label));
                                                             cellViewText.setEnabled(false);
                                                         } else {
                                                             cellViewText.setText(String.valueOf(damage.getAmount()));
@@ -422,7 +415,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                                             }
 
                                             cellBinding.commanderDamageGrid.setOnClickListener(v -> showCommanderDamageDialog(seatIndex));
-                                            cellBinding.commanderDamageGrid.setContentDescription("Click to manage commander damage for player " + (seatIndex + 1));
+                                            cellBinding.commanderDamageGrid.setContentDescription(getString(R.string.mtg_commander_damage_manage_desc, seatIndex + 1));
                                         } else {
                                             cellBinding.commanderDamageGrid.setVisibility(View.GONE);
                                         }
@@ -437,8 +430,10 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
 
         setupBinding.startGameButton.setOnClickListener(
                 v -> {
-                    String playersStr = setupBinding.playersInput.getText().toString();
-                    String lifeStr = setupBinding.lifeInput.getText().toString();
+                    android.text.Editable playersText = setupBinding.playersInput.getText();
+                    android.text.Editable lifeText = setupBinding.lifeInput.getText();
+                    String playersStr = playersText != null ? playersText.toString() : "";
+                    String lifeStr = lifeText != null ? lifeText.toString() : "";
                     boolean commanderEnabled = setupBinding.commanderDamageSwitch.isChecked();
                     viewModel.validateAndStartGame(playersStr, lifeStr, commanderEnabled);
                 });

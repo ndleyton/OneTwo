@@ -85,5 +85,8 @@
     <string name="mtg_btn_plus_default_desc">Increase life</string>
     <string name="default_mtg_life">40</string>
     <string name="mtg_commander_damage_self_label">me</string>
+    <string name="mtg_commander_damage_manage_desc">Click to manage commander damage for player %1$d</string>
+    <string name="mtg_btn_minus_commander_damage_desc">Decrease commander damage from player %1$d</string>
+    <string name="mtg_btn_plus_commander_damage_desc">Increase commander damage from player %1$d</string>
 
 </resources>

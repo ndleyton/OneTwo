@@ -75,7 +75,7 @@ public class MtgLifeViewModelTest {
         assertEquals(R.string.mtg_setup_players_error, (int) state.getPlayersErrorResId());
         assertNull(state.getLifeErrorResId());
 
-        // Non-integer player count
+        // Noninteger player count
         viewModel.validateAndStartGame("abc", "20");
         state = LiveDataTestUtil.getValue(viewModel.getUiState());
         assertTrue(state.isShowingSetup());
@@ -141,6 +141,8 @@ public class MtgLifeViewModelTest {
     public void testIncrementAndDecrementLife() throws Exception {
         viewModel.validateAndStartGame("2", "20");
         MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertEquals(20, state.getPlayers().get(0).getLifeTotal());
+        assertEquals(20, state.getPlayers().get(1).getLifeTotal());
 
         // Increment player 0 life
         viewModel.incrementLife(0);
