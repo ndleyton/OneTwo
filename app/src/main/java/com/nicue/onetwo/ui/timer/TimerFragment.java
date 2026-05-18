@@ -178,16 +178,46 @@ public class TimerFragment extends Fragment implements MenuProvider {
     private void showEditDialog() {
         TimerUiState state = viewModel.getUiState().getValue();
         long configuredDuration = state == null ? 300000L : state.getConfiguredDurationMs();
+        long configuredIncrement = state == null ? 0L : state.getConfiguredIncrementMs();
         MinutesAlertDialogBinding dialogBinding =
                 MinutesAlertDialogBinding.inflate(getLayoutInflater());
         NumberPicker minutePicker = dialogBinding.minutePicker;
         NumberPicker secondPicker = dialogBinding.secondsPicker;
+        NumberPicker incrementMinutePicker = dialogBinding.incrementMinutePicker;
+        NumberPicker incrementSecondPicker = dialogBinding.incrementSecondsPicker;
+        configureDurationPicker(minutePicker, secondPicker, configuredDuration);
+        configureDurationPicker(incrementMinutePicker, incrementSecondPicker, configuredIncrement);
+
+        new AlertDialog.Builder(requireContext())
+                .setView(dialogBinding.getRoot())
+                .setTitle(R.string.timer_settings_title)
+                .setPositiveButton(
+                        android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                long durationMs =
+                                        (minutePicker.getValue() * 60L + secondPicker.getValue())
+                                                * 1000L;
+                                long incrementMs =
+                                        (incrementMinutePicker.getValue() * 60L
+                                                        + incrementSecondPicker.getValue())
+                                                * 1000L;
+                                viewModel.editDuration(durationMs, incrementMs);
+                            }
+                        })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    private void configureDurationPicker(
+            NumberPicker minutePicker, NumberPicker secondPicker, long durationMs) {
         minutePicker.setMinValue(0);
         minutePicker.setMaxValue(999);
-        minutePicker.setValue((int) ((configuredDuration / 1000L) / 60L));
+        minutePicker.setValue((int) ((durationMs / 1000L) / 60L));
         secondPicker.setMinValue(0);
         secondPicker.setMaxValue(59);
-        secondPicker.setValue((int) ((configuredDuration / 1000L) % 60L));
+        secondPicker.setValue((int) ((durationMs / 1000L) % 60L));
         secondPicker.setFormatter(
                 new NumberPicker.Formatter() {
                     @Override
@@ -195,23 +225,6 @@ public class TimerFragment extends Fragment implements MenuProvider {
                         return String.format(java.util.Locale.getDefault(), "%02d", value);
                     }
                 });
-
-        new AlertDialog.Builder(requireContext())
-                .setView(dialogBinding.getRoot())
-                .setTitle("Set Time:")
-                .setPositiveButton(
-                        "Set",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                long durationMs =
-                                        (minutePicker.getValue() * 60L + secondPicker.getValue())
-                                                * 1000L;
-                                viewModel.editDuration(durationMs);
-                            }
-                        })
-                .setNegativeButton("Cancel", null)
-                .show();
     }
 
     private int resolveButtonColor(TimerItemUiModel timer) {

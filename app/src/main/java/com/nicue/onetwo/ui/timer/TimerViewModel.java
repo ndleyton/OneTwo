@@ -4,13 +4,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
-
 import com.nicue.onetwo.core.TimerScheduler;
 import com.nicue.onetwo.data.timer.TimerSnapshot;
 import com.nicue.onetwo.data.timer.TimerStateStore;
-
 import com.nicue.onetwo.utils.TimerBackend;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +16,9 @@ public class TimerViewModel extends ViewModel {
     private static final String KEY_RUNNING_INDEX = "timer_running_index";
     private static final String KEY_IS_PAUSED = "timer_is_paused";
     private static final String KEY_CONFIGURED_DURATION = "timer_configured_duration";
+    private static final String KEY_CONFIGURED_INCREMENT = "timer_configured_increment";
     private static final long DEFAULT_DURATION_MS = 300000L;
+    private static final long DEFAULT_INCREMENT_MS = 0L;
 
     private final SavedStateHandle savedStateHandle;
     private final TimerStateStore timerStateStore;
@@ -31,10 +30,13 @@ public class TimerViewModel extends ViewModel {
     private int runningIndex;
     private boolean paused;
     private long configuredDurationMs;
+    private long configuredIncrementMs;
     private long lastTickTimeMs;
 
-    public TimerViewModel(SavedStateHandle savedStateHandle, TimerStateStore timerStateStore,
-                          TimerScheduler timerScheduler) {
+    public TimerViewModel(
+            SavedStateHandle savedStateHandle,
+            TimerStateStore timerStateStore,
+            TimerScheduler timerScheduler) {
         this.savedStateHandle = savedStateHandle;
         this.timerStateStore = timerStateStore;
         this.timerScheduler = timerScheduler;
@@ -62,6 +64,7 @@ public class TimerViewModel extends ViewModel {
         if (paused || remainingTimes.isEmpty()) {
             return;
         }
+        remainingTimes.set(runningIndex, remainingTimes.get(runningIndex) + configuredIncrementMs);
         runningIndex = (runningIndex + 1) % remainingTimes.size();
         lastTickTimeMs = timerScheduler.now();
         persistState();
@@ -69,8 +72,13 @@ public class TimerViewModel extends ViewModel {
     }
 
     public void editDuration(long durationMs) {
+        editDuration(durationMs, configuredIncrementMs);
+    }
+
+    public void editDuration(long durationMs, long incrementMs) {
         pauseTimer();
         configuredDurationMs = durationMs;
+        configuredIncrementMs = incrementMs;
         for (int i = 0; i < remainingTimes.size(); i++) {
             remainingTimes.set(i, durationMs);
         }
@@ -135,12 +143,13 @@ public class TimerViewModel extends ViewModel {
         }
         paused = false;
         lastTickTimeMs = timerScheduler.now();
-        timerScheduler.start(new TimerScheduler.TickListener() {
-            @Override
-            public void onTick(long nowMs) {
-                handleTick(nowMs);
-            }
-        });
+        timerScheduler.start(
+                new TimerScheduler.TickListener() {
+                    @Override
+                    public void onTick(long nowMs) {
+                        handleTick(nowMs);
+                    }
+                });
         persistState();
         emitState();
     }
@@ -180,14 +189,18 @@ public class TimerViewModel extends ViewModel {
         Integer savedRunningIndex = savedStateHandle.get(KEY_RUNNING_INDEX);
         Boolean savedPaused = savedStateHandle.get(KEY_IS_PAUSED);
         Long savedConfiguredDuration = savedStateHandle.get(KEY_CONFIGURED_DURATION);
+        Long savedConfiguredIncrement = savedStateHandle.get(KEY_CONFIGURED_INCREMENT);
 
         if (savedRemainingTimes != null) {
             remainingTimes = new ArrayList<>(savedRemainingTimes);
             runningIndex = savedRunningIndex == null ? 0 : savedRunningIndex;
             paused = savedPaused == null || savedPaused;
-            configuredDurationMs = savedConfiguredDuration == null
-                    ? DEFAULT_DURATION_MS
-                    : savedConfiguredDuration;
+            configuredDurationMs =
+                    savedConfiguredDuration == null ? DEFAULT_DURATION_MS : savedConfiguredDuration;
+            configuredIncrementMs =
+                    savedConfiguredIncrement == null
+                            ? DEFAULT_INCREMENT_MS
+                            : savedConfiguredIncrement;
             return;
         }
 
@@ -197,11 +210,13 @@ public class TimerViewModel extends ViewModel {
             runningIndex = snapshot.getRunningIndex();
             paused = snapshot.isPaused();
             configuredDurationMs = snapshot.getConfiguredDurationMs();
+            configuredIncrementMs = snapshot.getConfiguredIncrementMs();
             persistState();
             return;
         }
 
         configuredDurationMs = DEFAULT_DURATION_MS;
+        configuredIncrementMs = DEFAULT_INCREMENT_MS;
         remainingTimes = new ArrayList<>();
         remainingTimes.add(DEFAULT_DURATION_MS);
         remainingTimes.add(DEFAULT_DURATION_MS);
@@ -215,6 +230,7 @@ public class TimerViewModel extends ViewModel {
         savedStateHandle.set(KEY_RUNNING_INDEX, runningIndex);
         savedStateHandle.set(KEY_IS_PAUSED, paused);
         savedStateHandle.set(KEY_CONFIGURED_DURATION, configuredDurationMs);
+        savedStateHandle.set(KEY_CONFIGURED_INCREMENT, configuredIncrementMs);
     }
 
     private void emitState() {
@@ -222,15 +238,16 @@ public class TimerViewModel extends ViewModel {
         for (int i = 0; i < remainingTimes.size(); i++) {
             long remainingTime = remainingTimes.get(i);
             boolean active = i == runningIndex;
-            timers.add(new TimerItemUiModel(
-                    remainingTime,
-                    formatTime(remainingTime),
-                    active,
-                    active && !paused && remainingTime > 0L,
-                    remainingTime <= 0L
-            ));
+            timers.add(
+                    new TimerItemUiModel(
+                            remainingTime,
+                            formatTime(remainingTime),
+                            active,
+                            active && !paused && remainingTime > 0L,
+                            remainingTime <= 0L));
         }
-        uiState.setValue(new TimerUiState(timers, paused, configuredDurationMs));
+        uiState.setValue(
+                new TimerUiState(timers, paused, configuredDurationMs, configuredIncrementMs));
     }
 
     private String formatTime(long milliseconds) {
@@ -238,6 +255,7 @@ public class TimerViewModel extends ViewModel {
     }
 
     private TimerSnapshot createSnapshot() {
-        return new TimerSnapshot(remainingTimes, runningIndex, paused, configuredDurationMs);
+        return new TimerSnapshot(
+                remainingTimes, runningIndex, paused, configuredDurationMs, configuredIncrementMs);
     }
 }
