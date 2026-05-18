@@ -191,6 +191,26 @@ public class MtgLifeViewModelTest {
     }
 
     @Test
+    public void testRecentLifeChangeAggregatesWithinWindowAndResetsAfterTimeout()
+            throws Exception {
+        viewModel.validateAndStartGame("2", "20");
+
+        viewModel.decrementLife(0);
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertEquals(-1, state.getPlayers().get(0).getRecentLifeChange());
+
+        nowProvider.advanceBy(MtgLifeViewModel.RECENT_LIFE_CHANGE_WINDOW_MS - 1);
+        viewModel.decrementLife(0);
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertEquals(-2, state.getPlayers().get(0).getRecentLifeChange());
+
+        nowProvider.advanceBy(MtgLifeViewModel.RECENT_LIFE_CHANGE_WINDOW_MS + 1);
+        viewModel.decrementLife(0);
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertEquals(-1, state.getPlayers().get(0).getRecentLifeChange());
+    }
+
+    @Test
     public void testRotationsForVaryingPlayerCounts() throws Exception {
         // 3 Players
         viewModel.validateAndStartGame("3", "40");
