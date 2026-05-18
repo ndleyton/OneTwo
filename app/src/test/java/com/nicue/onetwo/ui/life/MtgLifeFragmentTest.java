@@ -2,7 +2,10 @@ package com.nicue.onetwo.ui.life;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import android.app.Dialog;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,7 +17,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowDialog;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 34)
@@ -226,5 +231,86 @@ public class MtgLifeFragmentTest {
                     View setupOverlay = view.findViewById(R.id.setup_overlay);
                     assertEquals(View.GONE, setupOverlay.getVisibility());
                 });
+    }
+
+    @Test
+    public void testCommanderDamageDialogHalfTapZonesUpdateSummary() {
+        FragmentScenario<MtgLifeFragment> scenario =
+                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme);
+
+        scenario.onFragment(
+                fragment -> {
+                    View view = fragment.getView();
+                    Button startButton = view.findViewById(R.id.start_game_button);
+                    startButton.performClick();
+                });
+
+        scenario.onFragment(
+                fragment -> {
+                    View player1 = fragment.requireView().findViewById(R.id.player_1);
+                    View commanderGrid = player1.findViewById(R.id.commander_damage_grid);
+                    assertNotNull(commanderGrid);
+                    try {
+                        java.lang.reflect.Method showDialogMethod =
+                                MtgLifeFragment.class.getDeclaredMethod(
+                                        "showCommanderDamageDialog", int.class);
+                        showDialogMethod.setAccessible(true);
+                        showDialogMethod.invoke(fragment, 0);
+                    } catch (ReflectiveOperationException e) {
+                        throw new AssertionError(e);
+                    }
+                    Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+                    Dialog dialog = ShadowDialog.getLatestDialog();
+                    assertNotNull(dialog);
+                    assertTrue(dialog.isShowing());
+
+                    View decorView = dialog.getWindow().getDecorView();
+                    View incrementZone =
+                            findViewWithContentDescription(
+                                    decorView,
+                                    fragment.getString(
+                                            R.string.mtg_commander_damage_increase_desc, 2, 1));
+                    View decrementZone =
+                            findViewWithContentDescription(
+                                    decorView,
+                                    fragment.getString(
+                                            R.string.mtg_commander_damage_decrease_desc, 2, 1));
+
+                    assertNotNull(incrementZone);
+                    assertNotNull(decrementZone);
+
+                    incrementZone.performClick();
+                    incrementZone.performClick();
+                    decrementZone.performClick();
+
+                    View updatedSummary =
+                            findViewWithContentDescription(
+                                    commanderGrid,
+                                    fragment.getString(
+                                            R.string.mtg_commander_damage_cell_desc, 2, 1, 1));
+                    assertNotNull(updatedSummary);
+                });
+    }
+
+    private static View findViewWithContentDescription(View root, CharSequence contentDescription) {
+        if (root == null) {
+            return null;
+        }
+        CharSequence rootDescription = root.getContentDescription();
+        if (rootDescription != null && rootDescription.toString().contentEquals(contentDescription)) {
+            return root;
+        }
+        if (root instanceof android.view.ViewGroup rootGroup) {
+            for (int i = 0; i < rootGroup.getChildCount(); i++) {
+                View match =
+                        findViewWithContentDescription(
+                                rootGroup.getChildAt(i), contentDescription);
+                if (match != null) {
+                    return match;
+                }
+            }
+        }
+        return null;
     }
 }

@@ -348,8 +348,9 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
 
                                                 for (int c = 0; c < cols; c++) {
                                                     int idx = r * cols + c;
-                                                    if (idx < damages.size()) {
-                                                        CommanderDamageUiModel damage = damages.get(idx);
+                                                    int targetSeat = getSourceSeatForGridSlot(idx, seatIndex, totalPlayers);
+                                                    if (targetSeat < damages.size()) {
+                                                        CommanderDamageUiModel damage = damages.get(targetSeat);
                                                         android.widget.TextView cellViewText = new android.widget.TextView(requireContext());
                                                         cellViewText.setGravity(android.view.Gravity.CENTER);
                                                         cellViewText.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 10);
@@ -487,119 +488,328 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
 
         com.google.android.material.dialog.MaterialAlertDialogBuilder builder =
                 new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext());
+
+        int totalPlayers = uiState.getPlayerCount();
+        int rows = totalPlayers > 2 ? 2 : 1;
+        int cols = totalPlayers > 4 ? 3 : 2;
+
+        android.widget.FrameLayout dialogRoot = new android.widget.FrameLayout(requireContext());
+        android.widget.FrameLayout.LayoutParams rootParams = new android.widget.FrameLayout.LayoutParams(
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        dialogRoot.setLayoutParams(rootParams);
+
+        int squareDimDp = (rows == 1) ? 176 : 228;
+        int squareDim = (int) (squareDimDp * getResources().getDisplayMetrics().density);
         
-        builder.setTitle(getString(R.string.mtg_commander_damage_dialog_title, defenderSeatIndex + 1));
+        android.widget.FrameLayout gridSquare = new android.widget.FrameLayout(requireContext());
+        android.widget.FrameLayout.LayoutParams squareParams = new android.widget.FrameLayout.LayoutParams(
+                squareDim, squareDim
+        );
+        squareParams.gravity = android.view.Gravity.CENTER;
+        gridSquare.setLayoutParams(squareParams);
+        gridSquare.setRotation(defender.getRotationDegrees());
 
         android.widget.LinearLayout container = new android.widget.LinearLayout(requireContext());
         container.setOrientation(android.widget.LinearLayout.VERTICAL);
-        int padding = (int) (16 * getResources().getDisplayMetrics().density);
-        container.setPadding(padding, padding, padding, padding);
+        container.setGravity(android.view.Gravity.CENTER);
+        
+        android.graphics.drawable.GradientDrawable containerBg = new android.graphics.drawable.GradientDrawable();
+        containerBg.setColor(0xE61A1A1A); // Translucent near-black background
+        containerBg.setCornerRadius(10 * getResources().getDisplayMetrics().density);
+        container.setBackground(containerBg);
+        
+        int pad = (int) (4 * getResources().getDisplayMetrics().density);
+        container.setPadding(pad, pad, pad, pad);
 
-        for (CommanderDamageUiModel dmg : defender.getCommanderDamages()) {
-            if (dmg.isSelf()) {
-                continue;
-            }
+        android.widget.FrameLayout.LayoutParams containerParams = new android.widget.FrameLayout.LayoutParams(
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        containerParams.gravity = android.view.Gravity.CENTER;
+        container.setLayoutParams(containerParams);
 
-            int sourceSeat = dmg.getSourceSeatIndex();
-
-            android.widget.LinearLayout row = new android.widget.LinearLayout(requireContext());
-            row.setOrientation(android.widget.LinearLayout.HORIZONTAL);
-            row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        java.util.List<CommanderDamageUiModel> damages = defender.getCommanderDamages();
+        for (int r = 0; r < rows; r++) {
+            android.widget.LinearLayout rowLayout = new android.widget.LinearLayout(requireContext());
+            rowLayout.setOrientation(android.widget.LinearLayout.HORIZONTAL);
             android.widget.LinearLayout.LayoutParams rowParams = new android.widget.LinearLayout.LayoutParams(
                     android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
                     android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            rowParams.setMargins(0, 0, 0, (int) (12 * getResources().getDisplayMetrics().density));
-            row.setLayoutParams(rowParams);
+            rowLayout.setLayoutParams(rowParams);
 
-            android.view.View colorIndicator = new android.view.View(requireContext());
-            int indicatorSize = (int) (16 * getResources().getDisplayMetrics().density);
-            android.widget.LinearLayout.LayoutParams indicatorParams = new android.widget.LinearLayout.LayoutParams(
-                    indicatorSize, indicatorSize
-            );
-            indicatorParams.setMargins(0, 0, (int) (12 * getResources().getDisplayMetrics().density), 0);
-            colorIndicator.setLayoutParams(indicatorParams);
+            for (int c = 0; c < cols; c++) {
+                int idx = r * cols + c;
+                int targetSeat = getSourceSeatForGridSlot(idx, defenderSeatIndex, totalPlayers);
+                if (targetSeat < damages.size()) {
+                    CommanderDamageUiModel damage = damages.get(targetSeat);
+                    
+                    android.widget.FrameLayout cellLayout =
+                            new android.widget.FrameLayout(requireContext());
+                    cellLayout.setClipToOutline(true);
+                    
+                    int cellBgColor = ContextCompat.getColor(requireContext(), damage.getBackgroundColorRes());
+                    int cellFgColor = ContextCompat.getColor(requireContext(), damage.getForegroundColorRes());
 
-            android.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable();
-            gd.setShape(android.graphics.drawable.GradientDrawable.OVAL);
-            gd.setColor(ContextCompat.getColor(requireContext(), dmg.getBackgroundColorRes()));
-            colorIndicator.setBackground(gd);
-            row.addView(colorIndicator);
+                    android.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable();
+                    gd.setCornerRadius(8 * getResources().getDisplayMetrics().density);
+                    if (damage.isSelf()) {
+                        gd.setStroke((int) (1.5f * getResources().getDisplayMetrics().density), cellFgColor);
+                        gd.setColor(android.graphics.Color.TRANSPARENT);
+                    } else {
+                        gd.setColor(cellBgColor);
+                    }
+                    cellLayout.setBackground(gd);
 
-            android.widget.TextView labelTv = new android.widget.TextView(requireContext());
-            labelTv.setText(getString(R.string.mtg_commander_damage_player_label, sourceSeat + 1));
-            labelTv.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 16);
-            labelTv.setTypeface(null, android.graphics.Typeface.BOLD);
-            android.widget.LinearLayout.LayoutParams labelParams = new android.widget.LinearLayout.LayoutParams(
-                    0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1f
-            );
-            labelTv.setLayoutParams(labelParams);
-            row.addView(labelTv);
+                    android.widget.LinearLayout.LayoutParams cellParams = new android.widget.LinearLayout.LayoutParams(
+                            0,
+                            (int) (64 * getResources().getDisplayMetrics().density),
+                            1f
+                    );
+                    int margin = (int) (4 * getResources().getDisplayMetrics().density);
+                    cellParams.setMargins(margin, margin, margin, margin);
+                    cellLayout.setLayoutParams(cellParams);
 
-            com.google.android.material.button.MaterialButton btnMinus =
-                    new com.google.android.material.button.MaterialButton(requireContext(), null, com.google.android.material.R.attr.materialButtonOutlinedStyle);
-            btnMinus.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.ic_remove_24));
-            btnMinus.setIconSize((int) (18 * getResources().getDisplayMetrics().density));
-            btnMinus.setIconPadding(0);
-            btnMinus.setInsetTop(0);
-            btnMinus.setInsetBottom(0);
-            android.widget.LinearLayout.LayoutParams btnMinusParams = new android.widget.LinearLayout.LayoutParams(
-                    (int) (40 * getResources().getDisplayMetrics().density),
-                    (int) (40 * getResources().getDisplayMetrics().density)
-            );
-            btnMinusParams.setMargins(0, 0, (int) (8 * getResources().getDisplayMetrics().density), 0);
-            btnMinus.setLayoutParams(btnMinusParams);
-            btnMinus.setOnClickListener(v -> viewModel.decrementCommanderDamage(defenderSeatIndex, sourceSeat));
-            row.addView(btnMinus);
+                    if (damage.isSelf()) {
+                        android.widget.TextView selfTv = new android.widget.TextView(requireContext());
+                        selfTv.setGravity(android.view.Gravity.CENTER);
+                        selfTv.setText(getString(R.string.mtg_commander_damage_self_label));
+                        selfTv.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 18);
+                        selfTv.setTypeface(null, android.graphics.Typeface.BOLD);
+                        selfTv.setTextColor(cellFgColor);
+                        selfTv.setEnabled(false);
+                        
+                        android.widget.LinearLayout.LayoutParams selfParams = new android.widget.LinearLayout.LayoutParams(
+                                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+                                android.widget.LinearLayout.LayoutParams.MATCH_PARENT
+                        );
+                        selfTv.setLayoutParams(selfParams);
+                        cellLayout.addView(selfTv);
+                    } else {
+                        int sourceSeat = damage.getSourceSeatIndex();
+                        android.widget.TextView valTv = new android.widget.TextView(requireContext());
+                        valTv.setText(String.valueOf(damage.getAmount()));
+                        valTv.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 20);
+                        valTv.setTypeface(null, android.graphics.Typeface.BOLD);
+                        valTv.setGravity(android.view.Gravity.CENTER);
+                        valTv.setTextColor(cellFgColor);
+                        
+                        android.widget.LinearLayout.LayoutParams valParams = new android.widget.LinearLayout.LayoutParams(
+                                0,
+                                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+                                1f
+                        );
+                        valTv.setLayoutParams(valParams);
 
-            android.widget.TextView valTv = new android.widget.TextView(requireContext());
-            valTv.setText(String.valueOf(dmg.getAmount()));
-            valTv.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 18);
-            valTv.setTypeface(null, android.graphics.Typeface.BOLD);
-            valTv.setGravity(android.view.Gravity.CENTER);
-            android.widget.LinearLayout.LayoutParams valParams = new android.widget.LinearLayout.LayoutParams(
-                    (int) (36 * getResources().getDisplayMetrics().density),
-                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-            valParams.setMargins(0, 0, (int) (8 * getResources().getDisplayMetrics().density), 0);
-            valTv.setLayoutParams(valParams);
+                        valTv.setTag(cellFgColor);
 
-            int defaultColor = valTv.getTextColors().getDefaultColor();
-            valTv.setTag(defaultColor);
+                        if (damage.isLethal()) {
+                            valTv.setTextColor(ContextCompat.getColor(requireContext(), R.color.secondAccent));
+                        }
 
-            if (dmg.isLethal()) {
-                valTv.setTextColor(ContextCompat.getColor(requireContext(), R.color.secondAccent));
+                        cellLayout.addView(valTv);
+                        activeDialogDamageTextViews.put(sourceSeat, valTv);
+
+                        android.view.View divider = new android.view.View(requireContext());
+                        android.widget.FrameLayout.LayoutParams dividerParams =
+                                new android.widget.FrameLayout.LayoutParams(
+                                        (int) (1 * getResources().getDisplayMetrics().density),
+                                        android.widget.FrameLayout.LayoutParams.MATCH_PARENT);
+                        dividerParams.gravity = android.view.Gravity.CENTER;
+                        int dividerInset = (int) (8 * getResources().getDisplayMetrics().density);
+                        dividerParams.topMargin = dividerInset;
+                        dividerParams.bottomMargin = dividerInset;
+                        divider.setLayoutParams(dividerParams);
+                        divider.setBackgroundColor(adjustAlpha(cellFgColor, 0.2f));
+                        cellLayout.addView(divider);
+
+                        android.widget.LinearLayout tapZoneContainer =
+                                new android.widget.LinearLayout(requireContext());
+                        tapZoneContainer.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                        android.widget.FrameLayout.LayoutParams tapZoneParams =
+                                new android.widget.FrameLayout.LayoutParams(
+                                        android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                                        android.widget.FrameLayout.LayoutParams.MATCH_PARENT);
+                        tapZoneContainer.setLayoutParams(tapZoneParams);
+
+                        android.view.View decrementZone =
+                                createCommanderDamageTapZone(
+                                        false,
+                                        cellFgColor,
+                                        getString(
+                                                R.string
+                                                        .mtg_commander_damage_decrease_desc,
+                                                sourceSeat + 1,
+                                                defenderSeatIndex + 1),
+                                        v ->
+                                                viewModel.decrementCommanderDamage(
+                                                        defenderSeatIndex, sourceSeat));
+                        android.view.View incrementZone =
+                                createCommanderDamageTapZone(
+                                        true,
+                                        cellFgColor,
+                                        getString(
+                                                R.string
+                                                        .mtg_commander_damage_increase_desc,
+                                                sourceSeat + 1,
+                                                defenderSeatIndex + 1),
+                                        v ->
+                                                viewModel.incrementCommanderDamage(
+                                                        defenderSeatIndex, sourceSeat));
+
+                        tapZoneContainer.addView(decrementZone);
+                        tapZoneContainer.addView(incrementZone);
+                        cellLayout.addView(tapZoneContainer);
+                    }
+
+                    rowLayout.addView(cellLayout);
+                } else {
+                    android.view.View spacer = new android.view.View(requireContext());
+                    android.widget.LinearLayout.LayoutParams spacerParams = new android.widget.LinearLayout.LayoutParams(
+                            0,
+                            (int) (64 * getResources().getDisplayMetrics().density),
+                            1f
+                    );
+                    int margin = (int) (4 * getResources().getDisplayMetrics().density);
+                    spacerParams.setMargins(margin, margin, margin, margin);
+                    spacer.setLayoutParams(spacerParams);
+                    spacer.setVisibility(android.view.View.INVISIBLE);
+                    rowLayout.addView(spacer);
+                }
             }
-
-            row.addView(valTv);
-            activeDialogDamageTextViews.put(sourceSeat, valTv);
-
-            com.google.android.material.button.MaterialButton btnPlus =
-                    new com.google.android.material.button.MaterialButton(requireContext(), null, com.google.android.material.R.attr.materialButtonOutlinedStyle);
-            btnPlus.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.ic_add_24));
-            btnPlus.setIconSize((int) (18 * getResources().getDisplayMetrics().density));
-            btnPlus.setIconPadding(0);
-            btnPlus.setInsetTop(0);
-            btnPlus.setInsetBottom(0);
-            android.widget.LinearLayout.LayoutParams btnPlusParams = new android.widget.LinearLayout.LayoutParams(
-                    (int) (40 * getResources().getDisplayMetrics().density),
-                    (int) (40 * getResources().getDisplayMetrics().density)
-            );
-            btnPlus.setLayoutParams(btnPlusParams);
-            btnPlus.setOnClickListener(v -> viewModel.incrementCommanderDamage(defenderSeatIndex, sourceSeat));
-            row.addView(btnPlus);
-
-            container.addView(row);
+            container.addView(rowLayout);
         }
 
-        builder.setView(container);
-        builder.setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss());
-        builder.setOnDismissListener(dialog -> {
+        gridSquare.addView(container);
+        dialogRoot.addView(gridSquare);
+
+        builder.setView(dialogRoot);
+
+        android.app.Dialog dialog = builder.create();
+        dialog.setOnDismissListener(d -> {
             activeDialogDefenderSeatIndex = null;
             activeDialogDamageTextViews.clear();
         });
 
-        builder.show();
+        dialog.show();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(
+                    new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+    }
+
+    private android.view.View createCommanderDamageTapZone(
+            boolean increment,
+            int foregroundColor,
+            String contentDescription,
+            android.view.View.OnClickListener onClickListener) {
+        android.view.View tapZone = new android.view.View(requireContext());
+        android.widget.LinearLayout.LayoutParams params =
+                new android.widget.LinearLayout.LayoutParams(
+                        0, android.widget.LinearLayout.LayoutParams.MATCH_PARENT, 1f);
+        tapZone.setLayoutParams(params);
+        tapZone.setClickable(true);
+        tapZone.setFocusable(true);
+        tapZone.setContentDescription(contentDescription);
+        tapZone.setOnClickListener(onClickListener);
+
+        android.content.res.ColorStateList rippleColor =
+                android.content.res.ColorStateList.valueOf(adjustAlpha(foregroundColor, 0.18f));
+        android.graphics.drawable.RippleDrawable rippleDrawable =
+                new android.graphics.drawable.RippleDrawable(rippleColor, null, null);
+        tapZone.setBackground(rippleDrawable);
+        tapZone.setTag(increment ? "commander_increment_zone" : "commander_decrement_zone");
+
+        return tapZone;
+    }
+
+    private int adjustAlpha(int color, float alpha) {
+        int scaledAlpha = Math.round(android.graphics.Color.alpha(color) * alpha);
+        return androidx.core.graphics.ColorUtils.setAlphaComponent(color, scaledAlpha);
+    }
+
+    private int getSourceSeatForGridSlot(int idx, int defenderSeatIndex, int totalPlayers) {
+        if (totalPlayers == 4) {
+            if (defenderSeatIndex == 0 || defenderSeatIndex == 2) {
+                switch (idx) {
+                    case 0: return 1;
+                    case 1: return 3;
+                    case 2: return 0;
+                    case 3: return 2;
+                }
+            } else {
+                switch (idx) {
+                    case 0: return 2;
+                    case 1: return 0;
+                    case 2: return 3;
+                    case 3: return 1;
+                }
+            }
+        } else if (totalPlayers == 3) {
+            if (defenderSeatIndex == 0) {
+                switch (idx) {
+                    case 0: return 2;
+                    case 1: return 1;
+                    case 2: return 3; // spacer
+                    case 3: return 0;
+                }
+            } else if (defenderSeatIndex == 1) {
+                switch (idx) {
+                    case 0: return 0;
+                    case 1: return 2;
+                    case 2: return 3; // spacer
+                    case 3: return 1;
+                }
+            } else {
+                switch (idx) {
+                    case 0: return 1;
+                    case 1: return 0;
+                    case 2: return 2;
+                    case 3: return 3; // spacer
+                }
+            }
+        } else if (totalPlayers == 2) {
+            if (defenderSeatIndex == 0) {
+                return (idx == 0) ? 1 : 0;
+            } else {
+                return (idx == 0) ? 0 : 1;
+            }
+        } else if (totalPlayers == 6 || totalPlayers == 5) {
+            if (defenderSeatIndex == 4 && totalPlayers == 5) {
+                // Bottom player in 5-player game
+                switch (idx) {
+                    case 0: return 0;
+                    case 1: return 2;
+                    case 2: return 4;
+                    case 3: return 1;
+                    case 4: return 3;
+                    default: return 5; // spacer
+                }
+            }
+            if (defenderSeatIndex % 2 == 0) {
+                switch (idx) {
+                    case 0: return 1;
+                    case 1: return 3;
+                    case 2: return 5;
+                    case 3: return 0;
+                    case 4: return 2;
+                    default: return 4;
+                }
+            } else {
+                switch (idx) {
+                    case 0: return 4;
+                    case 1: return 2;
+                    case 2: return 0;
+                    case 3: return 5;
+                    case 4: return 3;
+                    default: return 1;
+                }
+            }
+        }
+        return idx;
     }
 
     @Override

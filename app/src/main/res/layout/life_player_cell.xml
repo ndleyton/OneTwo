@@ -48,7 +48,7 @@
             app:autoSizeMaxTextSize="108sp"
             app:autoSizeStepGranularity="2sp"
             app:autoSizeTextType="uniform"
-            app:layout_constraintBottom_toTopOf="@id/commander_damage_grid"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_plus"
             app:layout_constraintHeight_percent="0.6"
             app:layout_constraintStart_toEndOf="@id/btn_minus"
@@ -79,6 +79,8 @@
             android:orientation="vertical"
             android:layout_marginTop="4dp"
             android:visibility="gone"
+            app:layout_constraintWidth_percent="0.6"
+            app:layout_constraintWidth_max="140dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
