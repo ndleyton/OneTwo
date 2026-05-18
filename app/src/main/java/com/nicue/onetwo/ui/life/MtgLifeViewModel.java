@@ -1,5 +1,6 @@
 package com.nicue.onetwo.ui.life;
 
+import android.os.SystemClock;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
@@ -14,6 +15,7 @@ public class MtgLifeViewModel extends ViewModel {
     private static final String KEY_STARTING_LIFE = "startingLife";
     private static final String KEY_CURRENT_LIVES = "currentLives";
     private static final String KEY_RECENT_LIFE_CHANGES = "recentLifeChanges";
+    private static final String KEY_RECENT_LIFE_CHANGE_TIMESTAMPS = "recentLifeChangeTimestamps";
     private static final String KEY_PLAYERS_ERROR_RES_ID = "playersErrorResId";
     private static final String KEY_LIFE_ERROR_RES_ID = "lifeErrorResId";
     private static final String KEY_COMMANDER_DAMAGE_ENABLED = "commanderDamageEnabled";
@@ -24,12 +26,23 @@ public class MtgLifeViewModel extends ViewModel {
     private static final int MIN_PLAYER_COUNT = 1;
     private static final int MAX_PLAYER_COUNT = 6;
     private static final int COMMANDER_LETHAL_DAMAGE = 21;
+    public static final long RECENT_LIFE_CHANGE_WINDOW_MS = 2000L;
 
     private final SavedStateHandle savedStateHandle;
     private final MutableLiveData<MtgLifeUiState> uiState = new MutableLiveData<>();
+    private final NowProvider nowProvider;
+
+    interface NowProvider {
+        long now();
+    }
 
     public MtgLifeViewModel(SavedStateHandle savedStateHandle) {
+        this(savedStateHandle, SystemClock::elapsedRealtime);
+    }
+
+    MtgLifeViewModel(SavedStateHandle savedStateHandle, NowProvider nowProvider) {
         this.savedStateHandle = savedStateHandle;
+        this.nowProvider = nowProvider;
 
         if (!savedStateHandle.contains(KEY_SHOWING_SETUP)) {
             initializeDefaultState();
@@ -68,6 +81,9 @@ public class MtgLifeViewModel extends ViewModel {
         savedStateHandle.set(
                 KEY_CURRENT_LIVES, createInitialLives(parsedPlayerCount, parsedStartingLife));
         savedStateHandle.set(KEY_RECENT_LIFE_CHANGES, createInitialRecentLifeChanges(parsedPlayerCount));
+        savedStateHandle.set(
+                KEY_RECENT_LIFE_CHANGE_TIMESTAMPS,
+                createInitialRecentLifeChangeTimestamps(parsedPlayerCount));
         savedStateHandle.set(KEY_COMMANDER_DAMAGE_ENABLED, commanderDamageEnabled);
         savedStateHandle.set(
                 KEY_COMMANDER_DAMAGE_MATRIX, createCommanderDamageMatrix(parsedPlayerCount));
@@ -125,6 +141,7 @@ public class MtgLifeViewModel extends ViewModel {
         savedStateHandle.set(KEY_STARTING_LIFE, DEFAULT_STARTING_LIFE);
         savedStateHandle.set(KEY_CURRENT_LIVES, new ArrayList<Integer>());
         savedStateHandle.set(KEY_RECENT_LIFE_CHANGES, new ArrayList<Integer>());
+        savedStateHandle.set(KEY_RECENT_LIFE_CHANGE_TIMESTAMPS, new ArrayList<Long>());
         savedStateHandle.set(KEY_PLAYERS_ERROR_RES_ID, null);
         savedStateHandle.set(KEY_LIFE_ERROR_RES_ID, null);
         savedStateHandle.set(KEY_COMMANDER_DAMAGE_ENABLED, true);
@@ -175,6 +192,14 @@ public class MtgLifeViewModel extends ViewModel {
             recentChanges.add(0);
         }
         return recentChanges;
+    }
+
+    private ArrayList<Long> createInitialRecentLifeChangeTimestamps(int playerCount) {
+        ArrayList<Long> timestamps = new ArrayList<>();
+        for (int i = 0; i < playerCount; i++) {
+            timestamps.add(0L);
+        }
+        return timestamps;
     }
 
     private void updateLifeTotal(int seatIndex, int delta) {
@@ -230,13 +255,28 @@ public class MtgLifeViewModel extends ViewModel {
 
     private void updateRecentLifeChange(int seatIndex, int delta) {
         List<Integer> recentLifeChanges = getRecentLifeChanges();
-        if (!isValidSeatIndex(recentLifeChanges, seatIndex)) {
+        List<Long> recentLifeChangeTimestamps = getRecentLifeChangeTimestamps();
+        if (!isValidSeatIndex(recentLifeChanges, seatIndex)
+                || !isValidSeatIndex(recentLifeChangeTimestamps, seatIndex)) {
             return;
         }
 
+        long nowMs = nowProvider.now();
+        int previousChange = recentLifeChanges.get(seatIndex);
+        long previousTimestamp = recentLifeChangeTimestamps.get(seatIndex);
+        boolean withinAggregationWindow =
+                previousTimestamp > 0
+                        && nowMs - previousTimestamp <= RECENT_LIFE_CHANGE_WINDOW_MS;
+
         ArrayList<Integer> updatedRecentLifeChanges = new ArrayList<>(recentLifeChanges);
-        updatedRecentLifeChanges.set(seatIndex, delta);
+        updatedRecentLifeChanges.set(
+                seatIndex, withinAggregationWindow ? previousChange + delta : delta);
         savedStateHandle.set(KEY_RECENT_LIFE_CHANGES, updatedRecentLifeChanges);
+
+        ArrayList<Long> updatedRecentLifeChangeTimestamps =
+                new ArrayList<>(recentLifeChangeTimestamps);
+        updatedRecentLifeChangeTimestamps.set(seatIndex, nowMs);
+        savedStateHandle.set(KEY_RECENT_LIFE_CHANGE_TIMESTAMPS, updatedRecentLifeChangeTimestamps);
     }
 
     private boolean isShowingSetup() {
@@ -268,6 +308,10 @@ public class MtgLifeViewModel extends ViewModel {
 
     private List<Integer> getRecentLifeChanges() {
         return savedStateHandle.get(KEY_RECENT_LIFE_CHANGES);
+    }
+
+    private List<Long> getRecentLifeChangeTimestamps() {
+        return savedStateHandle.get(KEY_RECENT_LIFE_CHANGE_TIMESTAMPS);
     }
 
     private boolean isValidSeatIndex(List<?> list, int seatIndex) {
@@ -367,6 +411,7 @@ public class MtgLifeViewModel extends ViewModel {
         boolean commanderDamageEnabled = getCommanderDamageEnabled();
         ArrayList<ArrayList<Integer>> commanderDamageMatrix = getCommanderDamageMatrix();
         List<Integer> recentLifeChanges = getRecentLifeChanges();
+        List<Long> recentLifeChangeTimestamps = getRecentLifeChangeTimestamps();
 
         List<LifePlayerUiModel> players = new ArrayList<>();
         if (!showingSetup && currentLives != null) {
@@ -376,6 +421,11 @@ public class MtgLifeViewModel extends ViewModel {
                         recentLifeChanges != null && seatIndex < recentLifeChanges.size()
                                 ? recentLifeChanges.get(seatIndex)
                                 : 0;
+                long recentLifeChangeTimestampMs =
+                        recentLifeChangeTimestamps != null
+                                        && seatIndex < recentLifeChangeTimestamps.size()
+                                ? recentLifeChangeTimestamps.get(seatIndex)
+                                : 0L;
                 players.add(
                         new LifePlayerUiModel(
                                 seatIndex,
@@ -384,6 +434,7 @@ public class MtgLifeViewModel extends ViewModel {
                                 getBackgroundColorResForSeat(seatIndex),
                                 getForegroundColorResForSeat(seatIndex),
                                 recentLifeChange,
+                                recentLifeChangeTimestampMs,
                                 commanderDamageEnabled && totalPlayers > 1,
                                 buildCommanderDamages(
                                         seatIndex, commanderDamageMatrix, totalPlayers)));

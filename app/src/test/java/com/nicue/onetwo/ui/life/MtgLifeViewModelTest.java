@@ -20,14 +20,28 @@ import org.robolectric.annotation.Config;
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 34)
 public class MtgLifeViewModelTest {
+    private static final class FakeNowProvider implements MtgLifeViewModel.NowProvider {
+        private long nowMs;
+
+        @Override
+        public long now() {
+            return nowMs;
+        }
+
+        void advanceBy(long deltaMs) {
+            nowMs += deltaMs;
+        }
+    }
 
     @Rule public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     private MtgLifeViewModel viewModel;
+    private FakeNowProvider nowProvider;
 
     @Before
     public void setUp() {
-        viewModel = new MtgLifeViewModel(new SavedStateHandle());
+        nowProvider = new FakeNowProvider();
+        viewModel = new MtgLifeViewModel(new SavedStateHandle(), nowProvider);
     }
 
     @Test

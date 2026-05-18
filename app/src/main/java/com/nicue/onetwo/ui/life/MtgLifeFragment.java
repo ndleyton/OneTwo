@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -266,7 +267,11 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         cellBinding.tvLifeCount.setContentDescription(String.valueOf(player.getLifeTotal()));
         cellBinding.tvLifeCount.setTextColor(foregroundColor);
         cellBinding.playerCellContainer.setBackgroundColor(backgroundColor);
-        bindRecentLifeChange(cellBinding, player.getRecentLifeChange(), foregroundColor);
+        bindRecentLifeChange(
+                cellBinding,
+                player.getRecentLifeChange(),
+                player.getRecentLifeChangeTimestampMs(),
+                foregroundColor);
 
         cellBinding.btnMinus.setIconTint(ColorStateList.valueOf(foregroundColor));
         cellBinding.btnPlus.setIconTint(ColorStateList.valueOf(foregroundColor));
@@ -372,11 +377,18 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     }
 
     private void bindRecentLifeChange(
-            LifePlayerCellBinding cellBinding, int recentLifeChange, int foregroundColor) {
-        if (recentLifeChange == 0) {
+            LifePlayerCellBinding cellBinding,
+            int recentLifeChange,
+            long recentLifeChangeTimestampMs,
+            int foregroundColor) {
+        long ageMs = SystemClock.elapsedRealtime() - recentLifeChangeTimestampMs;
+        if (recentLifeChange == 0
+                || recentLifeChangeTimestampMs <= 0
+                || ageMs >= MtgLifeViewModel.RECENT_LIFE_CHANGE_WINDOW_MS) {
             cellBinding.tvRecentLifeChange.setVisibility(View.GONE);
             cellBinding.tvRecentLifeChange.setText(null);
             cellBinding.tvRecentLifeChange.setContentDescription(null);
+            cellBinding.tvRecentLifeChange.setTag(null);
             return;
         }
 
@@ -386,6 +398,17 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         cellBinding.tvRecentLifeChange.setText(indicatorText);
         cellBinding.tvRecentLifeChange.setTextColor(foregroundColor);
         cellBinding.tvRecentLifeChange.setContentDescription(indicatorText);
+        cellBinding.tvRecentLifeChange.setTag(recentLifeChangeTimestampMs);
+
+        long remainingMs = MtgLifeViewModel.RECENT_LIFE_CHANGE_WINDOW_MS - ageMs;
+        cellBinding.tvRecentLifeChange.postDelayed(
+                () -> {
+                    Object tag = cellBinding.tvRecentLifeChange.getTag();
+                    if (tag instanceof Long timestamp && timestamp == recentLifeChangeTimestampMs) {
+                        cellBinding.tvRecentLifeChange.setVisibility(View.GONE);
+                    }
+                },
+                remainingMs);
     }
 
     private View createCommanderSummarySpacer() {
