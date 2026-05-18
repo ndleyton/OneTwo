@@ -6,36 +6,23 @@
     android:layout_height="match_parent"
     android:padding="@dimen/space_sm">
 
-    <TextView
-        android:id="@+id/tv_player_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:alpha="0.7"
-        android:includeFontPadding="false"
-        android:text="Player 1"
-        android:textAppearance="?attr/textAppearanceTitleMedium"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_minus"
+        android:id="@+id/btn_plus"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:contentDescription="Decrease life"
+        android:contentDescription="Increase life"
         android:insetLeft="0dp"
         android:insetTop="0dp"
         android:insetRight="0dp"
         android:insetBottom="0dp"
-        app:icon="@drawable/ic_remove_24"
+        app:icon="@drawable/ic_add_24"
         app:iconGravity="textStart"
         app:iconPadding="0dp"
         app:iconSize="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_player_label" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_life_count"
@@ -51,22 +38,22 @@
         app:autoSizeMaxTextSize="108sp"
         app:autoSizeStepGranularity="2sp"
         app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toTopOf="@id/btn_plus"
+        app:layout_constraintBottom_toTopOf="@id/btn_minus"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_minus" />
+        app:layout_constraintTop_toBottomOf="@id/btn_plus" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_plus"
+        android:id="@+id/btn_minus"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:contentDescription="Increase life"
+        android:contentDescription="Decrease life"
         android:insetLeft="0dp"
         android:insetTop="0dp"
         android:insetRight="0dp"
         android:insetBottom="0dp"
-        app:icon="@drawable/ic_add_24"
+        app:icon="@drawable/ic_remove_24"
         app:iconGravity="textStart"
         app:iconPadding="0dp"
         app:iconSize="30dp"

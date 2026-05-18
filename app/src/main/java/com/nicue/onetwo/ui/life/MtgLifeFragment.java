@@ -123,25 +123,19 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                         LifePlayerCellBinding cellBinding = LifePlayerCellBinding.bind(cellView);
                         LifePlayerUiModel player = uiState.getPlayers().get(i);
 
-                        cellBinding.tvPlayerLabel.setText(getString(R.string.mtg_player_label, player.getSeatIndex() + 1));
                         cellBinding.tvLifeCount.setText(String.valueOf(player.getLifeTotal()));
 
                         int bgColor = requireContext().getColor(player.getBackgroundColorRes());
                         int fgColor = requireContext().getColor(player.getForegroundColorRes());
 
                         cellBinding.playerCellContainer.setBackgroundColor(bgColor);
-                        cellBinding.tvPlayerLabel.setTextColor(fgColor);
                         cellBinding.tvLifeCount.setTextColor(fgColor);
 
                         cellBinding.btnMinus.setIconTint(android.content.res.ColorStateList.valueOf(fgColor));
                         cellBinding.btnPlus.setIconTint(android.content.res.ColorStateList.valueOf(fgColor));
 
                         float rotation = player.getRotationDegrees();
-                        cellBinding.playerCellContainer.setRotation(0f);
-                        cellBinding.tvPlayerLabel.setRotation(rotation);
-                        cellBinding.tvLifeCount.setRotation(rotation);
-                        cellBinding.btnMinus.setRotation(rotation);
-                        cellBinding.btnPlus.setRotation(rotation);
+                        cellBinding.playerCellContainer.setRotation(rotation);
 
                         final int seatIndex = player.getSeatIndex();
                         cellBinding.btnMinus.setOnClickListener(v -> viewModel.decrementLife(seatIndex));
