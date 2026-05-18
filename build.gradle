@@ -1,14 +1,33 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
+    ext {
+        agpVersion = '9.2.1'
+        spotlessVersion = '7.2.1'
+        roomVersion = '2.6.1'
+        lifecycleVersion = '2.7.0'
+        navVersion = '2.7.7'
+        preferenceVersion = '1.2.1'
+        appcompatVersion = '1.6.1'
+        cardviewVersion = '1.0.0'
+        constraintLayoutVersion = '2.1.4'
+        materialVersion = '1.12.0'
+
+        junitVersion = '4.13.2'
+        espressoVersion = '3.5.1'
+        testCoreVersion = '1.5.0'
+        archCoreTestingVersion = '2.2.0'
+        robolectricVersion = '4.16.1'
+        fragmentTestingVersion = '1.6.2'
+    }
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:9.2.1'
-        classpath 'com.diffplug.spotless:spotless-plugin-gradle:7.2.1'
+        classpath "com.android.tools.build:gradle:$agpVersion"
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:$spotlessVersion"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

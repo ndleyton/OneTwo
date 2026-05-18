@@ -78,6 +78,7 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
         return counterIds;
     }
 
+    @android.annotation.SuppressLint("ClickableViewAccessibility")
     class CounterViewHolder extends RecyclerView.ViewHolder
             implements NumberPicker.OnValueChangeListener, NumberPicker.OnScrollListener {
         private final ListItemBinding binding;
@@ -101,7 +102,6 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
                     new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View v) {
-                            v.performClick();
                             return true;
                         }
                     });
@@ -129,7 +129,7 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
                     new View.OnTouchListener() {
                         @Override
                         public boolean onTouch(View v, MotionEvent event) {
-                            return handleForegroundTouch(event);
+                            return handleForegroundTouch(v, event);
                         }
                     });
             binding.subtractButton.setOnClickListener(
@@ -182,7 +182,7 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
             }
         }
 
-        private boolean handleForegroundTouch(MotionEvent event) {
+        private boolean handleForegroundTouch(View v, MotionEvent event) {
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
                     downX = event.getRawX();

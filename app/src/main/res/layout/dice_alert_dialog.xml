@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Quick Add"
+        android:text="@string/quick_add"
         android:textAppearance="?attr/textAppearanceLabelLarge"
         android:layout_marginBottom="@dimen/space_s" />
 
@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="4dp"
-            android:text="d4"
+            android:text="@string/d4"
             android:padding="0dp" />
 
         <com.google.android.material.button.MaterialButton
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="4dp"
-            android:text="d6"
+            android:text="@string/d6"
             android:padding="0dp" />
 
         <com.google.android.material.button.MaterialButton
@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="4dp"
-            android:text="d10"
+            android:text="@string/d10"
             android:padding="0dp" />
 
         <com.google.android.material.button.MaterialButton
@@ -55,7 +55,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="d20"
+            android:text="@string/d20"
             android:padding="0dp" />
 
     </LinearLayout>
@@ -63,7 +63,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Custom"
+        android:text="@string/custom"
         android:textAppearance="?attr/textAppearanceLabelLarge"
         android:layout_marginBottom="@dimen/space_s" />
 

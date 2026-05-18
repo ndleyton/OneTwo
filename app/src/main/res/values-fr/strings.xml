@@ -45,9 +45,19 @@
     <string name="menu_settings">Paramètres</string>
     <string name="ui_header">UI</string>
     <string name="always_on_title">Garder l\'écran allumé</string>
-    <string name="misc_header">Misc</string>
+    <string name="misc_header">Divers</string>
     <string name="always_on_summary">Garder l\'écran allumé</string>
     <string name="chooser_order_title">Ordre du choix</string>
     <string name="chooser_order_summary">Choisir les doigts dans l\'ordre de pose</string>
+    <string name="quick_add">Ajout rapide</string>
+    <string name="d4">d4</string>
+    <string name="d6">d6</string>
+    <string name="d10">d10</string>
+    <string name="d20">d20</string>
+    <string name="custom">Personnalisé</string>
+    <string name="zero">0</string>
+    <string name="colon">:</string>
+    <string name="content_desc_add_counter">Ajouter un score</string>
+    <string name="content_desc_roll_dice">Lancer les dés</string>
 
 </resources>

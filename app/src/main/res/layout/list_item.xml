@@ -48,6 +48,7 @@
             android:textSize="30sp"
             android:layout_gravity="center_vertical"
             android:paddingStart="@dimen/space_s"
+            android:paddingEnd="@dimen/space_s"
             android:layout_weight="1" />
 
         <TextView

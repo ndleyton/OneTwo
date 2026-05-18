@@ -45,6 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/space_m"
+        android:contentDescription="@string/content_desc_add_counter"
         android:src="@drawable/ic_plus_white_24dp"
         app:fabSize="normal"
         app:backgroundTint="?attr/colorSecondaryContainer"

@@ -44,10 +44,20 @@
     <string name="counter_instruction">ボタンを押してカウンターを追加するか、右にスワイプしてさらにオプションを表示します</string>
     <string name="menu_settings">設定</string>
     <string name="ui_header">UI</string>
-    <string name="always_on_title">Keep Screen on</string>
-    <string name="misc_header">Misc</string>
-    <string name="always_on_summary">Keep Screen on</string>
+    <string name="always_on_title">画面をスリープさせない</string>
+    <string name="misc_header">その他</string>
+    <string name="always_on_summary">画面をスリープさせない</string>
     <string name="chooser_order_title">選択順</string>
     <string name="chooser_order_summary">指を置いた順に選択します</string>
+    <string name="quick_add">クイック追加</string>
+    <string name="d4">d4</string>
+    <string name="d6">d6</string>
+    <string name="d10">d10</string>
+    <string name="d20">d20</string>
+    <string name="custom">カスタム</string>
+    <string name="zero">0</string>
+    <string name="colon">:</string>
+    <string name="content_desc_add_counter">カウンターを追加</string>
+    <string name="content_desc_roll_dice">サイコロを振る</string>
 
 </resources>

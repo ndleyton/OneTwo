@@ -49,4 +49,14 @@
     <string name="always_on_summary">Mantener pantalla encendida</string>
     <string name="chooser_order_title">Orden del selector</string>
     <string name="chooser_order_summary">Elegir dedos por orden de colocación</string>
+    <string name="quick_add">Click para agregar</string>
+    <string name="d4">d4</string>
+    <string name="d6">d6</string>
+    <string name="d10">d10</string>
+    <string name="d20">d20</string>
+    <string name="custom">Personalizado</string>
+    <string name="zero">0</string>
+    <string name="colon">:</string>
+    <string name="content_desc_add_counter">Agregar contador</string>
+    <string name="content_desc_roll_dice">Lanzar dados</string>
 </resources>
