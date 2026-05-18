@@ -93,12 +93,12 @@ public class MtgLifeFragmentTest {
             assertEquals("40", life1.getText().toString());
             assertEquals("40", life2.getText().toString());
 
-            // Tap PLUS button for player 1 (which maps to R.id.btn_minus for 90-degree rotated seat)
-            View btnPlus1 = player1.findViewById(R.id.btn_minus);
+            // Tap PLUS button for player 1
+            View btnPlus1 = player1.findViewById(R.id.btn_plus);
             assertNotNull(btnPlus1);
             btnPlus1.performClick();
 
-            // Tap MINUS button for player 2 (which maps to R.id.btn_minus for 270-degree rotated seat)
+            // Tap MINUS button for player 2
             View btnMinus2 = player2.findViewById(R.id.btn_minus);
             assertNotNull(btnMinus2);
             btnMinus2.performClick();
