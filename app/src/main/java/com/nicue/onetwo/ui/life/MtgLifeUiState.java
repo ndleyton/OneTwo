@@ -10,7 +10,13 @@ public class MtgLifeUiState {
     private final Integer playersErrorResId;
     private final Integer lifeErrorResId;
 
-    public MtgLifeUiState(boolean showingSetup, int playerCount, int startingLife, List<LifePlayerUiModel> players, Integer playersErrorResId, Integer lifeErrorResId) {
+    public MtgLifeUiState(
+            boolean showingSetup,
+            int playerCount,
+            int startingLife,
+            List<LifePlayerUiModel> players,
+            Integer playersErrorResId,
+            Integer lifeErrorResId) {
         this.showingSetup = showingSetup;
         this.playerCount = playerCount;
         this.startingLife = startingLife;

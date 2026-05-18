@@ -7,7 +7,12 @@ public class LifePlayerUiModel {
     private final int backgroundColorRes;
     private final int foregroundColorRes;
 
-    public LifePlayerUiModel(int seatIndex, int lifeTotal, int rotationDegrees, int backgroundColorRes, int foregroundColorRes) {
+    public LifePlayerUiModel(
+            int seatIndex,
+            int lifeTotal,
+            int rotationDegrees,
+            int backgroundColorRes,
+            int foregroundColorRes) {
         this.seatIndex = seatIndex;
         this.lifeTotal = lifeTotal;
         this.rotationDegrees = rotationDegrees;
@@ -35,4 +40,3 @@ public class LifePlayerUiModel {
         return foregroundColorRes;
     }
 }
-

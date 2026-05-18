@@ -2,14 +2,12 @@ package com.nicue.onetwo;
 
 import android.os.Bundle;
 import android.view.WindowManager;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-
 import com.nicue.onetwo.core.AppContainer;
 import com.nicue.onetwo.data.settings.SettingsRepository;
 import com.nicue.onetwo.databinding.ActivityMainBinding;
@@ -32,20 +30,23 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
 
         settingsRepository.applyKeepScreenOn(getWindow());
 
-        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.nav_host_fragment);
+        NavHostFragment navHostFragment =
+                (NavHostFragment)
+                        getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         if (navHostFragment == null) {
             throw new IllegalStateException("NavHostFragment is missing from activity_main");
         }
         NavController navController = navHostFragment.getNavController();
-        appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_counter,
-                R.id.nav_dice,
-                R.id.nav_chooser,
-                R.id.nav_timer,
-                R.id.nav_mtg_life,
-                R.id.nav_settings
-        ).setOpenableLayout(binding.drawerLayout).build();
+        appBarConfiguration =
+                new AppBarConfiguration.Builder(
+                                R.id.nav_counter,
+                                R.id.nav_dice,
+                                R.id.nav_chooser,
+                                R.id.nav_timer,
+                                R.id.nav_mtg_life,
+                                R.id.nav_settings)
+                        .setOpenableLayout(binding.drawerLayout)
+                        .build();
 
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.nvView, navController);
@@ -53,8 +54,9 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
 
     @Override
     public boolean onSupportNavigateUp() {
-        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.nav_host_fragment);
+        NavHostFragment navHostFragment =
+                (NavHostFragment)
+                        getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         if (navHostFragment == null) {
             return super.onSupportNavigateUp();
         }
@@ -77,8 +79,7 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
         AppCompatDelegate.setDefaultNightMode(
                 darkModeEnabled
                         ? AppCompatDelegate.MODE_NIGHT_YES
-                        : AppCompatDelegate.MODE_NIGHT_NO
-        );
+                        : AppCompatDelegate.MODE_NIGHT_NO);
     }
 
     private AppContainer getAppContainer() {

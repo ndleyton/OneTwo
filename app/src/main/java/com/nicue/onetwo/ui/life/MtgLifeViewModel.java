@@ -4,9 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
-
 import com.nicue.onetwo.R;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,7 +73,7 @@ public class MtgLifeViewModel extends ViewModel {
         if (valid) {
             savedStateHandle.set(KEY_PLAYER_COUNT, players);
             savedStateHandle.set(KEY_STARTING_LIFE, life);
-            
+
             ArrayList<Integer> lives = new ArrayList<>();
             for (int i = 0; i < players; i++) {
                 lives.add(life);
@@ -136,25 +134,39 @@ public class MtgLifeViewModel extends ViewModel {
 
     private int getBackgroundColorResForSeat(int seatIndex) {
         switch (seatIndex) {
-            case 0: return R.color.lifeCounterPlayer1;
-            case 1: return R.color.lifeCounterPlayer2;
-            case 2: return R.color.lifeCounterPlayer3;
-            case 3: return R.color.lifeCounterPlayer4;
-            case 4: return R.color.lifeCounterPlayer5;
-            case 5: return R.color.lifeCounterPlayer6;
-            default: return R.color.lifeCounterPlayer1;
+            case 0:
+                return R.color.lifeCounterPlayer1;
+            case 1:
+                return R.color.lifeCounterPlayer2;
+            case 2:
+                return R.color.lifeCounterPlayer3;
+            case 3:
+                return R.color.lifeCounterPlayer4;
+            case 4:
+                return R.color.lifeCounterPlayer5;
+            case 5:
+                return R.color.lifeCounterPlayer6;
+            default:
+                return R.color.lifeCounterPlayer1;
         }
     }
 
     private int getForegroundColorResForSeat(int seatIndex) {
         switch (seatIndex) {
-            case 0: return R.color.lifeCounterOnPlayer1;
-            case 1: return R.color.lifeCounterOnPlayer2;
-            case 2: return R.color.lifeCounterOnPlayer3;
-            case 3: return R.color.lifeCounterOnPlayer4;
-            case 4: return R.color.lifeCounterOnPlayer5;
-            case 5: return R.color.lifeCounterOnPlayer6;
-            default: return R.color.lifeCounterOnPlayer1;
+            case 0:
+                return R.color.lifeCounterOnPlayer1;
+            case 1:
+                return R.color.lifeCounterOnPlayer2;
+            case 2:
+                return R.color.lifeCounterOnPlayer3;
+            case 3:
+                return R.color.lifeCounterOnPlayer4;
+            case 4:
+                return R.color.lifeCounterOnPlayer5;
+            case 5:
+                return R.color.lifeCounterOnPlayer6;
+            default:
+                return R.color.lifeCounterOnPlayer1;
         }
     }
 
@@ -177,6 +189,13 @@ public class MtgLifeViewModel extends ViewModel {
             }
         }
 
-        uiState.setValue(new MtgLifeUiState(showingSetup, playerCount, startingLife, playerModels, playersErrorResId, lifeErrorResId));
+        uiState.setValue(
+                new MtgLifeUiState(
+                        showingSetup,
+                        playerCount,
+                        startingLife,
+                        playerModels,
+                        playersErrorResId,
+                        lifeErrorResId));
     }
 }

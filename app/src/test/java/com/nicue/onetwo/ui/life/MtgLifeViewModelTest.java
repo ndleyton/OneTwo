@@ -7,10 +7,8 @@ import static org.junit.Assert.assertTrue;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.SavedStateHandle;
-
 import com.nicue.onetwo.LiveDataTestUtil;
 import com.nicue.onetwo.R;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,8 +20,7 @@ import org.robolectric.annotation.Config;
 @Config(sdk = 34)
 public class MtgLifeViewModelTest {
 
-    @Rule
-    public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
+    @Rule public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     private MtgLifeViewModel viewModel;
 
