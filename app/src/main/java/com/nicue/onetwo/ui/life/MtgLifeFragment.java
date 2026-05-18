@@ -141,6 +141,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                                             String.valueOf(uiState.getPlayerCount()));
                                     setupBinding.lifeInput.setText(
                                             String.valueOf(uiState.getStartingLife()));
+                                    setupBinding.commanderDamageSwitch.setChecked(
+                                            uiState.isCommanderDamageEnabled());
                                     inputsInitialized = true;
                                 }
 
@@ -298,6 +300,97 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                                                 getString(
                                                         R.string.mtg_btn_plus_desc, seatIndex + 1));
 
+                                        if (player.isCommanderDamageVisible()) {
+                                            cellBinding.commanderDamageGrid.setVisibility(View.VISIBLE);
+                                            cellBinding.commanderDamageGrid.removeAllViews();
+
+                                            int totalPlayers = uiState.getPlayerCount();
+                                            int rows = 1;
+                                            int cols = 2;
+                                            if (totalPlayers == 3 || totalPlayers == 4) {
+                                                rows = 2;
+                                                cols = 2;
+                                            } else if (totalPlayers >= 5) {
+                                                rows = 2;
+                                                cols = 3;
+                                            }
+                                            cellBinding.commanderDamageGrid.setRowCount(rows);
+                                            cellBinding.commanderDamageGrid.setColumnCount(cols);
+
+                                            final int seatIndex = player.getSeatIndex();
+                                            java.util.List<CommanderDamageUiModel> damages = player.getCommanderDamages();
+                                            for (int idx = 0; idx < damages.size(); idx++) {
+                                                CommanderDamageUiModel damage = damages.get(idx);
+                                                android.widget.TextView cellViewText = new android.widget.TextView(requireContext());
+                                                cellViewText.setGravity(android.view.Gravity.CENTER);
+                                                cellViewText.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 12);
+                                                cellViewText.setTypeface(null, android.graphics.Typeface.BOLD);
+
+                                                if (damage.isSelf()) {
+                                                    cellViewText.setText("me");
+                                                    cellViewText.setEnabled(false);
+                                                } else {
+                                                    cellViewText.setText(String.valueOf(damage.getAmount()));
+                                                }
+
+                                                int bgColor = ContextCompat.getColor(requireContext(), damage.getBackgroundColorRes());
+                                                int fgColor = ContextCompat.getColor(requireContext(), damage.getForegroundColorRes());
+
+                                                android.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable();
+                                                gd.setCornerRadius(4 * getResources().getDisplayMetrics().density);
+                                                if (damage.isSelf()) {
+                                                    gd.setStroke((int) (1 * getResources().getDisplayMetrics().density), fgColor);
+                                                    gd.setColor(android.graphics.Color.TRANSPARENT);
+                                                } else {
+                                                    gd.setColor(bgColor);
+                                                }
+                                                cellViewText.setBackground(gd);
+                                                cellViewText.setTextColor(fgColor);
+
+                                                int r = idx / cols;
+                                                int c = idx % cols;
+                                                android.widget.GridLayout.LayoutParams params = new android.widget.GridLayout.LayoutParams(
+                                                        android.widget.GridLayout.spec(r, 1f),
+                                                        android.widget.GridLayout.spec(c, 1f)
+                                                );
+                                                params.width = 0;
+                                                params.height = (int) (28 * getResources().getDisplayMetrics().density);
+                                                int margin = (int) (2 * getResources().getDisplayMetrics().density);
+                                                params.setMargins(margin, margin, margin, margin);
+                                                cellViewText.setLayoutParams(params);
+
+                                                if (!damage.isSelf()) {
+                                                    cellViewText.setOnClickListener(v -> viewModel.incrementCommanderDamage(seatIndex, damage.getSourceSeatIndex()));
+                                                    cellViewText.setOnLongClickListener(v -> {
+                                                        viewModel.decrementCommanderDamage(seatIndex, damage.getSourceSeatIndex());
+                                                        return true;
+                                                    });
+
+                                                    cellViewText.setContentDescription(getString(
+                                                            R.string.mtg_commander_damage_cell_desc,
+                                                            damage.getSourceSeatIndex() + 1,
+                                                            seatIndex + 1,
+                                                            damage.getAmount()
+                                                    ));
+
+                                                    androidx.core.view.ViewCompat.addAccessibilityAction(
+                                                            cellViewText,
+                                                            "Decrement commander damage",
+                                                            (v, args) -> {
+                                                                viewModel.decrementCommanderDamage(seatIndex, damage.getSourceSeatIndex());
+                                                                return true;
+                                                            }
+                                                    );
+                                                } else {
+                                                    cellViewText.setContentDescription(getString(R.string.mtg_commander_damage_self_desc));
+                                                }
+
+                                                cellBinding.commanderDamageGrid.addView(cellViewText);
+                                            }
+                                        } else {
+                                            cellBinding.commanderDamageGrid.setVisibility(View.GONE);
+                                        }
+
                                         float rotation = player.getRotationDegrees();
                                         cellBinding.playerCellContainer.setRotation(0f);
                                         cellBinding.innerPlayerLayout.setRotation(rotation);
@@ -310,7 +403,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                 v -> {
                     String playersStr = setupBinding.playersInput.getText().toString();
                     String lifeStr = setupBinding.lifeInput.getText().toString();
-                    viewModel.validateAndStartGame(playersStr, lifeStr);
+                    boolean commanderEnabled = setupBinding.commanderDamageSwitch.isChecked();
+                    viewModel.validateAndStartGame(playersStr, lifeStr, commanderEnabled);
                 });
 
         binding.setupOverlay.setOnClickListener(v -> viewModel.dismissSetup());

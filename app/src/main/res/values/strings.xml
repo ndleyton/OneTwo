@@ -76,5 +76,8 @@
     <string name="mtg_player_label">Player %1$d</string>
     <string name="mtg_btn_minus_desc">Decrease life for player %1$d</string>
     <string name="mtg_btn_plus_desc">Increase life for player %1$d</string>
+    <string name="mtg_setup_commander_damage">Commander Damage</string>
+    <string name="mtg_commander_damage_cell_desc">Commander damage from player %1$d to player %2$d: %3$d</string>
+    <string name="mtg_commander_damage_self_desc">Your own commander damage slot</string>
 
 </resources>
