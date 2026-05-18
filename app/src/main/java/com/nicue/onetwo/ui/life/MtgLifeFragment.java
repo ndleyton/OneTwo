@@ -55,8 +55,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     private Integer activeDialogDefenderSeatIndex = null;
     private final Map<Integer, TextView> activeDialogDamageTextViews = new HashMap<>();
 
-    @Nullable
-    @Override
+    @Nullable @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater,
             @Nullable ViewGroup container,
@@ -109,7 +108,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
         menuInflater.inflate(R.menu.life_actions, menu);
         MenuItem newGameItem = menu.findItem(R.id.action_new_game);
-        MtgLifeUiState currentUiState = viewModel != null ? viewModel.getUiState().getValue() : null;
+        MtgLifeUiState currentUiState =
+                viewModel != null ? viewModel.getUiState().getValue() : null;
         if (newGameItem != null && currentUiState != null) {
             newGameItem.setVisible(!currentUiState.isShowingSetup());
         }
@@ -129,7 +129,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             return;
         }
 
-        LifePlayerUiModel defender = findPlayerBySeat(uiState.getPlayers(), activeDialogDefenderSeatIndex);
+        LifePlayerUiModel defender =
+                findPlayerBySeat(uiState.getPlayers(), activeDialogDefenderSeatIndex);
         if (defender == null) {
             return;
         }
@@ -153,8 +154,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         }
     }
 
-    private void renderSetupState(
-            MtgLifeUiState uiState, LifeSetupContentBinding setupBinding) {
+    private void renderSetupState(MtgLifeUiState uiState, LifeSetupContentBinding setupBinding) {
         binding.setupOverlay.setVisibility(View.VISIBLE);
         binding.setupContent.getRoot().setVisibility(View.VISIBLE);
         binding.boardContainer.setVisibility(View.VISIBLE);
@@ -205,7 +205,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             case 4 -> LifeBoard4Binding.inflate(inflater, binding.boardContainer, true);
             case 5 -> LifeBoard5Binding.inflate(inflater, binding.boardContainer, true);
             case 6 -> LifeBoard6Binding.inflate(inflater, binding.boardContainer, true);
-            default -> throw new IllegalArgumentException("Unsupported player count: " + playerCount);
+            default ->
+                    throw new IllegalArgumentException("Unsupported player count: " + playerCount);
         }
     }
 
@@ -267,8 +268,10 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
 
         cellBinding.btnMinus.setIconTint(ColorStateList.valueOf(foregroundColor));
         cellBinding.btnPlus.setIconTint(ColorStateList.valueOf(foregroundColor));
-        cellBinding.btnMinus.setContentDescription(getString(R.string.mtg_btn_minus_desc, seatIndex + 1));
-        cellBinding.btnPlus.setContentDescription(getString(R.string.mtg_btn_plus_desc, seatIndex + 1));
+        cellBinding.btnMinus.setContentDescription(
+                getString(R.string.mtg_btn_minus_desc, seatIndex + 1));
+        cellBinding.btnPlus.setContentDescription(
+                getString(R.string.mtg_btn_plus_desc, seatIndex + 1));
         cellBinding.btnMinus.setOnClickListener(v -> viewModel.decrementLife(seatIndex));
         cellBinding.btnPlus.setOnClickListener(v -> viewModel.incrementLife(seatIndex));
 
@@ -304,10 +307,10 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
 
             for (int columnIndex = 0; columnIndex < cols; columnIndex++) {
                 int slotIndex = rowIndex * cols + columnIndex;
-                int sourceSeatIndex =
-                        getSourceSeatForGridSlot(slotIndex, seatIndex, totalPlayers);
+                int sourceSeatIndex = getSourceSeatForGridSlot(slotIndex, seatIndex, totalPlayers);
                 if (sourceSeatIndex < damages.size()) {
-                    rowLayout.addView(createCommanderSummaryCell(damages.get(sourceSeatIndex), seatIndex));
+                    rowLayout.addView(
+                            createCommanderSummaryCell(damages.get(sourceSeatIndex), seatIndex));
                 } else {
                     rowLayout.addView(createCommanderSummarySpacer());
                 }
@@ -316,13 +319,13 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             cellBinding.commanderDamageGrid.addView(rowLayout);
         }
 
-        cellBinding.commanderDamageGrid.setOnClickListener(v -> showCommanderDamageDialog(seatIndex));
+        cellBinding.commanderDamageGrid.setOnClickListener(
+                v -> showCommanderDamageDialog(seatIndex));
         cellBinding.commanderDamageGrid.setContentDescription(
                 getString(R.string.mtg_commander_damage_manage_desc, seatIndex + 1));
     }
 
-    private View createCommanderSummaryCell(
-            CommanderDamageUiModel damage, int defenderSeatIndex) {
+    private View createCommanderSummaryCell(CommanderDamageUiModel damage, int defenderSeatIndex) {
         TextView summaryCell = new TextView(requireContext());
         summaryCell.setGravity(Gravity.CENTER);
         summaryCell.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
@@ -364,8 +367,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     }
 
     private LinearLayout.LayoutParams createSmallGridLayoutParams(int heightDp) {
-        LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(0, dpToPx(heightDp), 1f);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, dpToPx(heightDp), 1f);
         int margin = dpToPx(2);
         params.setMargins(margin, margin, margin, margin);
         return params;
@@ -442,8 +444,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         rotatedGrid.addView(dialogContent);
         dialogRoot.addView(rotatedGrid);
 
-        MaterialAlertDialogBuilder dialogBuilder =
-                new MaterialAlertDialogBuilder(requireContext());
+        MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(requireContext());
         dialogBuilder.setView(dialogRoot);
 
         Dialog dialog = dialogBuilder.create();
@@ -459,8 +460,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         }
     }
 
-    private View createCommanderDialogCell(
-            CommanderDamageUiModel damage, int defenderSeatIndex) {
+    private View createCommanderDialogCell(CommanderDamageUiModel damage, int defenderSeatIndex) {
         FrameLayout cellLayout = new FrameLayout(requireContext());
         cellLayout.setClipToOutline(true);
         cellLayout.setLayoutParams(createLargeGridLayoutParams());
@@ -552,8 +552,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     }
 
     private LinearLayout.LayoutParams createLargeGridLayoutParams() {
-        LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(0, dpToPx(64), 1f);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, dpToPx(64), 1f);
         int margin = dpToPx(4);
         params.setMargins(margin, margin, margin, margin);
         return params;
@@ -578,23 +577,19 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             View.OnClickListener onClickListener) {
         View tapZone = new View(requireContext());
         tapZone.setLayoutParams(
-                new LinearLayout.LayoutParams(
-                        0, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
+                new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
         tapZone.setClickable(true);
         tapZone.setFocusable(true);
         tapZone.setContentDescription(contentDescription);
         tapZone.setOnClickListener(onClickListener);
         tapZone.setBackground(
                 new RippleDrawable(
-                        ColorStateList.valueOf(adjustAlpha(foregroundColor, 0.18f)),
-                        null,
-                        null));
+                        ColorStateList.valueOf(adjustAlpha(foregroundColor, 0.18f)), null, null));
         tapZone.setTag(increment ? "commander_increment_zone" : "commander_decrement_zone");
         return tapZone;
     }
 
-    private LifePlayerUiModel findPlayerBySeat(
-            List<LifePlayerUiModel> players, int seatIndex) {
+    private LifePlayerUiModel findPlayerBySeat(List<LifePlayerUiModel> players, int seatIndex) {
         for (LifePlayerUiModel player : players) {
             if (player.getSeatIndex() == seatIndex) {
                 return player;
@@ -661,10 +656,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     private int getSourceSeatForGridSlot(int slotIndex, int defenderSeatIndex, int totalPlayers) {
         int[] mapping =
                 switch (totalPlayers) {
-                    case 2 ->
-                            defenderSeatIndex == 0
-                                    ? new int[] {1, 0}
-                                    : new int[] {0, 1};
+                    case 2 -> defenderSeatIndex == 0 ? new int[] {1, 0} : new int[] {0, 1};
                     case 3 ->
                             switch (defenderSeatIndex) {
                                 case 0 -> new int[] {2, 1, 3, 0};

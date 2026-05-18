@@ -67,7 +67,8 @@ public class MtgLifeViewModel extends ViewModel {
         savedStateHandle.set(
                 KEY_CURRENT_LIVES, createInitialLives(parsedPlayerCount, parsedStartingLife));
         savedStateHandle.set(KEY_COMMANDER_DAMAGE_ENABLED, commanderDamageEnabled);
-        savedStateHandle.set(KEY_COMMANDER_DAMAGE_MATRIX, createCommanderDamageMatrix(parsedPlayerCount));
+        savedStateHandle.set(
+                KEY_COMMANDER_DAMAGE_MATRIX, createCommanderDamageMatrix(parsedPlayerCount));
         savedStateHandle.set(KEY_SHOWING_SETUP, false);
 
         updateUiState();
@@ -171,9 +172,7 @@ public class MtgLifeViewModel extends ViewModel {
 
     private void updateCommanderDamage(int defenderSeatIndex, int sourceSeatIndex, int delta) {
         ArrayList<ArrayList<Integer>> matrix = getCommanderDamageMatrix();
-        if (matrix == null
-                || !isValidSeatIndex(matrix, defenderSeatIndex)
-                || defenderSeatIndex == sourceSeatIndex) {
+        if (!isValidSeatIndex(matrix, defenderSeatIndex) || defenderSeatIndex == sourceSeatIndex) {
             return;
         }
 
@@ -243,11 +242,12 @@ public class MtgLifeViewModel extends ViewModel {
         return switch (totalPlayers) {
             case 1 -> 0;
             case 2 -> seatIndex == 0 ? 180 : 0;
-            case 3 -> switch (seatIndex) {
-                case 0 -> 180;
-                case 1 -> 90;
-                default -> 270;
-            };
+            case 3 ->
+                    switch (seatIndex) {
+                        case 0 -> 180;
+                        case 1 -> 90;
+                        default -> 270;
+                    };
             case 4 -> seatIndex % 2 == 0 ? 90 : 270;
             case 5 -> seatIndex == 4 ? 0 : (seatIndex % 2 == 0 ? 90 : 270);
             case 6 -> seatIndex % 2 == 0 ? 90 : 270;
@@ -283,7 +283,9 @@ public class MtgLifeViewModel extends ViewModel {
             int defenderSeatIndex, ArrayList<ArrayList<Integer>> matrix, int totalPlayers) {
         List<CommanderDamageUiModel> damages = new ArrayList<>();
         ArrayList<Integer> defenderRow =
-                matrix != null && defenderSeatIndex < matrix.size() ? matrix.get(defenderSeatIndex) : null;
+                matrix != null && defenderSeatIndex < matrix.size()
+                        ? matrix.get(defenderSeatIndex)
+                        : null;
 
         for (int sourceSeatIndex = 0; sourceSeatIndex < totalPlayers; sourceSeatIndex++) {
             int amount =
