@@ -9,6 +9,7 @@ public class MtgLifeUiState {
     private final List<LifePlayerUiModel> players;
     private final Integer playersErrorResId;
     private final Integer lifeErrorResId;
+    private final boolean commanderDamageEnabled;
 
     public MtgLifeUiState(
             boolean showingSetup,
@@ -16,13 +17,15 @@ public class MtgLifeUiState {
             int startingLife,
             List<LifePlayerUiModel> players,
             Integer playersErrorResId,
-            Integer lifeErrorResId) {
+            Integer lifeErrorResId,
+            boolean commanderDamageEnabled) {
         this.showingSetup = showingSetup;
         this.playerCount = playerCount;
         this.startingLife = startingLife;
         this.players = players;
         this.playersErrorResId = playersErrorResId;
         this.lifeErrorResId = lifeErrorResId;
+        this.commanderDamageEnabled = commanderDamageEnabled;
     }
 
     public boolean isShowingSetup() {
@@ -47,5 +50,9 @@ public class MtgLifeUiState {
 
     public Integer getLifeErrorResId() {
         return lifeErrorResId;
+    }
+
+    public boolean isCommanderDamageEnabled() {
+        return commanderDamageEnabled;
     }
 }
