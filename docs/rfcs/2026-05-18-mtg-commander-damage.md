@@ -6,11 +6,11 @@
 
 ## Summary
 
-Add commander-damage tracking to the existing MTG life counter. Each `LifePlayerUiModel` tile should render a compact commander-damage strip at the bottom, matching the placement in the provided reference. The strip tracks damage dealt to that player by each seat's commander and persists alongside life totals in the existing `MtgLifeViewModel` state.
+Add commander-damage tracking to the existing MTG life counter. Each `LifePlayerUiModel` tile should render a compact commander-damage strip at the bottom, matching the placement in the provided reference. The strip acts as a summary for damage dealt to that player by each seat's commander, and tapping it opens a modal editor where the values can be adjusted. Commander-damage state persists alongside life totals in the existing `MtgLifeViewModel` state.
 
 ## Motivation
 
-The life counter now supports shared-screen MTG play, but Commander games still require players to track a second loss condition outside the app. Keeping commander damage inside the same tile avoids paper tracking and keeps all table-state interactions in one place.
+The life counter now supports shared-screen MTG play, but Commander games still require players to track a second loss condition outside the app. Keeping commander damage inside the same tile avoids paper tracking, while using a modal editor avoids overloading the base board with dense micro-controls.
 
 This is a natural follow-up to the original life-counter RFC, which explicitly left commander damage out of v1.
 
@@ -39,7 +39,7 @@ This is an extension of the existing MTG life fragment, not a separate top-level
 
 ### Visibility
 
-Add a `Commander Damage` toggle to the setup state, defaulting to `on`. When enabled, the play board shows commander-damage controls in every tile. When disabled, the board keeps the current life-only layout.
+Add a `Commander Damage` toggle to the setup state, defaulting to `on`. When enabled, the play board shows a commander-damage summary strip in every tile. When disabled, the board keeps the current life-only layout.
 
 Why:
 
@@ -49,7 +49,7 @@ Why:
 
 ### Tile Placement
 
-Commander damage belongs inside `LifePlayerUiModel` as bottom-of-tile content, below the large life total and below the primary `+` and `-` life interactions. It should not float outside the player cell and should not require opening a separate screen.
+Commander damage belongs inside `LifePlayerUiModel` as bottom-of-tile summary content, below the large life total and below the primary `+` and `-` life interactions. The tile should open a modal editor for changes rather than making the base grid itself directly editable.
 
 ## UX Proposal
 
@@ -81,7 +81,7 @@ Each commander-damage cell represents:
 To keep the layout stable, render one cell per seat, including self:
 
 - self cell: disabled, labeled `me`
-- opponent cells: interactive, numeric, starting at `0`
+- opponent cells: non-editable summary values, starting at `0`
 
 This mirrors the provided reference while avoiding gaps in the grid.
 
@@ -89,18 +89,33 @@ This mirrors the provided reference while avoiding gaps in the grid.
 
 Life interactions stay exactly as they are today.
 
-Commander-damage interactions should be compact:
+Commander-damage interactions should be modal:
 
-- tap a commander-damage cell to increment that source's damage by `1`
-- long-press a commander-damage cell to decrement by `1`, with a floor of `0`
-- self cells do nothing
+- tapping the commander-damage strip opens a dialog or modal bottom sheet for that defender
+- the base grid on the tile is a summary only and does not directly modify values
+- the modal shows one editable row per source seat, including a disabled `me` row
+- each opponent row has explicit increment and decrement controls
+- decrement floors at `0`
 - reaching `21` does not lock the value; users can decrement back to `20` or lower to correct mistakes
+- dismissing the modal returns to the main board with updated summary values
 
 Why this interaction:
 
-- it fits the limited bottom-of-tile space
-- it avoids adding separate `+` and `-` chrome for every opponent
-- it keeps the primary life controls visually dominant
+- it preserves the clean board-level layout
+- it reduces accidental edits from stray taps on a crowded shared screen
+- it gives the editor enough room for explicit `+` and `-` controls without shrinking the life UI
+
+### Modal Editor
+
+Recommended editor behavior:
+
+- title: `Commander Damage`
+- subtitle or supporting text identifies the defending player, for example `Damage dealt to Player 2`
+- one row per source seat in stable seat order
+- each row shows source identity, current value, decrement, and increment
+- the self row stays visible but disabled so seat mapping remains consistent
+- values update immediately in the shared ViewModel as the user edits
+- modal dismissal uses normal back, outside-tap, or close affordances; no extra save step is required in v1
 
 ### Visual Treatment
 
@@ -109,6 +124,7 @@ Why this interaction:
 - Opponent cells should use the source player's seat color family so the source mapping is consistent across the board.
 - The self cell should use a neutral outlined or muted treatment rather than a player color.
 - At `21` or more, the relevant commander-damage cell should switch to an error or warning treatment.
+- The base-strip summary should look tappable as a whole, but the individual cells should not look like standalone buttons.
 
 ## Layout Strategy
 
@@ -187,6 +203,15 @@ Recommended shape:
 
 This keeps the fragment focused on rendering and click wiring, matching the existing architecture where seat colors and rotations are already derived in `MtgLifeViewModel`.
 
+Recommended additional UI state:
+
+- `CommanderDamageEditorUiModel`
+  - `defenderSeatIndex`
+  - `defenderLabel`
+  - `List<CommanderDamageUiModel> commanderDamages`
+
+This can be exposed either as part of the main screen state or as transient dialog state, depending on whether the implementation uses a `DialogFragment` or an in-fragment modal surface.
+
 ### Fragment Responsibilities
 
 `MtgLifeFragment` should:
@@ -195,7 +220,9 @@ This keeps the fragment focused on rendering and click wiring, matching the exis
 - bind the existing life buttons and life total exactly as today
 - show or hide the commander-damage container per player
 - inflate or bind commander-damage cells from `LifePlayerUiModel`
-- route tap and long-press events to `MtgLifeViewModel`
+- open the commander-damage editor when a player tile summary strip is tapped
+- route modal increment and decrement events to `MtgLifeViewModel`
+- restore the modal cleanly across configuration changes if it is open
 
 ### ViewModel Responsibilities
 
@@ -204,15 +231,17 @@ This keeps the fragment focused on rendering and click wiring, matching the exis
 - validate the new setup toggle input
 - create the commander-damage matrix on game start when enabled
 - expose commander-damage UI state inside each `LifePlayerUiModel`
+- expose the currently edited defender, if the implementation stores editor state in the ViewModel
 - increment and decrement commander damage for a specific defender/source pair
 - clamp commander damage at `0`
 - derive `lethal` once a source reaches `21` or more
 
 ## Accessibility and Usability
 
-- Every commander-damage cell needs a content description in the form `Commander damage from player 3 to player 1: 7`.
+- The summary strip needs a content description in the form `Commander damage for player 1. Double tap to edit.`
+- Each summary value should still expose source-aware spoken text such as `Commander damage from player 3 to player 1: 7`.
 - The self cell should expose a description such as `Your own commander damage slot`.
-- Long-press decrement must have an accessibility fallback. Recommended approach: include a custom accessibility action for decrement on interactive commander-damage cells.
+- The modal editor must provide accessible increment and decrement controls without relying on long-press.
 - Do not rely on color alone to identify source seats; the order must remain stable and the content description must include player numbers.
 - The commander strip must not reduce life-button touch targets below 48dp.
 
@@ -223,7 +252,7 @@ Add or update local JVM and Robolectric coverage for:
 - `MtgLifeViewModelTest`
   - new games initialize a zeroed commander-damage matrix when enabled
   - disabling commander damage leaves player life state unchanged and hides commander UI
-  - tapping a source increments only the targeted defender/source entry
+  - incrementing from the modal updates only the targeted defender/source entry
   - decrement never goes below `0`
   - self entries remain `0`
   - `21` commander damage marks the entry as lethal
@@ -232,8 +261,10 @@ Add or update local JVM and Robolectric coverage for:
 - `MtgLifeFragmentTest`
   - setup shows the commander-damage toggle with default `on`
   - starting a commander-enabled game shows the bottom commander strip
-  - interactive commander cells increment on tap
-  - self cells are disabled
+  - tapping a commander summary strip opens the modal editor for that defender
+  - modal increment and decrement controls update the visible summary values
+  - self rows are disabled in the modal
+  - dismissing and reopening the modal shows the current values
   - commander-disabled games do not render the strip
 
 ## Implementation Plan
@@ -242,16 +273,17 @@ Add or update local JVM and Robolectric coverage for:
 2. Add commander-damage saved-state keys and matrix logic to `MtgLifeViewModel`.
 3. Extend `LifePlayerUiModel` with commander-damage child state.
 4. Update `life_player_cell.xml` to reserve bottom space for the commander strip.
-5. Bind commander-damage cells in `MtgLifeFragment`, including tap and long-press handlers.
-6. Add lethal-state styling and accessibility actions.
-7. Add focused ViewModel and fragment tests.
+5. Add a commander-damage dialog or modal surface and its row layout.
+6. Bind the tile summary strip in `MtgLifeFragment` and wire modal increment and decrement handlers.
+7. Add lethal-state styling and accessibility actions.
+8. Add focused ViewModel and fragment tests.
 
 ## Risks and Mitigations
 
 - The bottom strip could crowd small 5- and 6-player layouts.
   - Mitigation: keep the commander UI compact, reserve a fixed bottom band, and auto-size the life total more aggressively when commander damage is enabled.
-- Long-press decrement is discoverable but not obvious.
-  - Mitigation: add a tooltip or helper text in the RFC implementation review if testing shows confusion, and always expose an accessibility decrement action.
+- The extra modal step could slow common edits.
+  - Mitigation: keep the summary strip easy to hit, open the editor with a single tap, and make modal controls explicit and fast.
 - Matrix indexing bugs are easy to introduce.
   - Mitigation: keep defender/source semantics explicit in method names and cover them with focused unit tests.
 

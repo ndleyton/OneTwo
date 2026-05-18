@@ -21,7 +21,7 @@
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:contentDescription="Decrease life"
+            android:contentDescription="@string/mtg_btn_minus_default_desc"
             android:insetLeft="0dp"
             android:insetTop="0dp"
             android:insetRight="0dp"
@@ -41,7 +41,7 @@
             android:gravity="center"
             android:includeFontPadding="false"
             android:maxLines="1"
-            android:text="40"
+            android:text="@string/default_mtg_life"
             android:textSize="96sp"
             android:textStyle="bold"
             app:autoSizeMinTextSize="20sp"
@@ -59,7 +59,7 @@
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:contentDescription="Increase life"
+            android:contentDescription="@string/mtg_btn_plus_default_desc"
             android:insetLeft="0dp"
             android:insetTop="0dp"
             android:insetRight="0dp"
@@ -72,10 +72,11 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <GridLayout
+        <LinearLayout
             android:id="@+id/commander_damage_grid"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:layout_marginTop="4dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"

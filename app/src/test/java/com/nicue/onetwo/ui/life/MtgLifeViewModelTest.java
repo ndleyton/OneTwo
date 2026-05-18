@@ -9,6 +9,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.SavedStateHandle;
 import com.nicue.onetwo.LiveDataTestUtil;
 import com.nicue.onetwo.R;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -201,7 +202,7 @@ public class MtgLifeViewModelTest {
         assertTrue(state.isCommanderDamageEnabled());
 
         // Check that player 0 has 2 commander damage items (for player 0 and player 1)
-        List<CommanderDamageUiModel> damages = state.getPlayers().get(0).getCommanderDamages();
+        List<CommanderDamageUiModel> damages = state.getPlayers().getFirst().getCommanderDamages();
         assertEquals(2, damages.size());
 
         // Self damage should be self = true, amount = 0
@@ -220,22 +221,22 @@ public class MtgLifeViewModelTest {
         // Increment player 0 damage from source player 1
         viewModel.incrementCommanderDamage(0, 1);
         MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
-        assertEquals(1, state.getPlayers().get(0).getCommanderDamages().get(1).getAmount());
+        assertEquals(1, state.getPlayers().getFirst().getCommanderDamages().get(1).getAmount());
 
         // Self damage changes should be ignored
         viewModel.incrementCommanderDamage(0, 0);
         state = LiveDataTestUtil.getValue(viewModel.getUiState());
-        assertEquals(0, state.getPlayers().get(0).getCommanderDamages().get(0).getAmount());
+        assertEquals(0, state.getPlayers().getFirst().getCommanderDamages().getFirst().getAmount());
 
         // Decrement player 0 damage from source player 1
         viewModel.decrementCommanderDamage(0, 1);
         state = LiveDataTestUtil.getValue(viewModel.getUiState());
-        assertEquals(0, state.getPlayers().get(0).getCommanderDamages().get(1).getAmount());
+        assertEquals(0, state.getPlayers().getFirst().getCommanderDamages().get(1).getAmount());
 
         // Decrement below 0 floor should be ignored
         viewModel.decrementCommanderDamage(0, 1);
         state = LiveDataTestUtil.getValue(viewModel.getUiState());
-        assertEquals(0, state.getPlayers().get(0).getCommanderDamages().get(1).getAmount());
+        assertEquals(0, state.getPlayers().getFirst().getCommanderDamages().get(1).getAmount());
     }
 
     @Test
@@ -243,17 +244,17 @@ public class MtgLifeViewModelTest {
         // Player count = 1: strip must be hidden even if enabled
         viewModel.validateAndStartGame("1", "40", true);
         MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
-        assertFalse(state.getPlayers().get(0).isCommanderDamageVisible());
+        assertFalse(state.getPlayers().getFirst().isCommanderDamageVisible());
 
         // Player count = 2: strip should be visible
         viewModel.validateAndStartGame("2", "40", true);
         state = LiveDataTestUtil.getValue(viewModel.getUiState());
-        assertTrue(state.getPlayers().get(0).isCommanderDamageVisible());
+        assertTrue(state.getPlayers().getFirst().isCommanderDamageVisible());
 
         // If explicitly disabled: strip should be hidden
         viewModel.validateAndStartGame("2", "40", false);
         state = LiveDataTestUtil.getValue(viewModel.getUiState());
-        assertFalse(state.getPlayers().get(0).isCommanderDamageVisible());
+        assertFalse(state.getPlayers().getFirst().isCommanderDamageVisible());
     }
 
     @Test
@@ -265,12 +266,12 @@ public class MtgLifeViewModelTest {
             viewModel.incrementCommanderDamage(0, 1);
         }
         MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
-        assertFalse(state.getPlayers().get(0).getCommanderDamages().get(1).isLethal());
+        assertFalse(state.getPlayers().getFirst().getCommanderDamages().get(1).isLethal());
 
         // 21st point -> lethal
         viewModel.incrementCommanderDamage(0, 1);
         state = LiveDataTestUtil.getValue(viewModel.getUiState());
-        CommanderDamageUiModel model = state.getPlayers().get(0).getCommanderDamages().get(1);
+        CommanderDamageUiModel model = state.getPlayers().getFirst().getCommanderDamages().get(1);
         assertTrue(model.isLethal());
         assertEquals(R.color.secondAccent, model.getBackgroundColorRes());
         assertEquals(android.R.color.white, model.getForegroundColorRes());
