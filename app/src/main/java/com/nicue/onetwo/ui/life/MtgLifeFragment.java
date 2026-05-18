@@ -8,6 +8,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.text.Editable;
 import android.util.TypedValue;
@@ -16,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -49,6 +52,7 @@ import java.util.Map;
 public class MtgLifeFragment extends Fragment implements MenuProvider {
     private static final int PREVIEW_PLAYER_COUNT = 4;
     private static final int LIFE_LONG_PRESS_DELTA = 10;
+    private static final long LIFE_HOLD_REPEAT_INTERVAL_MS = 1000L;
 
     private LifeFragmentBinding binding;
     private MtgLifeViewModel viewModel;
@@ -56,6 +60,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     private int currentBoardPlayerCount = -1;
     private Integer activeDialogDefenderSeatIndex = null;
     private final Map<Integer, TextView> activeDialogDamageTextViews = new HashMap<>();
+    private final Handler holdRepeatHandler = new Handler(Looper.getMainLooper());
+    private final Map<View, Runnable> activeLifeHoldRunnables = new HashMap<>();
 
     @Nullable @Override
     public View onCreateView(
@@ -284,13 +290,17 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         cellBinding.lifeDecrementZone.setOnLongClickListener(
                 v -> {
                     viewModel.decrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
+                    startLifeHoldRepeat(v, () -> viewModel.decrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA));
                     return true;
                 });
         cellBinding.lifeIncrementZone.setOnLongClickListener(
                 v -> {
                     viewModel.incrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
+                    startLifeHoldRepeat(v, () -> viewModel.incrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA));
                     return true;
                 });
+        cellBinding.lifeDecrementZone.setOnTouchListener(this::handleLifeHoldTouch);
+        cellBinding.lifeIncrementZone.setOnTouchListener(this::handleLifeHoldTouch);
 
         bindCommanderDamageSummary(cellBinding, player, playerCount);
 
@@ -706,6 +716,45 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         return (int) (dp * getResources().getDisplayMetrics().density);
     }
 
+    private void startLifeHoldRepeat(View view, Runnable action) {
+        stopLifeHoldRepeat(view);
+
+        Runnable repeatRunnable =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Runnable activeRunnable = activeLifeHoldRunnables.get(view);
+                        if (activeRunnable != this || !view.isPressed()) {
+                            stopLifeHoldRepeat(view);
+                            return;
+                        }
+
+                        action.run();
+                        holdRepeatHandler.postDelayed(this, LIFE_HOLD_REPEAT_INTERVAL_MS);
+                    }
+                };
+
+        activeLifeHoldRunnables.put(view, repeatRunnable);
+        holdRepeatHandler.postDelayed(repeatRunnable, LIFE_HOLD_REPEAT_INTERVAL_MS);
+    }
+
+    private boolean handleLifeHoldTouch(View view, MotionEvent event) {
+        int action = event.getActionMasked();
+        if (action == MotionEvent.ACTION_UP
+                || action == MotionEvent.ACTION_CANCEL
+                || action == MotionEvent.ACTION_OUTSIDE) {
+            stopLifeHoldRepeat(view);
+        }
+        return false;
+    }
+
+    private void stopLifeHoldRepeat(View view) {
+        Runnable repeatRunnable = activeLifeHoldRunnables.remove(view);
+        if (repeatRunnable != null) {
+            holdRepeatHandler.removeCallbacks(repeatRunnable);
+        }
+    }
+
     private int getSourceSeatForGridSlot(int slotIndex, int defenderSeatIndex, int totalPlayers) {
         int[] mapping =
                 switch (totalPlayers) {
@@ -743,6 +792,10 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        for (Runnable repeatRunnable : activeLifeHoldRunnables.values()) {
+            holdRepeatHandler.removeCallbacks(repeatRunnable);
+        }
+        activeLifeHoldRunnables.clear();
         binding = null;
         inputsInitialized = false;
         currentBoardPlayerCount = -1;
