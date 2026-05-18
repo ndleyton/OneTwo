@@ -117,4 +117,61 @@ public class MtgLifeFragmentTest {
             assertEquals("39", life2.getText().toString());
         });
     }
+
+    @Test
+    public void testNewGameResetActionReturnsToSetupWithPrefilledValues() {
+        FragmentScenario<MtgLifeFragment> scenario =
+                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme);
+
+        // 1. Enter non-default setup, e.g., 3 players, 30 life, and start game
+        scenario.onFragment(fragment -> {
+            View view = fragment.getView();
+            EditText playersInput = view.findViewById(R.id.players_input);
+            EditText lifeInput = view.findViewById(R.id.life_input);
+            playersInput.setText("3");
+            lifeInput.setText("30");
+
+            Button startButton = view.findViewById(R.id.start_game_button);
+            startButton.performClick();
+        });
+
+        // 2. Verify we are playing 3 players game
+        scenario.onFragment(fragment -> {
+            View view = fragment.getView();
+            View setupContent = view.findViewById(R.id.setup_content);
+            assertEquals(View.GONE, setupContent.getVisibility());
+
+            View boardContainer = view.findViewById(R.id.board_container);
+            assertEquals(View.VISIBLE, boardContainer.getVisibility());
+
+            View player1 = view.findViewById(R.id.player_1);
+            View player3 = view.findViewById(R.id.player_3);
+            assertNotNull(player1);
+            assertNotNull(player3);
+
+            TextView life1 = player1.findViewById(R.id.tv_life_count);
+            assertEquals("30", life1.getText().toString());
+        });
+
+        // 3. Trigger app-bar "New Game" menu action (action_new_game)
+        scenario.onFragment(fragment -> {
+            org.robolectric.fakes.RoboMenuItem resetMenuItem = new org.robolectric.fakes.RoboMenuItem(R.id.action_new_game);
+            fragment.onMenuItemSelected(resetMenuItem);
+        });
+
+        // 4. Verify we are back on the setup screen and inputs are prefilled with last-used values (3 and 30)
+        scenario.onFragment(fragment -> {
+            View view = fragment.getView();
+            View setupContent = view.findViewById(R.id.setup_content);
+            assertEquals(View.VISIBLE, setupContent.getVisibility());
+
+            View boardContainer = view.findViewById(R.id.board_container);
+            assertEquals(View.GONE, boardContainer.getVisibility());
+
+            EditText playersInput = view.findViewById(R.id.players_input);
+            EditText lifeInput = view.findViewById(R.id.life_input);
+            assertEquals("3", playersInput.getText().toString());
+            assertEquals("30", lifeInput.getText().toString());
+        });
+    }
 }
