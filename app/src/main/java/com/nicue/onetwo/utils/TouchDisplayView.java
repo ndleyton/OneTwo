@@ -251,8 +251,6 @@ public class TouchDisplayView extends View {
                     mHasTouch = false;
                     resetSelection();
 
-                    performClick();
-
                     break;
                 }
 

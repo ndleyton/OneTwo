@@ -102,7 +102,6 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
                     new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View v) {
-                            v.performClick();
                             return true;
                         }
                     });
@@ -113,8 +112,6 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
                             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                                 listener.onDragHandleTouched(CounterViewHolder.this);
                                 return true;
-                            } else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-                                v.performClick();
                             }
                             return false;
                         }
@@ -221,8 +218,6 @@ public class CounterListAdapter extends RecyclerView.Adapter<CounterListAdapter.
                                 .start();
                         draggingForeground = false;
                         return true;
-                    } else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-                        v.performClick();
                     }
                     return false;
                 default:
