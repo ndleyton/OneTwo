@@ -10,8 +10,12 @@ public class TimerSnapshot {
     private final long configuredDurationMs;
     private final long configuredIncrementMs;
 
-    public TimerSnapshot(List<Long> remainingTimes, int runningIndex, boolean paused,
-                         long configuredDurationMs, long configuredIncrementMs) {
+    public TimerSnapshot(
+            List<Long> remainingTimes,
+            int runningIndex,
+            boolean paused,
+            long configuredDurationMs,
+            long configuredIncrementMs) {
         this.remainingTimes = new ArrayList<>(remainingTimes);
         this.runningIndex = runningIndex;
         this.paused = paused;

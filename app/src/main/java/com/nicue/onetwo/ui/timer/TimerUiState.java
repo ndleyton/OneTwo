@@ -9,8 +9,11 @@ public class TimerUiState {
     private final long configuredDurationMs;
     private final long configuredIncrementMs;
 
-    public TimerUiState(List<TimerItemUiModel> timers, boolean paused, long configuredDurationMs,
-                        long configuredIncrementMs) {
+    public TimerUiState(
+            List<TimerItemUiModel> timers,
+            boolean paused,
+            long configuredDurationMs,
+            long configuredIncrementMs) {
         this.timers = new ArrayList<>(timers);
         this.paused = paused;
         this.configuredDurationMs = configuredDurationMs;

@@ -186,10 +186,7 @@ public class TimerFragment extends Fragment implements MenuProvider {
         NumberPicker incrementMinutePicker = dialogBinding.incrementMinutePicker;
         NumberPicker incrementSecondPicker = dialogBinding.incrementSecondsPicker;
         configureDurationPicker(minutePicker, secondPicker, configuredDuration);
-        configureDurationPicker(
-                incrementMinutePicker,
-                incrementSecondPicker,
-                configuredIncrement);
+        configureDurationPicker(incrementMinutePicker, incrementSecondPicker, configuredIncrement);
 
         new AlertDialog.Builder(requireContext())
                 .setView(dialogBinding.getRoot())
@@ -213,8 +210,8 @@ public class TimerFragment extends Fragment implements MenuProvider {
                 .show();
     }
 
-    private void configureDurationPicker(NumberPicker minutePicker, NumberPicker secondPicker,
-                                         long durationMs) {
+    private void configureDurationPicker(
+            NumberPicker minutePicker, NumberPicker secondPicker, long durationMs) {
         minutePicker.setMinValue(0);
         minutePicker.setMaxValue(999);
         minutePicker.setValue((int) ((durationMs / 1000L) / 60L));

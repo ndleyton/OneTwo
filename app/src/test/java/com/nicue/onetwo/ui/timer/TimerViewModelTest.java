@@ -6,11 +6,9 @@ import static org.junit.Assert.assertTrue;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.SavedStateHandle;
-
 import com.nicue.onetwo.LiveDataTestUtil;
 import com.nicue.onetwo.core.TimerScheduler;
 import com.nicue.onetwo.data.timer.TimerStateStore;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,17 +18,13 @@ import org.robolectric.annotation.Config;
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 34)
 public class TimerViewModelTest {
-    @Rule
-    public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
+    @Rule public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     @Test
     public void timerStateTransitions_areOwnedByViewModel() throws Exception {
         FakeTimerScheduler scheduler = new FakeTimerScheduler();
-        TimerViewModel viewModel = new TimerViewModel(
-                new SavedStateHandle(),
-                new TimerStateStore(),
-                scheduler
-        );
+        TimerViewModel viewModel =
+                new TimerViewModel(new SavedStateHandle(), new TimerStateStore(), scheduler);
 
         TimerUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
         assertTrue(state.isPaused());
@@ -58,11 +52,8 @@ public class TimerViewModelTest {
     @Test
     public void advanceTimer_appliesIncrementToCompletedTurn() throws Exception {
         FakeTimerScheduler scheduler = new FakeTimerScheduler();
-        TimerViewModel viewModel = new TimerViewModel(
-                new SavedStateHandle(),
-                new TimerStateStore(),
-                scheduler
-        );
+        TimerViewModel viewModel =
+                new TimerViewModel(new SavedStateHandle(), new TimerStateStore(), scheduler);
 
         viewModel.editDuration(10_000L, 2_000L);
         viewModel.togglePlayPause();
