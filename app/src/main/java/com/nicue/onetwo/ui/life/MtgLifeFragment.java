@@ -670,7 +670,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                             };
                     case 5 ->
                             defenderSeatIndex == 4
-                                    ? new int[] {0, 2, 4, 1, 3, 5}
+                                    ? new int[] {0, 1, 4, 2, 3, 5}
                                     : defenderSeatIndex % 2 == 0
                                             ? new int[] {1, 3, 5, 0, 2, 4}
                                             : new int[] {4, 2, 0, 5, 3, 1};
