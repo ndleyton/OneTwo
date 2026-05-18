@@ -40,6 +40,7 @@ public class ChooserFragment extends Fragment {
         return binding.getRoot();
     }
 
+    @android.annotation.SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -69,8 +70,6 @@ public class ChooserFragment extends Fragment {
                         if (action == MotionEvent.ACTION_DOWN
                                 || action == MotionEvent.ACTION_POINTER_DOWN) {
                             scheduleInstructionHide();
-                        } else if (action == MotionEvent.ACTION_UP) {
-                            touchedView.performClick();
                         }
                         return false;
                     }
