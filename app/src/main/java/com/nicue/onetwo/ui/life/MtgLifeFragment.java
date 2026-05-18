@@ -131,18 +131,42 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                         cellBinding.playerCellContainer.setBackgroundColor(bgColor);
                         cellBinding.tvLifeCount.setTextColor(fgColor);
 
+                        float rotation = player.getRotationDegrees();
+                        cellBinding.playerCellContainer.setRotation(0f);
+                        cellBinding.tvLifeCount.setRotation(rotation);
+
+                        final int seatIndex = player.getSeatIndex();
+
+                        // btn_plus is physically at the top, btn_minus is physically at the bottom.
+                        boolean topIsPlus = (rotation == 0f || rotation == 270f);
+
+                        if (topIsPlus) {
+                            // Top button acts as PLUS
+                            cellBinding.btnPlus.setIconResource(R.drawable.ic_add_24);
+                            cellBinding.btnPlus.setContentDescription(getString(R.string.mtg_btn_plus_desc, seatIndex + 1));
+                            cellBinding.btnPlus.setOnClickListener(v -> viewModel.incrementLife(seatIndex));
+
+                            // Bottom button acts as MINUS
+                            cellBinding.btnMinus.setIconResource(R.drawable.ic_remove_24);
+                            cellBinding.btnMinus.setContentDescription(getString(R.string.mtg_btn_minus_desc, seatIndex + 1));
+                            cellBinding.btnMinus.setOnClickListener(v -> viewModel.decrementLife(seatIndex));
+                        } else {
+                            // Top button acts as MINUS
+                            cellBinding.btnPlus.setIconResource(R.drawable.ic_remove_24);
+                            cellBinding.btnPlus.setContentDescription(getString(R.string.mtg_btn_minus_desc, seatIndex + 1));
+                            cellBinding.btnPlus.setOnClickListener(v -> viewModel.decrementLife(seatIndex));
+
+                            // Bottom button acts as PLUS
+                            cellBinding.btnMinus.setIconResource(R.drawable.ic_add_24);
+                            cellBinding.btnMinus.setContentDescription(getString(R.string.mtg_btn_plus_desc, seatIndex + 1));
+                            cellBinding.btnMinus.setOnClickListener(v -> viewModel.incrementLife(seatIndex));
+                        }
+
                         cellBinding.btnMinus.setIconTint(android.content.res.ColorStateList.valueOf(fgColor));
                         cellBinding.btnPlus.setIconTint(android.content.res.ColorStateList.valueOf(fgColor));
 
-                        float rotation = player.getRotationDegrees();
-                        cellBinding.playerCellContainer.setRotation(rotation);
-
-                        final int seatIndex = player.getSeatIndex();
-                        cellBinding.btnMinus.setOnClickListener(v -> viewModel.decrementLife(seatIndex));
-                        cellBinding.btnPlus.setOnClickListener(v -> viewModel.incrementLife(seatIndex));
-
-                        cellBinding.btnMinus.setContentDescription(getString(R.string.mtg_btn_minus_desc, seatIndex + 1));
-                        cellBinding.btnPlus.setContentDescription(getString(R.string.mtg_btn_plus_desc, seatIndex + 1));
+                        cellBinding.btnMinus.setRotation(rotation);
+                        cellBinding.btnPlus.setRotation(rotation);
                     }
                 }
             }
