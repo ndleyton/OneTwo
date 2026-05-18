@@ -1,60 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
+    style="?attr/materialCardViewElevatedStyle"
+    android:layout_width="320dp"
     android:layout_height="wrap_content"
     android:layout_margin="32dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="8dp">
+    app:cardBackgroundColor="#FFFFFF"
+    app:cardElevation="4dp"
+    app:strokeWidth="0dp"
+    app:shapeAppearanceOverlay="@style/ShapeAppearance.OneTwo.Container">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="32dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/mtg_setup_title"
-            android:textAppearance="?attr/textAppearanceHeadline5"
-            android:textAlignment="center"
-            android:layout_marginBottom="24dp" />
+            android:textAppearance="?attr/textAppearanceTitleLarge"
+            android:textStyle="bold"
+            android:textColor="?attr/colorPrimary"
+            android:gravity="center"
+            android:layout_marginBottom="28dp" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/players_input_layout"
-            android:layout_width="match_parent"
+        <TableLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:hint="@string/mtg_setup_players"
-            app:errorEnabled="true">
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="28dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/players_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number" />
-        </com.google.android.material.textfield.TextInputLayout>
+            <TableRow
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/life_input_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:hint="@string/mtg_setup_life"
-            app:errorEnabled="true">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mtg_setup_players"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="24dp" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/life_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number" />
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/players_input_layout"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    app:hintEnabled="false"
+                    app:errorEnabled="true"
+                    app:boxBackgroundMode="filled"
+                    app:boxBackgroundColor="@android:color/transparent">
 
-        <Button
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/players_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:inputType="number"
+                        android:maxLength="4"
+                        android:gravity="center"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="8dp"
+                        android:paddingStart="0dp"
+                        android:paddingEnd="0dp"
+                        android:textSize="22sp"
+                        android:textColor="?attr/colorPrimary"
+                        android:textStyle="bold"
+                        android:selectAllOnFocus="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </TableRow>
+
+            <TableRow
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mtg_setup_life"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="24dp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/life_input_layout"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    app:hintEnabled="false"
+                    app:errorEnabled="true"
+                    app:boxBackgroundMode="filled"
+                    app:boxBackgroundColor="@android:color/transparent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/life_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:inputType="number"
+                        android:maxLength="4"
+                        android:gravity="center"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="8dp"
+                        android:paddingStart="0dp"
+                        android:paddingEnd="0dp"
+                        android:textSize="22sp"
+                        android:textColor="?attr/colorPrimary"
+                        android:textStyle="bold"
+                        android:selectAllOnFocus="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </TableRow>
+
+        </TableLayout>
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/start_game_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            app:cornerRadius="@dimen/shape_corner_soft"
+            app:backgroundTint="?attr/colorPrimary"
+            android:textColor="?attr/colorOnPrimary"
             android:text="@string/mtg_setup_start" />
 
     </LinearLayout>

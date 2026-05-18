@@ -59,8 +59,13 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                             requireActivity().invalidateOptionsMenu();
 
                             if (uiState.isShowingSetup()) {
+                                binding.setupOverlay.setVisibility(View.VISIBLE);
                                 binding.setupContent.getRoot().setVisibility(View.VISIBLE);
-                                binding.boardContainer.setVisibility(View.GONE);
+                                if (binding.boardContainer.getChildCount() == 0) {
+                                    binding.boardContainer.setVisibility(View.GONE);
+                                } else {
+                                    binding.boardContainer.setVisibility(View.VISIBLE);
+                                }
 
                                 if (!inputsInitialized) {
                                     setupBinding.playersInput.setText(
@@ -84,6 +89,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                                     setupBinding.lifeInputLayout.setError(null);
                                 }
                             } else {
+                                binding.setupOverlay.setVisibility(View.GONE);
                                 binding.setupContent.getRoot().setVisibility(View.GONE);
                                 binding.boardContainer.setVisibility(View.VISIBLE);
                                 inputsInitialized = false;
