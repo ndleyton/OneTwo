@@ -136,7 +136,12 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                         cellBinding.btnMinus.setIconTint(android.content.res.ColorStateList.valueOf(fgColor));
                         cellBinding.btnPlus.setIconTint(android.content.res.ColorStateList.valueOf(fgColor));
 
-                        cellBinding.playerCellContainer.setRotation(player.getRotationDegrees());
+                        float rotation = player.getRotationDegrees();
+                        cellBinding.playerCellContainer.setRotation(0f);
+                        cellBinding.tvPlayerLabel.setRotation(rotation);
+                        cellBinding.tvLifeCount.setRotation(rotation);
+                        cellBinding.btnMinus.setRotation(rotation);
+                        cellBinding.btnPlus.setRotation(rotation);
 
                         final int seatIndex = player.getSeatIndex();
                         cellBinding.btnMinus.setOnClickListener(v -> viewModel.decrementLife(seatIndex));
