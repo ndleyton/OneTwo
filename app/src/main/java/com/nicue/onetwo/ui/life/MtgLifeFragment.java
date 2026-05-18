@@ -47,6 +47,7 @@ import java.util.Map;
 
 public class MtgLifeFragment extends Fragment implements MenuProvider {
     private static final int PREVIEW_PLAYER_COUNT = 4;
+    private static final int LIFE_LONG_PRESS_DELTA = 10;
 
     private LifeFragmentBinding binding;
     private MtgLifeViewModel viewModel;
@@ -268,12 +269,22 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
 
         cellBinding.btnMinus.setIconTint(ColorStateList.valueOf(foregroundColor));
         cellBinding.btnPlus.setIconTint(ColorStateList.valueOf(foregroundColor));
-        cellBinding.btnMinus.setContentDescription(
+        cellBinding.lifeDecrementZone.setContentDescription(
                 getString(R.string.mtg_btn_minus_desc, seatIndex + 1));
-        cellBinding.btnPlus.setContentDescription(
+        cellBinding.lifeIncrementZone.setContentDescription(
                 getString(R.string.mtg_btn_plus_desc, seatIndex + 1));
-        cellBinding.btnMinus.setOnClickListener(v -> viewModel.decrementLife(seatIndex));
-        cellBinding.btnPlus.setOnClickListener(v -> viewModel.incrementLife(seatIndex));
+        cellBinding.lifeDecrementZone.setOnClickListener(v -> viewModel.decrementLife(seatIndex));
+        cellBinding.lifeIncrementZone.setOnClickListener(v -> viewModel.incrementLife(seatIndex));
+        cellBinding.lifeDecrementZone.setOnLongClickListener(
+                v -> {
+                    viewModel.decrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
+                    return true;
+                });
+        cellBinding.lifeIncrementZone.setOnLongClickListener(
+                v -> {
+                    viewModel.incrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
+                    return true;
+                });
 
         bindCommanderDamageSummary(cellBinding, player, playerCount);
 

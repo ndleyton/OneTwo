@@ -82,6 +82,14 @@ public class MtgLifeViewModel extends ViewModel {
         updateLifeTotal(seatIndex, -1);
     }
 
+    public void incrementLifeBy(int seatIndex, int amount) {
+        updateLifeTotal(seatIndex, amount);
+    }
+
+    public void decrementLifeBy(int seatIndex, int amount) {
+        updateLifeTotal(seatIndex, -amount);
+    }
+
     public void incrementCommanderDamage(int defenderSeatIndex, int sourceSeatIndex) {
         updateCommanderDamage(defenderSeatIndex, sourceSeatIndex, 1);
     }
