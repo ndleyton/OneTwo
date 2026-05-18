@@ -38,7 +38,7 @@ public class MtgLifeFragmentTest {
 
                     View boardContainer = view.findViewById(R.id.board_container);
                     assertNotNull(boardContainer);
-                    assertEquals(View.GONE, boardContainer.getVisibility());
+                    assertEquals(View.VISIBLE, boardContainer.getVisibility());
 
                     EditText playersInput = view.findViewById(R.id.players_input);
                     EditText lifeInput = view.findViewById(R.id.life_input);
@@ -173,12 +173,58 @@ public class MtgLifeFragmentTest {
                     assertEquals(View.VISIBLE, setupContent.getVisibility());
 
                     View boardContainer = view.findViewById(R.id.board_container);
-                    assertEquals(View.GONE, boardContainer.getVisibility());
+                    assertEquals(View.VISIBLE, boardContainer.getVisibility());
 
                     EditText playersInput = view.findViewById(R.id.players_input);
                     EditText lifeInput = view.findViewById(R.id.life_input);
                     assertEquals("3", playersInput.getText().toString());
                     assertEquals("30", lifeInput.getText().toString());
+                });
+    }
+
+    @Test
+    public void testTappingOutsideSetupCardDismissesOverlayWhenGameIsActive() {
+        FragmentScenario<MtgLifeFragment> scenario =
+                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme);
+
+        // 1. Start a game with default settings
+        scenario.onFragment(
+                fragment -> {
+                    View view = fragment.getView();
+                    Button startButton = view.findViewById(R.id.start_game_button);
+                    startButton.performClick();
+                });
+
+        // 2. Go back to setup screen via menu action
+        scenario.onFragment(
+                fragment -> {
+                    org.robolectric.fakes.RoboMenuItem resetMenuItem =
+                            new org.robolectric.fakes.RoboMenuItem(R.id.action_new_game);
+                    fragment.onMenuItemSelected(resetMenuItem);
+                });
+
+        // 3. Verify setup overlay is visible
+        scenario.onFragment(
+                fragment -> {
+                    View view = fragment.getView();
+                    View setupOverlay = view.findViewById(R.id.setup_overlay);
+                    assertEquals(View.VISIBLE, setupOverlay.getVisibility());
+                });
+
+        // 4. Tap the overlay (clicking outside the card)
+        scenario.onFragment(
+                fragment -> {
+                    View view = fragment.getView();
+                    View setupOverlay = view.findViewById(R.id.setup_overlay);
+                    setupOverlay.performClick();
+                });
+
+        // 5. Verify setup overlay is now GONE (modal dismissed/escaped)
+        scenario.onFragment(
+                fragment -> {
+                    View view = fragment.getView();
+                    View setupOverlay = view.findViewById(R.id.setup_overlay);
+                    assertEquals(View.GONE, setupOverlay.getVisibility());
                 });
     }
 }

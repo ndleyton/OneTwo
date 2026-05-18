@@ -110,6 +110,15 @@ public class MtgLifeViewModel extends ViewModel {
         updateUiState();
     }
 
+    public void dismissSetup() {
+        Boolean showing = savedStateHandle.get(KEY_SHOWING_SETUP);
+        List<Integer> currentLives = savedStateHandle.get(KEY_CURRENT_LIVES);
+        if (showing != null && showing && currentLives != null && !currentLives.isEmpty()) {
+            savedStateHandle.set(KEY_SHOWING_SETUP, false);
+            updateUiState();
+        }
+    }
+
     private int getRotationForSeat(int seatIndex, int totalPlayers) {
         switch (totalPlayers) {
             case 1:

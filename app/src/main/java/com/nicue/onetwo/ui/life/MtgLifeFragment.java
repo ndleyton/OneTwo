@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
@@ -59,8 +60,81 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                             requireActivity().invalidateOptionsMenu();
 
                             if (uiState.isShowingSetup()) {
+                                binding.setupOverlay.setVisibility(View.VISIBLE);
                                 binding.setupContent.getRoot().setVisibility(View.VISIBLE);
-                                binding.boardContainer.setVisibility(View.GONE);
+                                if (binding.boardContainer.getChildCount() == 0) {
+                                    binding.boardContainer.removeAllViews();
+                                    LayoutInflater inflater = LayoutInflater.from(requireContext());
+                                    LifeBoard4Binding.inflate(
+                                            inflater, binding.boardContainer, true);
+                                    currentBoardPlayerCount = 4;
+
+                                    for (int i = 0; i < 4; i++) {
+                                        int seatId;
+                                        switch (i) {
+                                            case 0:
+                                                seatId = R.id.player_1;
+                                                break;
+                                            case 1:
+                                                seatId = R.id.player_2;
+                                                break;
+                                            case 2:
+                                                seatId = R.id.player_3;
+                                                break;
+                                            case 3:
+                                                seatId = R.id.player_4;
+                                                break;
+                                            default:
+                                                continue;
+                                        }
+                                        View cellView = binding.boardContainer.findViewById(seatId);
+                                        if (cellView != null) {
+                                            LifePlayerCellBinding cellBinding =
+                                                    LifePlayerCellBinding.bind(cellView);
+                                            int bgColorRes;
+                                            switch (i) {
+                                                case 0:
+                                                    bgColorRes = R.color.lifeCounterPlayer1;
+                                                    break;
+                                                case 1:
+                                                    bgColorRes = R.color.lifeCounterPlayer2;
+                                                    break;
+                                                case 2:
+                                                    bgColorRes = R.color.lifeCounterPlayer3;
+                                                    break;
+                                                case 3:
+                                                    bgColorRes = R.color.lifeCounterPlayer4;
+                                                    break;
+                                                default:
+                                                    bgColorRes = R.color.lifeCounterPlayer1;
+                                                    break;
+                                            }
+                                            int bgColor =
+                                                    ContextCompat.getColor(
+                                                            requireContext(), bgColorRes);
+                                            boolean isDark =
+                                                    ColorUtils.calculateLuminance(bgColor) < 0.5;
+                                            int fgColor = isDark ? 0xFFFFFFFF : 0xFF000000;
+
+                                            cellBinding.playerCellContainer.setBackgroundColor(
+                                                    bgColor);
+                                            cellBinding.tvLifeCount.setTextColor(fgColor);
+                                            cellBinding.tvLifeCount.setText("40");
+
+                                            cellBinding.btnMinus.setIconTint(
+                                                    android.content.res.ColorStateList.valueOf(
+                                                            fgColor));
+                                            cellBinding.btnPlus.setIconTint(
+                                                    android.content.res.ColorStateList.valueOf(
+                                                            fgColor));
+
+                                            float rotation = (i % 2 == 0) ? 90f : 270f;
+                                            cellBinding.playerCellContainer.setRotation(0f);
+                                            cellBinding.innerPlayerLayout.setRotation(rotation);
+                                        }
+                                    }
+                                }
+                                binding.boardContainer.setVisibility(View.VISIBLE);
 
                                 if (!inputsInitialized) {
                                     setupBinding.playersInput.setText(
@@ -84,6 +158,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                                     setupBinding.lifeInputLayout.setError(null);
                                 }
                             } else {
+                                binding.setupOverlay.setVisibility(View.GONE);
                                 binding.setupContent.getRoot().setVisibility(View.GONE);
                                 binding.boardContainer.setVisibility(View.VISIBLE);
                                 inputsInitialized = false;
@@ -195,10 +270,9 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                                                 ContextCompat.getColor(
                                                         requireContext(),
                                                         player.getBackgroundColorRes());
-                                        int fgColor =
-                                                ContextCompat.getColor(
-                                                        requireContext(),
-                                                        player.getForegroundColorRes());
+                                        boolean isDark =
+                                                ColorUtils.calculateLuminance(bgColor) < 0.5;
+                                        int fgColor = isDark ? 0xFFFFFFFF : 0xFF000000;
 
                                         cellBinding.playerCellContainer.setBackgroundColor(bgColor);
                                         cellBinding.tvLifeCount.setTextColor(fgColor);
@@ -239,6 +313,15 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                     viewModel.validateAndStartGame(playersStr, lifeStr);
                 });
 
+        binding.setupOverlay.setOnClickListener(v -> viewModel.dismissSetup());
+        setupBinding
+                .getRoot()
+                .setOnClickListener(
+                        v -> {
+                            // Intercept clicks inside the setup card to prevent dismissing the
+                            // modal
+                        });
+
         MenuHost menuHost = requireActivity();
         menuHost.addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
@@ -265,5 +348,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+        inputsInitialized = false;
+        currentBoardPlayerCount = -1;
     }
 }
