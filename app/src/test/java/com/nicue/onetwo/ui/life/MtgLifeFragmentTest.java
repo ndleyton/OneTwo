@@ -66,6 +66,7 @@ public class MtgLifeFragmentTest {
             scenario.onFragment(
                     fragment -> {
                         View view = fragment.getView();
+                        assertNotNull(view);
                         Button startButton = view.findViewById(R.id.start_game_button);
                         assertNotNull(startButton);
                         startButton.performClick();
@@ -115,9 +116,12 @@ public class MtgLifeFragmentTest {
             scenario.onFragment(
                     fragment -> {
                         View view = fragment.getView();
+                        assertNotNull(view);
                         View player1 = view.findViewById(R.id.player_1);
                         View player2 = view.findViewById(R.id.player_2);
 
+                        assertNotNull(player1);
+                        assertNotNull(player2);
                         TextView life1 = player1.findViewById(R.id.tv_life_count);
                         TextView life2 = player2.findViewById(R.id.tv_life_count);
 
@@ -136,6 +140,7 @@ public class MtgLifeFragmentTest {
             scenario.onFragment(
                     fragment -> {
                         View view = fragment.getView();
+                        assertNotNull(view);
                         EditText playersInput = view.findViewById(R.id.players_input);
                         EditText lifeInput = view.findViewById(R.id.life_input);
                         playersInput.setText("3");
@@ -203,6 +208,7 @@ public class MtgLifeFragmentTest {
             scenario.onFragment(
                     fragment -> {
                         View view = fragment.getView();
+                        assertNotNull(view);
                         Button startButton = view.findViewById(R.id.start_game_button);
                         startButton.performClick();
                     });
@@ -219,6 +225,7 @@ public class MtgLifeFragmentTest {
             scenario.onFragment(
                     fragment -> {
                         View view = fragment.getView();
+                        assertNotNull(view);
                         View setupOverlay = view.findViewById(R.id.setup_overlay);
                         assertEquals(View.VISIBLE, setupOverlay.getVisibility());
                     });
@@ -227,6 +234,7 @@ public class MtgLifeFragmentTest {
             scenario.onFragment(
                     fragment -> {
                         View view = fragment.getView();
+                        assertNotNull(view);
                         View setupOverlay = view.findViewById(R.id.setup_overlay);
                         setupOverlay.performClick();
                     });
@@ -235,6 +243,7 @@ public class MtgLifeFragmentTest {
             scenario.onFragment(
                     fragment -> {
                         View view = fragment.getView();
+                        assertNotNull(view);
                         View setupOverlay = view.findViewById(R.id.setup_overlay);
                         assertEquals(View.GONE, setupOverlay.getVisibility());
                     });
@@ -249,6 +258,7 @@ public class MtgLifeFragmentTest {
             scenario.onFragment(
                     fragment -> {
                         View view = fragment.getView();
+                        assertNotNull(view);
                         Button startButton = view.findViewById(R.id.start_game_button);
                         startButton.performClick();
                     });
@@ -256,6 +266,7 @@ public class MtgLifeFragmentTest {
             scenario.onFragment(
                     fragment -> {
                         View player1 = fragment.requireView().findViewById(R.id.player_1);
+                        assertNotNull(player1);
                         View commanderGrid = player1.findViewById(R.id.commander_damage_grid);
                         assertNotNull(commanderGrid);
                         try {
