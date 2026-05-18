@@ -406,6 +406,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         rotatedGrid.setRotation(defender.getRotationDegrees());
 
         LinearLayout dialogContent = new LinearLayout(requireContext());
+        dialogContent.setTag("commander_dialog_content");
         dialogContent.setOrientation(LinearLayout.VERTICAL);
         dialogContent.setGravity(Gravity.CENTER);
         dialogContent.setPadding(dpToPx(4), dpToPx(4), dpToPx(4), dpToPx(4));

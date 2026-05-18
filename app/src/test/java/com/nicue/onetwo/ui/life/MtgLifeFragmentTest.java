@@ -357,7 +357,7 @@ public class MtgLifeFragmentTest {
 
                         View decorView = dialog.getWindow().getDecorView();
                         android.widget.LinearLayout dialogContent =
-                                (android.widget.LinearLayout) findDialogContent(decorView);
+                                decorView.findViewWithTag("commander_dialog_content");
                         assertNotNull(dialogContent);
 
                         // Verify that row 0 has the expected cells:
@@ -402,28 +402,6 @@ public class MtgLifeFragmentTest {
                         assertNotNull(incZone4);
                     });
         }
-    }
-
-    private static View findDialogContent(View root) {
-        if (root instanceof android.widget.LinearLayout layout) {
-            if (layout.getOrientation() == android.widget.LinearLayout.VERTICAL && layout.getChildCount() == 2) {
-                View child = layout.getChildAt(0);
-                if (child instanceof android.widget.LinearLayout horizontalLayout) {
-                    if (horizontalLayout.getOrientation() == android.widget.LinearLayout.HORIZONTAL) {
-                        return layout;
-                    }
-                }
-            }
-        }
-        if (root instanceof android.view.ViewGroup group) {
-            for (int i = 0; i < group.getChildCount(); i++) {
-                View match = findDialogContent(group.getChildAt(i));
-                if (match != null) {
-                    return match;
-                }
-            }
-        }
-        return null;
     }
 
     private static View findViewWithContentDescription(View root, CharSequence contentDescription) {
