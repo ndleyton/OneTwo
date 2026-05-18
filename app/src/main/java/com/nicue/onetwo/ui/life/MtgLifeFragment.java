@@ -63,10 +63,52 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                                 binding.setupOverlay.setVisibility(View.VISIBLE);
                                 binding.setupContent.getRoot().setVisibility(View.VISIBLE);
                                 if (binding.boardContainer.getChildCount() == 0) {
-                                    binding.boardContainer.setVisibility(View.GONE);
-                                } else {
-                                    binding.boardContainer.setVisibility(View.VISIBLE);
+                                    binding.boardContainer.removeAllViews();
+                                    LayoutInflater inflater = LayoutInflater.from(requireContext());
+                                    LifeBoard4Binding.inflate(inflater, binding.boardContainer, true);
+                                    currentBoardPlayerCount = 4;
+
+                                    for (int i = 0; i < 4; i++) {
+                                        int seatId;
+                                        switch (i) {
+                                            case 0: seatId = R.id.player_1; break;
+                                            case 1: seatId = R.id.player_2; break;
+                                            case 2: seatId = R.id.player_3; break;
+                                            case 3: seatId = R.id.player_4; break;
+                                            default: continue;
+                                        }
+                                        View cellView = binding.boardContainer.findViewById(seatId);
+                                        if (cellView != null) {
+                                            LifePlayerCellBinding cellBinding =
+                                                    LifePlayerCellBinding.bind(cellView);
+                                            int bgColorRes;
+                                            switch (i) {
+                                                case 0: bgColorRes = R.color.lifeCounterPlayer1; break;
+                                                case 1: bgColorRes = R.color.lifeCounterPlayer2; break;
+                                                case 2: bgColorRes = R.color.lifeCounterPlayer3; break;
+                                                case 3: bgColorRes = R.color.lifeCounterPlayer4; break;
+                                                default: bgColorRes = R.color.lifeCounterPlayer1; break;
+                                            }
+                                            int bgColor = ContextCompat.getColor(requireContext(), bgColorRes);
+                                            boolean isDark = ColorUtils.calculateLuminance(bgColor) < 0.5;
+                                            int fgColor = isDark ? 0xFFFFFFFF : 0xFF000000;
+
+                                            cellBinding.playerCellContainer.setBackgroundColor(bgColor);
+                                            cellBinding.tvLifeCount.setTextColor(fgColor);
+                                            cellBinding.tvLifeCount.setText("40");
+
+                                            cellBinding.btnMinus.setIconTint(
+                                                    android.content.res.ColorStateList.valueOf(fgColor));
+                                            cellBinding.btnPlus.setIconTint(
+                                                    android.content.res.ColorStateList.valueOf(fgColor));
+
+                                            float rotation = (i % 2 == 0) ? 90f : 270f;
+                                            cellBinding.playerCellContainer.setRotation(0f);
+                                            cellBinding.innerPlayerLayout.setRotation(rotation);
+                                        }
+                                    }
                                 }
+                                binding.boardContainer.setVisibility(View.VISIBLE);
 
                                 if (!inputsInitialized) {
                                     setupBinding.playersInput.setText(

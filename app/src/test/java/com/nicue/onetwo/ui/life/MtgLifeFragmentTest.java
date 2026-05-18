@@ -38,7 +38,7 @@ public class MtgLifeFragmentTest {
 
                     View boardContainer = view.findViewById(R.id.board_container);
                     assertNotNull(boardContainer);
-                    assertEquals(View.GONE, boardContainer.getVisibility());
+                    assertEquals(View.VISIBLE, boardContainer.getVisibility());
 
                     EditText playersInput = view.findViewById(R.id.players_input);
                     EditText lifeInput = view.findViewById(R.id.life_input);
