@@ -80,7 +80,8 @@ public class MtgLifeViewModel extends ViewModel {
         savedStateHandle.set(KEY_STARTING_LIFE, parsedStartingLife);
         savedStateHandle.set(
                 KEY_CURRENT_LIVES, createInitialLives(parsedPlayerCount, parsedStartingLife));
-        savedStateHandle.set(KEY_RECENT_LIFE_CHANGES, createInitialRecentLifeChanges(parsedPlayerCount));
+        savedStateHandle.set(
+                KEY_RECENT_LIFE_CHANGES, createInitialRecentLifeChanges(parsedPlayerCount));
         savedStateHandle.set(
                 KEY_RECENT_LIFE_CHANGE_TIMESTAMPS,
                 createInitialRecentLifeChangeTimestamps(parsedPlayerCount));
@@ -265,8 +266,7 @@ public class MtgLifeViewModel extends ViewModel {
         int previousChange = recentLifeChanges.get(seatIndex);
         long previousTimestamp = recentLifeChangeTimestamps.get(seatIndex);
         boolean withinAggregationWindow =
-                previousTimestamp > 0
-                        && nowMs - previousTimestamp <= RECENT_LIFE_CHANGE_WINDOW_MS;
+                previousTimestamp > 0 && nowMs - previousTimestamp <= RECENT_LIFE_CHANGE_WINDOW_MS;
 
         ArrayList<Integer> updatedRecentLifeChanges = new ArrayList<>(recentLifeChanges);
         updatedRecentLifeChanges.set(

@@ -21,7 +21,7 @@ import org.robolectric.annotation.Config;
 @Config(sdk = 34)
 public class MtgLifeViewModelTest {
     private static final class FakeNowProvider implements MtgLifeViewModel.NowProvider {
-        private long nowMs;
+        private long nowMs = 1L;
 
         @Override
         public long now() {
@@ -191,8 +191,7 @@ public class MtgLifeViewModelTest {
     }
 
     @Test
-    public void testRecentLifeChangeAggregatesWithinWindowAndResetsAfterTimeout()
-            throws Exception {
+    public void testRecentLifeChangeAggregatesWithinWindowAndResetsAfterTimeout() throws Exception {
         viewModel.validateAndStartGame("2", "20");
 
         viewModel.decrementLife(0);
@@ -293,14 +292,14 @@ public class MtgLifeViewModelTest {
         state = LiveDataTestUtil.getValue(viewModel.getUiState());
         assertEquals(0, state.getPlayers().getFirst().getCommanderDamages().get(1).getAmount());
         assertEquals(40, state.getPlayers().getFirst().getLifeTotal());
-        assertEquals(1, state.getPlayers().getFirst().getRecentLifeChange());
+        assertEquals(0, state.getPlayers().getFirst().getRecentLifeChange());
 
         // Decrement below 0 floor should be ignored
         viewModel.decrementCommanderDamage(0, 1);
         state = LiveDataTestUtil.getValue(viewModel.getUiState());
         assertEquals(0, state.getPlayers().getFirst().getCommanderDamages().get(1).getAmount());
         assertEquals(40, state.getPlayers().getFirst().getLifeTotal());
-        assertEquals(1, state.getPlayers().getFirst().getRecentLifeChange());
+        assertEquals(0, state.getPlayers().getFirst().getRecentLifeChange());
     }
 
     @Test
