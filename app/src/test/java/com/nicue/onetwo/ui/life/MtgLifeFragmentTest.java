@@ -314,6 +314,118 @@ public class MtgLifeFragmentTest {
         }
     }
 
+    @Test
+    public void testFivePlayerCommanderDamageLayoutForPlayer5MatchesFragment() {
+        try (FragmentScenario<MtgLifeFragment> scenario =
+                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
+
+            // 1. Enter 5 players setup and start game
+            scenario.onFragment(
+                    fragment -> {
+                        View view = fragment.getView();
+                        assertNotNull(view);
+                        EditText playersInput = view.findViewById(R.id.players_input);
+                        EditText lifeInput = view.findViewById(R.id.life_input);
+                        playersInput.setText("5");
+                        lifeInput.setText("40");
+
+                        Button startButton = view.findViewById(R.id.start_game_button);
+                        startButton.performClick();
+                    });
+
+            // 2. Open commander damage dialog for player 5 (seat 4)
+            scenario.onFragment(
+                    fragment -> {
+                        View player5 = fragment.requireView().findViewById(R.id.player_5);
+                        View commanderGrid = player5.findViewById(R.id.commander_damage_grid);
+                        assertNotNull(commanderGrid);
+                        try {
+                            java.lang.reflect.Method showDialogMethod =
+                                    MtgLifeFragment.class.getDeclaredMethod(
+                                            "showCommanderDamageDialog", int.class);
+                            showDialogMethod.setAccessible(true);
+                            showDialogMethod.invoke(fragment, 4);
+                        } catch (ReflectiveOperationException e) {
+                            throw new AssertionError(e);
+                        }
+                        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+                        Dialog dialog = ShadowDialog.getLatestDialog();
+                        assertNotNull(dialog);
+                        assertTrue(dialog.isShowing());
+                        assertNotNull(dialog.getWindow());
+
+                        View decorView = dialog.getWindow().getDecorView();
+                        android.widget.LinearLayout dialogContent =
+                                (android.widget.LinearLayout) findDialogContent(decorView);
+                        assertNotNull(dialogContent);
+
+                        // Verify that row 0 has the expected cells:
+                        // Col 0: Player 1 (source seat 0) -> visible
+                        // Col 1: Player 2 (source seat 1) -> visible
+                        // Col 2: Player 5 (source seat 4, self) -> invisible
+                        android.widget.LinearLayout row0 = (android.widget.LinearLayout) dialogContent.getChildAt(0);
+                        View cell0 = row0.getChildAt(0);
+                        View cell1 = row0.getChildAt(1);
+                        View cell2 = row0.getChildAt(2);
+
+                        assertEquals(View.VISIBLE, cell0.getVisibility());
+                        assertEquals(View.VISIBLE, cell1.getVisibility());
+                        assertEquals(View.INVISIBLE, cell2.getVisibility());
+
+                        // Verify increment zones exist in cell0 and cell1
+                        View incZone0 = findViewWithContentDescription(
+                                cell0, fragment.getString(R.string.mtg_commander_damage_increase_desc, 1, 5));
+                        View incZone1 = findViewWithContentDescription(
+                                cell1, fragment.getString(R.string.mtg_commander_damage_increase_desc, 2, 5));
+                        assertNotNull(incZone0);
+                        assertNotNull(incZone1);
+
+                        // Verify that row 1 has the expected cells:
+                        // Col 0: Player 3 (source seat 2) -> visible
+                        // Col 1: Player 4 (source seat 3) -> visible
+                        // Col 2: Spacer (seat 5) -> invisible
+                        android.widget.LinearLayout row1 = (android.widget.LinearLayout) dialogContent.getChildAt(1);
+                        View cell3 = row1.getChildAt(0);
+                        View cell4 = row1.getChildAt(1);
+                        View cell5 = row1.getChildAt(2);
+
+                        assertEquals(View.VISIBLE, cell3.getVisibility());
+                        assertEquals(View.VISIBLE, cell4.getVisibility());
+                        assertEquals(View.INVISIBLE, cell5.getVisibility());
+
+                        View incZone3 = findViewWithContentDescription(
+                                cell3, fragment.getString(R.string.mtg_commander_damage_increase_desc, 3, 5));
+                        View incZone4 = findViewWithContentDescription(
+                                cell4, fragment.getString(R.string.mtg_commander_damage_increase_desc, 4, 5));
+                        assertNotNull(incZone3);
+                        assertNotNull(incZone4);
+                    });
+        }
+    }
+
+    private static View findDialogContent(View root) {
+        if (root instanceof android.widget.LinearLayout layout) {
+            if (layout.getOrientation() == android.widget.LinearLayout.VERTICAL && layout.getChildCount() == 2) {
+                View child = layout.getChildAt(0);
+                if (child instanceof android.widget.LinearLayout horizontalLayout) {
+                    if (horizontalLayout.getOrientation() == android.widget.LinearLayout.HORIZONTAL) {
+                        return layout;
+                    }
+                }
+            }
+        }
+        if (root instanceof android.view.ViewGroup group) {
+            for (int i = 0; i < group.getChildCount(); i++) {
+                View match = findDialogContent(group.getChildAt(i));
+                if (match != null) {
+                    return match;
+                }
+            }
+        }
+        return null;
+    }
+
     private static View findViewWithContentDescription(View root, CharSequence contentDescription) {
         if (root == null) {
             return null;
