@@ -66,4 +66,7 @@
     <string name="mtg_setup_start">Empezar</string>
     <string name="mtg_setup_players_error">Debe ser de 1 a 6</string>
     <string name="mtg_setup_life_error">Debe ser mayor que 0</string>
+    <string name="mtg_player_label">Jugador %1$d</string>
+    <string name="mtg_btn_minus_desc">Disminuir vida para el jugador %1$d</string>
+    <string name="mtg_btn_plus_desc">Aumentar vida para el jugador %1$d</string>
 </resources>

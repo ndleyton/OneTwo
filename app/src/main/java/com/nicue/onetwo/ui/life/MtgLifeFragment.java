@@ -13,12 +13,20 @@ import androidx.lifecycle.ViewModelProvider;
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.databinding.LifeFragmentBinding;
 import com.nicue.onetwo.databinding.LifeSetupContentBinding;
+import com.nicue.onetwo.databinding.LifeBoard1Binding;
+import com.nicue.onetwo.databinding.LifeBoard2Binding;
+import com.nicue.onetwo.databinding.LifeBoard3Binding;
+import com.nicue.onetwo.databinding.LifeBoard4Binding;
+import com.nicue.onetwo.databinding.LifeBoard5Binding;
+import com.nicue.onetwo.databinding.LifeBoard6Binding;
+import com.nicue.onetwo.databinding.LifePlayerCellBinding;
 
 public class MtgLifeFragment extends Fragment {
 
     private LifeFragmentBinding binding;
     private MtgLifeViewModel viewModel;
     private boolean inputsInitialized = false;
+    private int currentBoardPlayerCount = -1;
 
     @Nullable
     @Override
@@ -61,6 +69,75 @@ public class MtgLifeFragment extends Fragment {
                 binding.setupContent.getRoot().setVisibility(View.GONE);
                 binding.boardContainer.setVisibility(View.VISIBLE);
                 inputsInitialized = false;
+
+                int playerCount = uiState.getPlayerCount();
+                if (binding.boardContainer.getChildCount() == 0 || currentBoardPlayerCount != playerCount) {
+                    binding.boardContainer.removeAllViews();
+                    LayoutInflater inflater = LayoutInflater.from(requireContext());
+                    currentBoardPlayerCount = playerCount;
+
+                    switch (playerCount) {
+                        case 1:
+                            LifeBoard1Binding.inflate(inflater, binding.boardContainer, true);
+                            break;
+                        case 2:
+                            LifeBoard2Binding.inflate(inflater, binding.boardContainer, true);
+                            break;
+                        case 3:
+                            LifeBoard3Binding.inflate(inflater, binding.boardContainer, true);
+                            break;
+                        case 4:
+                            LifeBoard4Binding.inflate(inflater, binding.boardContainer, true);
+                            break;
+                        case 5:
+                            LifeBoard5Binding.inflate(inflater, binding.boardContainer, true);
+                            break;
+                        case 6:
+                            LifeBoard6Binding.inflate(inflater, binding.boardContainer, true);
+                            break;
+                    }
+                }
+
+                // Bind player tiles
+                for (int i = 0; i < playerCount; i++) {
+                    int seatId;
+                    switch (i) {
+                        case 0: seatId = R.id.player_1; break;
+                        case 1: seatId = R.id.player_2; break;
+                        case 2: seatId = R.id.player_3; break;
+                        case 3: seatId = R.id.player_4; break;
+                        case 4: seatId = R.id.player_5; break;
+                        case 5: seatId = R.id.player_6; break;
+                        default: continue;
+                    }
+                    View cellView = binding.boardContainer.findViewById(seatId);
+                    if (cellView != null) {
+                        LifePlayerCellBinding cellBinding = LifePlayerCellBinding.bind(cellView);
+                        LifePlayerUiModel player = uiState.getPlayers().get(i);
+
+                        cellBinding.tvPlayerLabel.setText(getString(R.string.mtg_player_label, player.getSeatIndex() + 1));
+                        cellBinding.tvLifeCount.setText(String.valueOf(player.getLifeTotal()));
+
+                        int bgColor = requireContext().getColor(player.getBackgroundColorRes());
+                        int fgColor = requireContext().getColor(player.getForegroundColorRes());
+
+                        cellBinding.playerCellContainer.setBackgroundColor(bgColor);
+                        cellBinding.tvPlayerLabel.setTextColor(fgColor);
+                        cellBinding.tvLifeCount.setTextColor(fgColor);
+
+                        cellBinding.btnMinus.setIconTint(android.content.res.ColorStateList.valueOf(fgColor));
+                        cellBinding.btnPlus.setIconTint(android.content.res.ColorStateList.valueOf(fgColor));
+
+                        cellBinding.playerCellContainer.setRotation(player.getRotationDegrees());
+
+                        final int seatIndex = player.getSeatIndex();
+                        cellBinding.btnMinus.setOnClickListener(v -> viewModel.decrementLife(seatIndex));
+                        cellBinding.btnPlus.setOnClickListener(v -> viewModel.incrementLife(seatIndex));
+
+                        cellBinding.btnMinus.setContentDescription(getString(R.string.mtg_btn_minus_desc, seatIndex + 1));
+                        cellBinding.btnPlus.setContentDescription(getString(R.string.mtg_btn_plus_desc, seatIndex + 1));
+                    }
+                }
             }
         });
 

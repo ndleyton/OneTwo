@@ -112,6 +112,51 @@ public class MtgLifeViewModel extends ViewModel {
         updateUiState();
     }
 
+    private int getRotationForSeat(int seatIndex, int totalPlayers) {
+        switch (totalPlayers) {
+            case 1:
+                return 0;
+            case 2:
+                return (seatIndex == 0) ? 180 : 0;
+            case 3:
+                if (seatIndex == 0) return 180;
+                if (seatIndex == 1) return 270;
+                return 90;
+            case 4:
+                return (seatIndex < 2) ? 180 : 0;
+            case 5:
+                return (seatIndex < 2) ? 180 : 0;
+            case 6:
+                return (seatIndex < 3) ? 180 : 0;
+            default:
+                return 0;
+        }
+    }
+
+    private int getBackgroundColorResForSeat(int seatIndex) {
+        switch (seatIndex) {
+            case 0: return R.color.lifeCounterPlayer1;
+            case 1: return R.color.lifeCounterPlayer2;
+            case 2: return R.color.lifeCounterPlayer3;
+            case 3: return R.color.lifeCounterPlayer4;
+            case 4: return R.color.lifeCounterPlayer5;
+            case 5: return R.color.lifeCounterPlayer6;
+            default: return R.color.lifeCounterPlayer1;
+        }
+    }
+
+    private int getForegroundColorResForSeat(int seatIndex) {
+        switch (seatIndex) {
+            case 0: return R.color.lifeCounterOnPlayer1;
+            case 1: return R.color.lifeCounterOnPlayer2;
+            case 2: return R.color.lifeCounterOnPlayer3;
+            case 3: return R.color.lifeCounterOnPlayer4;
+            case 4: return R.color.lifeCounterOnPlayer5;
+            case 5: return R.color.lifeCounterOnPlayer6;
+            default: return R.color.lifeCounterOnPlayer1;
+        }
+    }
+
     private void updateUiState() {
         boolean showingSetup = savedStateHandle.get(KEY_SHOWING_SETUP);
         int playerCount = savedStateHandle.get(KEY_PLAYER_COUNT);
@@ -122,8 +167,12 @@ public class MtgLifeViewModel extends ViewModel {
 
         List<LifePlayerUiModel> playerModels = new ArrayList<>();
         if (!showingSetup && currentLives != null) {
-            for (int i = 0; i < currentLives.size(); i++) {
-                playerModels.add(new LifePlayerUiModel(i, currentLives.get(i), 0, 0, 0));
+            int size = currentLives.size();
+            for (int i = 0; i < size; i++) {
+                int rotation = getRotationForSeat(i, size);
+                int bg = getBackgroundColorResForSeat(i);
+                int fg = getForegroundColorResForSeat(i);
+                playerModels.add(new LifePlayerUiModel(i, currentLives.get(i), rotation, bg, fg));
             }
         }
 
