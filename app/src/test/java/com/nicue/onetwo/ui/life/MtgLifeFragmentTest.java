@@ -98,8 +98,12 @@ public class MtgLifeFragmentTest {
                         // Verify starting life totals are 40
                         TextView life1 = player1.findViewById(R.id.tv_life_count);
                         TextView life2 = player2.findViewById(R.id.tv_life_count);
+                        TextView recentChange1 = player1.findViewById(R.id.tv_recent_life_change);
+                        TextView recentChange2 = player2.findViewById(R.id.tv_recent_life_change);
                         assertEquals("40", life1.getText().toString());
                         assertEquals("40", life2.getText().toString());
+                        assertEquals(View.GONE, recentChange1.getVisibility());
+                        assertEquals(View.GONE, recentChange2.getVisibility());
 
                         // Tap right half for player 1
                         View incrementZone1 = player1.findViewById(R.id.life_increment_zone);
@@ -124,9 +128,15 @@ public class MtgLifeFragmentTest {
                         assertNotNull(player2);
                         TextView life1 = player1.findViewById(R.id.tv_life_count);
                         TextView life2 = player2.findViewById(R.id.tv_life_count);
+                        TextView recentChange1 = player1.findViewById(R.id.tv_recent_life_change);
+                        TextView recentChange2 = player2.findViewById(R.id.tv_recent_life_change);
 
                         assertEquals("41", life1.getText().toString());
                         assertEquals("39", life2.getText().toString());
+                        assertEquals(View.VISIBLE, recentChange1.getVisibility());
+                        assertEquals("+1", recentChange1.getText().toString());
+                        assertEquals(View.VISIBLE, recentChange2.getVisibility());
+                        assertEquals("-1", recentChange2.getText().toString());
                     });
         }
     }
@@ -355,8 +365,12 @@ public class MtgLifeFragmentTest {
 
                         TextView life1 = player1.findViewById(R.id.tv_life_count);
                         TextView life2 = player2.findViewById(R.id.tv_life_count);
+                        TextView recentChange1 = player1.findViewById(R.id.tv_recent_life_change);
+                        TextView recentChange2 = player2.findViewById(R.id.tv_recent_life_change);
                         assertEquals("50", life1.getText().toString());
                         assertEquals("30", life2.getText().toString());
+                        assertEquals("+10", recentChange1.getText().toString());
+                        assertEquals("-10", recentChange2.getText().toString());
                     });
         }
     }

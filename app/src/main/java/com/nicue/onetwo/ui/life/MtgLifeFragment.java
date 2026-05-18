@@ -266,6 +266,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         cellBinding.tvLifeCount.setContentDescription(String.valueOf(player.getLifeTotal()));
         cellBinding.tvLifeCount.setTextColor(foregroundColor);
         cellBinding.playerCellContainer.setBackgroundColor(backgroundColor);
+        bindRecentLifeChange(cellBinding, player.getRecentLifeChange(), foregroundColor);
 
         cellBinding.btnMinus.setIconTint(ColorStateList.valueOf(foregroundColor));
         cellBinding.btnPlus.setIconTint(ColorStateList.valueOf(foregroundColor));
@@ -368,6 +369,23 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                         damage.getAmount()));
 
         return summaryCell;
+    }
+
+    private void bindRecentLifeChange(
+            LifePlayerCellBinding cellBinding, int recentLifeChange, int foregroundColor) {
+        if (recentLifeChange == 0) {
+            cellBinding.tvRecentLifeChange.setVisibility(View.GONE);
+            cellBinding.tvRecentLifeChange.setText(null);
+            cellBinding.tvRecentLifeChange.setContentDescription(null);
+            return;
+        }
+
+        String indicatorText =
+                recentLifeChange > 0 ? "+" + recentLifeChange : String.valueOf(recentLifeChange);
+        cellBinding.tvRecentLifeChange.setVisibility(View.VISIBLE);
+        cellBinding.tvRecentLifeChange.setText(indicatorText);
+        cellBinding.tvRecentLifeChange.setTextColor(foregroundColor);
+        cellBinding.tvRecentLifeChange.setContentDescription(indicatorText);
     }
 
     private View createCommanderSummarySpacer() {

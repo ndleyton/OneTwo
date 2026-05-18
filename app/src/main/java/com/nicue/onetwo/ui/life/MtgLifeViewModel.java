@@ -13,6 +13,7 @@ public class MtgLifeViewModel extends ViewModel {
     private static final String KEY_PLAYER_COUNT = "playerCount";
     private static final String KEY_STARTING_LIFE = "startingLife";
     private static final String KEY_CURRENT_LIVES = "currentLives";
+    private static final String KEY_RECENT_LIFE_CHANGES = "recentLifeChanges";
     private static final String KEY_PLAYERS_ERROR_RES_ID = "playersErrorResId";
     private static final String KEY_LIFE_ERROR_RES_ID = "lifeErrorResId";
     private static final String KEY_COMMANDER_DAMAGE_ENABLED = "commanderDamageEnabled";
@@ -66,6 +67,7 @@ public class MtgLifeViewModel extends ViewModel {
         savedStateHandle.set(KEY_STARTING_LIFE, parsedStartingLife);
         savedStateHandle.set(
                 KEY_CURRENT_LIVES, createInitialLives(parsedPlayerCount, parsedStartingLife));
+        savedStateHandle.set(KEY_RECENT_LIFE_CHANGES, createInitialRecentLifeChanges(parsedPlayerCount));
         savedStateHandle.set(KEY_COMMANDER_DAMAGE_ENABLED, commanderDamageEnabled);
         savedStateHandle.set(
                 KEY_COMMANDER_DAMAGE_MATRIX, createCommanderDamageMatrix(parsedPlayerCount));
@@ -122,6 +124,7 @@ public class MtgLifeViewModel extends ViewModel {
         savedStateHandle.set(KEY_PLAYER_COUNT, DEFAULT_PLAYER_COUNT);
         savedStateHandle.set(KEY_STARTING_LIFE, DEFAULT_STARTING_LIFE);
         savedStateHandle.set(KEY_CURRENT_LIVES, new ArrayList<Integer>());
+        savedStateHandle.set(KEY_RECENT_LIFE_CHANGES, new ArrayList<Integer>());
         savedStateHandle.set(KEY_PLAYERS_ERROR_RES_ID, null);
         savedStateHandle.set(KEY_LIFE_ERROR_RES_ID, null);
         savedStateHandle.set(KEY_COMMANDER_DAMAGE_ENABLED, true);
@@ -166,6 +169,14 @@ public class MtgLifeViewModel extends ViewModel {
         return matrix;
     }
 
+    private ArrayList<Integer> createInitialRecentLifeChanges(int playerCount) {
+        ArrayList<Integer> recentChanges = new ArrayList<>();
+        for (int i = 0; i < playerCount; i++) {
+            recentChanges.add(0);
+        }
+        return recentChanges;
+    }
+
     private void updateLifeTotal(int seatIndex, int delta) {
         List<Integer> currentLives = getCurrentLives();
         if (!isValidSeatIndex(currentLives, seatIndex)) {
@@ -175,6 +186,7 @@ public class MtgLifeViewModel extends ViewModel {
         ArrayList<Integer> updatedLives = new ArrayList<>(currentLives);
         updatedLives.set(seatIndex, updatedLives.get(seatIndex) + delta);
         savedStateHandle.set(KEY_CURRENT_LIVES, updatedLives);
+        updateRecentLifeChange(seatIndex, delta);
         updateUiState();
     }
 
@@ -213,6 +225,18 @@ public class MtgLifeViewModel extends ViewModel {
         ArrayList<Integer> updatedLives = new ArrayList<>(currentLives);
         updatedLives.set(defenderSeatIndex, updatedLives.get(defenderSeatIndex) + delta);
         savedStateHandle.set(KEY_CURRENT_LIVES, updatedLives);
+        updateRecentLifeChange(defenderSeatIndex, delta);
+    }
+
+    private void updateRecentLifeChange(int seatIndex, int delta) {
+        List<Integer> recentLifeChanges = getRecentLifeChanges();
+        if (!isValidSeatIndex(recentLifeChanges, seatIndex)) {
+            return;
+        }
+
+        ArrayList<Integer> updatedRecentLifeChanges = new ArrayList<>(recentLifeChanges);
+        updatedRecentLifeChanges.set(seatIndex, delta);
+        savedStateHandle.set(KEY_RECENT_LIFE_CHANGES, updatedRecentLifeChanges);
     }
 
     private boolean isShowingSetup() {
@@ -240,6 +264,10 @@ public class MtgLifeViewModel extends ViewModel {
 
     private ArrayList<ArrayList<Integer>> getCommanderDamageMatrix() {
         return savedStateHandle.get(KEY_COMMANDER_DAMAGE_MATRIX);
+    }
+
+    private List<Integer> getRecentLifeChanges() {
+        return savedStateHandle.get(KEY_RECENT_LIFE_CHANGES);
     }
 
     private boolean isValidSeatIndex(List<?> list, int seatIndex) {
@@ -338,11 +366,16 @@ public class MtgLifeViewModel extends ViewModel {
         Integer lifeErrorResId = savedStateHandle.get(KEY_LIFE_ERROR_RES_ID);
         boolean commanderDamageEnabled = getCommanderDamageEnabled();
         ArrayList<ArrayList<Integer>> commanderDamageMatrix = getCommanderDamageMatrix();
+        List<Integer> recentLifeChanges = getRecentLifeChanges();
 
         List<LifePlayerUiModel> players = new ArrayList<>();
         if (!showingSetup && currentLives != null) {
             int totalPlayers = currentLives.size();
             for (int seatIndex = 0; seatIndex < totalPlayers; seatIndex++) {
+                int recentLifeChange =
+                        recentLifeChanges != null && seatIndex < recentLifeChanges.size()
+                                ? recentLifeChanges.get(seatIndex)
+                                : 0;
                 players.add(
                         new LifePlayerUiModel(
                                 seatIndex,
@@ -350,6 +383,7 @@ public class MtgLifeViewModel extends ViewModel {
                                 getRotationForSeat(seatIndex, totalPlayers),
                                 getBackgroundColorResForSeat(seatIndex),
                                 getForegroundColorResForSeat(seatIndex),
+                                recentLifeChange,
                                 commanderDamageEnabled && totalPlayers > 1,
                                 buildCommanderDamages(
                                         seatIndex, commanderDamageMatrix, totalPlayers)));

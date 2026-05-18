@@ -45,6 +45,20 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_recent_life_change"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@id/btn_plus"
+            app:layout_constraintStart_toEndOf="@id/btn_minus"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_life_count"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -60,9 +74,9 @@
             app:autoSizeTextType="uniform"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_plus"
-            app:layout_constraintHeight_percent="0.6"
             app:layout_constraintStart_toEndOf="@id/btn_minus"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/tv_recent_life_change"
+            app:layout_constraintVertical_bias="0.4" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_plus"

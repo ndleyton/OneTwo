@@ -8,6 +8,7 @@ public class LifePlayerUiModel {
     private final int rotationDegrees;
     private final int backgroundColorRes;
     private final int foregroundColorRes;
+    private final int recentLifeChange;
     private final boolean commanderDamageVisible;
     private final List<CommanderDamageUiModel> commanderDamages;
 
@@ -17,6 +18,7 @@ public class LifePlayerUiModel {
             int rotationDegrees,
             int backgroundColorRes,
             int foregroundColorRes,
+            int recentLifeChange,
             boolean commanderDamageVisible,
             List<CommanderDamageUiModel> commanderDamages) {
         this.seatIndex = seatIndex;
@@ -24,6 +26,7 @@ public class LifePlayerUiModel {
         this.rotationDegrees = rotationDegrees;
         this.backgroundColorRes = backgroundColorRes;
         this.foregroundColorRes = foregroundColorRes;
+        this.recentLifeChange = recentLifeChange;
         this.commanderDamageVisible = commanderDamageVisible;
         this.commanderDamages = commanderDamages;
     }
@@ -46,6 +49,10 @@ public class LifePlayerUiModel {
 
     public int getForegroundColorRes() {
         return foregroundColorRes;
+    }
+
+    public int getRecentLifeChange() {
+        return recentLifeChange;
     }
 
     public boolean isCommanderDamageVisible() {

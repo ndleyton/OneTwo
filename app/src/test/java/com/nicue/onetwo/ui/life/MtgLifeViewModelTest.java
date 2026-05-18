@@ -55,8 +55,10 @@ public class MtgLifeViewModelTest {
         assertEquals(2, state.getPlayers().size());
         assertEquals(0, state.getPlayers().get(0).getSeatIndex());
         assertEquals(20, state.getPlayers().get(0).getLifeTotal());
+        assertEquals(0, state.getPlayers().get(0).getRecentLifeChange());
         assertEquals(1, state.getPlayers().get(1).getSeatIndex());
         assertEquals(20, state.getPlayers().get(1).getLifeTotal());
+        assertEquals(0, state.getPlayers().get(1).getRecentLifeChange());
     }
 
     @Test
@@ -149,12 +151,29 @@ public class MtgLifeViewModelTest {
         state = LiveDataTestUtil.getValue(viewModel.getUiState());
         assertEquals(21, state.getPlayers().get(0).getLifeTotal());
         assertEquals(20, state.getPlayers().get(1).getLifeTotal());
+        assertEquals(1, state.getPlayers().get(0).getRecentLifeChange());
 
         // Decrement player 1 life
         viewModel.decrementLife(1);
         state = LiveDataTestUtil.getValue(viewModel.getUiState());
         assertEquals(21, state.getPlayers().get(0).getLifeTotal());
         assertEquals(19, state.getPlayers().get(1).getLifeTotal());
+        assertEquals(-1, state.getPlayers().get(1).getRecentLifeChange());
+    }
+
+    @Test
+    public void testRecentLifeChangeTracksLongPressDelta() throws Exception {
+        viewModel.validateAndStartGame("2", "20");
+
+        viewModel.incrementLifeBy(0, 10);
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertEquals(30, state.getPlayers().get(0).getLifeTotal());
+        assertEquals(10, state.getPlayers().get(0).getRecentLifeChange());
+
+        viewModel.decrementLifeBy(1, 10);
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertEquals(10, state.getPlayers().get(1).getLifeTotal());
+        assertEquals(-10, state.getPlayers().get(1).getRecentLifeChange());
     }
 
     @Test
@@ -226,24 +245,28 @@ public class MtgLifeViewModelTest {
         assertEquals(1, state.getPlayers().getFirst().getCommanderDamages().get(1).getAmount());
         assertEquals(39, state.getPlayers().getFirst().getLifeTotal());
         assertEquals(40, state.getPlayers().get(1).getLifeTotal());
+        assertEquals(-1, state.getPlayers().getFirst().getRecentLifeChange());
 
         // Self damage changes should be ignored
         viewModel.incrementCommanderDamage(0, 0);
         state = LiveDataTestUtil.getValue(viewModel.getUiState());
         assertEquals(0, state.getPlayers().getFirst().getCommanderDamages().getFirst().getAmount());
         assertEquals(39, state.getPlayers().getFirst().getLifeTotal());
+        assertEquals(-1, state.getPlayers().getFirst().getRecentLifeChange());
 
         // Decrement player 0 damage from source player 1
         viewModel.decrementCommanderDamage(0, 1);
         state = LiveDataTestUtil.getValue(viewModel.getUiState());
         assertEquals(0, state.getPlayers().getFirst().getCommanderDamages().get(1).getAmount());
         assertEquals(40, state.getPlayers().getFirst().getLifeTotal());
+        assertEquals(1, state.getPlayers().getFirst().getRecentLifeChange());
 
         // Decrement below 0 floor should be ignored
         viewModel.decrementCommanderDamage(0, 1);
         state = LiveDataTestUtil.getValue(viewModel.getUiState());
         assertEquals(0, state.getPlayers().getFirst().getCommanderDamages().get(1).getAmount());
         assertEquals(40, state.getPlayers().getFirst().getLifeTotal());
+        assertEquals(1, state.getPlayers().getFirst().getRecentLifeChange());
     }
 
     @Test
