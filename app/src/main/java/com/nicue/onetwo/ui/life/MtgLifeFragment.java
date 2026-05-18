@@ -596,11 +596,11 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                         valTv.setGravity(android.view.Gravity.CENTER);
                         valTv.setTextColor(cellFgColor);
                         
-                        android.widget.LinearLayout.LayoutParams valParams = new android.widget.LinearLayout.LayoutParams(
-                                0,
-                                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
-                                1f
-                        );
+                        android.widget.FrameLayout.LayoutParams valParams =
+                                new android.widget.FrameLayout.LayoutParams(
+                                        android.widget.FrameLayout.LayoutParams.WRAP_CONTENT,
+                                        android.widget.FrameLayout.LayoutParams.WRAP_CONTENT);
+                        valParams.gravity = android.view.Gravity.CENTER;
                         valTv.setLayoutParams(valParams);
 
                         valTv.setTag(cellFgColor);
