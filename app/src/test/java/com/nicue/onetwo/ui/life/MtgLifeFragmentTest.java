@@ -180,6 +180,8 @@ public class MtgLifeFragmentTest {
                     assertEquals("3", playersInput.getText().toString());
                     assertEquals("30", lifeInput.getText().toString());
                 });
+    }
+
     @Test
     public void testTappingOutsideSetupCardDismissesOverlayWhenGameIsActive() {
         FragmentScenario<MtgLifeFragment> scenario =

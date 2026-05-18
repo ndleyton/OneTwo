@@ -246,9 +246,13 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                 });
 
         binding.setupOverlay.setOnClickListener(v -> viewModel.dismissSetup());
-        setupBinding.getRoot().setOnClickListener(v -> {
-            // Intercept clicks inside the setup card to prevent dismissing the modal
-        });
+        setupBinding
+                .getRoot()
+                .setOnClickListener(
+                        v -> {
+                            // Intercept clicks inside the setup card to prevent dismissing the
+                            // modal
+                        });
 
         MenuHost menuHost = requireActivity();
         menuHost.addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
