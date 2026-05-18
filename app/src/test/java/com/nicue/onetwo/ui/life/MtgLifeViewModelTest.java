@@ -156,4 +156,41 @@ public class MtgLifeViewModelTest {
         assertEquals(21, state.getPlayers().get(0).getLifeTotal());
         assertEquals(19, state.getPlayers().get(1).getLifeTotal());
     }
+
+    @Test
+    public void testRotationsForVaryingPlayerCounts() throws Exception {
+        // 3 Players
+        viewModel.validateAndStartGame("3", "40");
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertEquals(180, state.getPlayers().get(0).getRotationDegrees());
+        assertEquals(90, state.getPlayers().get(1).getRotationDegrees());
+        assertEquals(270, state.getPlayers().get(2).getRotationDegrees());
+
+        // 4 Players (Lateral orientation matching the user specifications)
+        viewModel.validateAndStartGame("4", "40");
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertEquals(90, state.getPlayers().get(0).getRotationDegrees());
+        assertEquals(270, state.getPlayers().get(1).getRotationDegrees());
+        assertEquals(90, state.getPlayers().get(2).getRotationDegrees());
+        assertEquals(270, state.getPlayers().get(3).getRotationDegrees());
+
+        // 5 Players (4-player lateral grid + full width bottom 0-degree player)
+        viewModel.validateAndStartGame("5", "40");
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertEquals(90, state.getPlayers().get(0).getRotationDegrees());
+        assertEquals(270, state.getPlayers().get(1).getRotationDegrees());
+        assertEquals(90, state.getPlayers().get(2).getRotationDegrees());
+        assertEquals(270, state.getPlayers().get(3).getRotationDegrees());
+        assertEquals(0, state.getPlayers().get(4).getRotationDegrees());
+
+        // 6 Players
+        viewModel.validateAndStartGame("6", "40");
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertEquals(90, state.getPlayers().get(0).getRotationDegrees());
+        assertEquals(180, state.getPlayers().get(1).getRotationDegrees());
+        assertEquals(270, state.getPlayers().get(2).getRotationDegrees());
+        assertEquals(90, state.getPlayers().get(3).getRotationDegrees());
+        assertEquals(0, state.getPlayers().get(4).getRotationDegrees());
+        assertEquals(270, state.getPlayers().get(5).getRotationDegrees());
+    }
 }

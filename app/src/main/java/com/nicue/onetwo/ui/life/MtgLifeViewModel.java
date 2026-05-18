@@ -120,14 +120,18 @@ public class MtgLifeViewModel extends ViewModel {
                 return (seatIndex == 0) ? 180 : 0;
             case 3:
                 if (seatIndex == 0) return 180;
-                if (seatIndex == 1) return 270;
-                return 90;
+                if (seatIndex == 1) return 90;
+                return 270;
             case 4:
-                return (seatIndex < 2) ? 180 : 0;
+                return (seatIndex % 2 == 0) ? 90 : 270;
             case 5:
-                return (seatIndex < 2) ? 180 : 0;
+                if (seatIndex == 4) return 0;
+                return (seatIndex % 2 == 0) ? 90 : 270;
             case 6:
-                return (seatIndex < 3) ? 180 : 0;
+                if (seatIndex == 1) return 180;
+                if (seatIndex == 4) return 0;
+                if (seatIndex == 0 || seatIndex == 3) return 90;
+                return 270;
             default:
                 return 0;
         }
