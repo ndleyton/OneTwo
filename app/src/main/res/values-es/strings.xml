@@ -59,4 +59,11 @@
     <string name="colon">:</string>
     <string name="content_desc_add_counter">Agregar contador</string>
     <string name="content_desc_roll_dice">Lanzar dados</string>
+    <string name="menu_mtg_life">Contador de Vidas</string>
+    <string name="mtg_setup_title">Nueva Partida</string>
+    <string name="mtg_setup_players">Jugadores</string>
+    <string name="mtg_setup_life">Vidas</string>
+    <string name="mtg_setup_start">Empezar</string>
+    <string name="mtg_setup_players_error">Debe ser de 1 a 6</string>
+    <string name="mtg_setup_life_error">Debe ser mayor que 0</string>
 </resources>

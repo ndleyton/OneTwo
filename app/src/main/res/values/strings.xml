@@ -66,4 +66,12 @@
     <string name="content_desc_add_counter">Add Counter</string>
     <string name="content_desc_roll_dice">Roll Dice</string>
 
+    <string name="menu_mtg_life">Life Counter</string>
+    <string name="mtg_setup_title">New Game</string>
+    <string name="mtg_setup_players">Players</string>
+    <string name="mtg_setup_life">Life</string>
+    <string name="mtg_setup_start">Start Game</string>
+    <string name="mtg_setup_players_error">Must be 1 to 6</string>
+    <string name="mtg_setup_life_error">Must be greater than 0</string>
+
 </resources>

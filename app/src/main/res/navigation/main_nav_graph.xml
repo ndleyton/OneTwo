@@ -28,4 +28,8 @@
         android:id="@+id/nav_settings"
         android:name="com.nicue.onetwo.ui.settings.SettingsFragment"
         android:label="@string/menu_settings" />
+    <fragment
+        android:id="@+id/nav_mtg_life"
+        android:name="com.nicue.onetwo.ui.life.MtgLifeFragment"
+        android:label="@string/menu_mtg_life" />
 </navigation>

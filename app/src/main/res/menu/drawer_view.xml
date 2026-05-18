@@ -23,6 +23,11 @@
             android:icon="@drawable/timer_sand"
             android:title="@string/menu_timer" />
 
+        <item
+            android:id="@+id/nav_mtg_life"
+            android:icon="@drawable/cards_playing_outline"
+            android:title="@string/menu_mtg_life" />
+
     </group>
 
     <group

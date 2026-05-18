@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
                 R.id.nav_dice,
                 R.id.nav_chooser,
                 R.id.nav_timer,
+                R.id.nav_mtg_life,
                 R.id.nav_settings
         ).setOpenableLayout(binding.drawerLayout).build();
 
