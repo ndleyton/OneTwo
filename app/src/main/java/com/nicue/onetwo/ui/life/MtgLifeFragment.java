@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
@@ -201,10 +202,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                                                 ContextCompat.getColor(
                                                         requireContext(),
                                                         player.getBackgroundColorRes());
-                                        int fgColor =
-                                                ContextCompat.getColor(
-                                                        requireContext(),
-                                                        player.getForegroundColorRes());
+                                        boolean isDark = ColorUtils.calculateLuminance(bgColor) < 0.5;
+                                        int fgColor = isDark ? 0xFFFFFFFF : 0xFF000000;
 
                                         cellBinding.playerCellContainer.setBackgroundColor(bgColor);
                                         cellBinding.tvLifeCount.setTextColor(fgColor);
