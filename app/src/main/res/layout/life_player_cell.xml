@@ -50,6 +50,7 @@
             app:autoSizeTextType="uniform"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_plus"
+            app:layout_constraintHeight_percent="0.6"
             app:layout_constraintStart_toEndOf="@id/btn_minus"
             app:layout_constraintTop_toTopOf="parent" />
 

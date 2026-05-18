@@ -35,3 +35,4 @@ public class LifePlayerUiModel {
         return foregroundColorRes;
     }
 }
+

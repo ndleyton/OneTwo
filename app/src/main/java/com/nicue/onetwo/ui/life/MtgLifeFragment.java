@@ -123,7 +123,26 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                         LifePlayerCellBinding cellBinding = LifePlayerCellBinding.bind(cellView);
                         LifePlayerUiModel player = uiState.getPlayers().get(i);
 
+                        int maxSizeSp;
+                        switch (playerCount) {
+                            case 1: maxSizeSp = 96; break;
+                            case 2: maxSizeSp = 80; break;
+                            case 3: maxSizeSp = 72; break;
+                            case 4: maxSizeSp = 60; break;
+                            case 5: maxSizeSp = 54; break;
+                            case 6: maxSizeSp = 48; break;
+                            default: maxSizeSp = 60; break;
+                        }
+                        androidx.core.widget.TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
+                            cellBinding.tvLifeCount,
+                            20,
+                            maxSizeSp,
+                            2,
+                            android.util.TypedValue.COMPLEX_UNIT_SP
+                        );
+
                         cellBinding.tvLifeCount.setText(String.valueOf(player.getLifeTotal()));
+                        cellBinding.tvLifeCount.setContentDescription(String.valueOf(player.getLifeTotal()));
 
                         int bgColor = requireContext().getColor(player.getBackgroundColorRes());
                         int fgColor = requireContext().getColor(player.getForegroundColorRes());
