@@ -183,14 +183,14 @@ public class MtgLifeViewModelTest {
         assertEquals(270, state.getPlayers().get(3).getRotationDegrees());
         assertEquals(0, state.getPlayers().get(4).getRotationDegrees());
 
-        // 6 Players
+        // 6 Players (2 wide, 3 tall lateral split grid)
         viewModel.validateAndStartGame("6", "40");
         state = LiveDataTestUtil.getValue(viewModel.getUiState());
         assertEquals(90, state.getPlayers().get(0).getRotationDegrees());
-        assertEquals(180, state.getPlayers().get(1).getRotationDegrees());
-        assertEquals(270, state.getPlayers().get(2).getRotationDegrees());
-        assertEquals(90, state.getPlayers().get(3).getRotationDegrees());
-        assertEquals(0, state.getPlayers().get(4).getRotationDegrees());
+        assertEquals(270, state.getPlayers().get(1).getRotationDegrees());
+        assertEquals(90, state.getPlayers().get(2).getRotationDegrees());
+        assertEquals(270, state.getPlayers().get(3).getRotationDegrees());
+        assertEquals(90, state.getPlayers().get(4).getRotationDegrees());
         assertEquals(270, state.getPlayers().get(5).getRotationDegrees());
     }
 }
