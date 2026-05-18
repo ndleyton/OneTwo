@@ -34,6 +34,9 @@ public class NavigationSmokeTest {
 
                 navController.navigate(R.id.nav_timer);
                 assertEquals(R.id.nav_timer, navController.getCurrentDestination().getId());
+
+                navController.navigate(R.id.nav_mtg_life);
+                assertEquals(R.id.nav_mtg_life, navController.getCurrentDestination().getId());
             });
         }
     }

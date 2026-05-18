@@ -18,6 +18,7 @@ public class MtgLifeFragment extends Fragment {
 
     private LifeFragmentBinding binding;
     private MtgLifeViewModel viewModel;
+    private boolean inputsInitialized = false;
 
     @Nullable
     @Override
@@ -39,50 +40,34 @@ public class MtgLifeFragment extends Fragment {
                 binding.setupContent.getRoot().setVisibility(View.VISIBLE);
                 binding.boardContainer.setVisibility(View.GONE);
                 
-                setupBinding.playersInput.setText(String.valueOf(uiState.getPlayerCount()));
-                setupBinding.lifeInput.setText(String.valueOf(uiState.getStartingLife()));
-                setupBinding.playersInputLayout.setError(null);
-                setupBinding.lifeInputLayout.setError(null);
+                if (!inputsInitialized) {
+                    setupBinding.playersInput.setText(String.valueOf(uiState.getPlayerCount()));
+                    setupBinding.lifeInput.setText(String.valueOf(uiState.getStartingLife()));
+                    inputsInitialized = true;
+                }
+
+                if (uiState.getPlayersErrorResId() != null) {
+                    setupBinding.playersInputLayout.setError(getString(uiState.getPlayersErrorResId()));
+                } else {
+                    setupBinding.playersInputLayout.setError(null);
+                }
+
+                if (uiState.getLifeErrorResId() != null) {
+                    setupBinding.lifeInputLayout.setError(getString(uiState.getLifeErrorResId()));
+                } else {
+                    setupBinding.lifeInputLayout.setError(null);
+                }
             } else {
                 binding.setupContent.getRoot().setVisibility(View.GONE);
                 binding.boardContainer.setVisibility(View.VISIBLE);
+                inputsInitialized = false;
             }
         });
 
         setupBinding.startGameButton.setOnClickListener(v -> {
             String playersStr = setupBinding.playersInput.getText().toString();
             String lifeStr = setupBinding.lifeInput.getText().toString();
-            
-            boolean valid = true;
-            try {
-                int players = Integer.parseInt(playersStr);
-                if (players < 1 || players > 6) {
-                    setupBinding.playersInputLayout.setError(getString(R.string.mtg_setup_players_error));
-                    valid = false;
-                } else {
-                    setupBinding.playersInputLayout.setError(null);
-                }
-            } catch (NumberFormatException e) {
-                setupBinding.playersInputLayout.setError(getString(R.string.mtg_setup_players_error));
-                valid = false;
-            }
-
-            try {
-                int life = Integer.parseInt(lifeStr);
-                if (life <= 0) {
-                    setupBinding.lifeInputLayout.setError(getString(R.string.mtg_setup_life_error));
-                    valid = false;
-                } else {
-                    setupBinding.lifeInputLayout.setError(null);
-                }
-            } catch (NumberFormatException e) {
-                setupBinding.lifeInputLayout.setError(getString(R.string.mtg_setup_life_error));
-                valid = false;
-            }
-
-            if (valid) {
-                viewModel.validateAndStartGame(playersStr, lifeStr);
-            }
+            viewModel.validateAndStartGame(playersStr, lifeStr);
         });
     }
 

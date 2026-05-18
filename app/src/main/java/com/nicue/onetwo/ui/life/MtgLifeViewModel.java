@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
 
+import com.nicue.onetwo.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +15,8 @@ public class MtgLifeViewModel extends ViewModel {
     private static final String KEY_PLAYER_COUNT = "playerCount";
     private static final String KEY_STARTING_LIFE = "startingLife";
     private static final String KEY_CURRENT_LIVES = "currentLives";
+    private static final String KEY_PLAYERS_ERROR_RES_ID = "playersErrorResId";
+    private static final String KEY_LIFE_ERROR_RES_ID = "lifeErrorResId";
 
     private final SavedStateHandle savedStateHandle;
     private final MutableLiveData<MtgLifeUiState> uiState = new MutableLiveData<>();
@@ -25,6 +29,8 @@ public class MtgLifeViewModel extends ViewModel {
             savedStateHandle.set(KEY_PLAYER_COUNT, 4);
             savedStateHandle.set(KEY_STARTING_LIFE, 40);
             savedStateHandle.set(KEY_CURRENT_LIVES, new ArrayList<Integer>());
+            savedStateHandle.set(KEY_PLAYERS_ERROR_RES_ID, null);
+            savedStateHandle.set(KEY_LIFE_ERROR_RES_ID, null);
         }
 
         updateUiState();
@@ -35,17 +41,38 @@ public class MtgLifeViewModel extends ViewModel {
     }
 
     public void validateAndStartGame(String playersStr, String lifeStr) {
+        boolean valid = true;
+        Integer playersError = null;
+        Integer lifeError = null;
+
+        int players = 0;
         try {
-            int players = Integer.parseInt(playersStr);
-            int life = Integer.parseInt(lifeStr);
-
+            players = Integer.parseInt(playersStr);
             if (players < 1 || players > 6) {
-                return;
+                playersError = R.string.mtg_setup_players_error;
+                valid = false;
             }
-            if (life <= 0) {
-                return;
-            }
+        } catch (NumberFormatException e) {
+            playersError = R.string.mtg_setup_players_error;
+            valid = false;
+        }
 
+        int life = 0;
+        try {
+            life = Integer.parseInt(lifeStr);
+            if (life <= 0) {
+                lifeError = R.string.mtg_setup_life_error;
+                valid = false;
+            }
+        } catch (NumberFormatException e) {
+            lifeError = R.string.mtg_setup_life_error;
+            valid = false;
+        }
+
+        savedStateHandle.set(KEY_PLAYERS_ERROR_RES_ID, playersError);
+        savedStateHandle.set(KEY_LIFE_ERROR_RES_ID, lifeError);
+
+        if (valid) {
             savedStateHandle.set(KEY_PLAYER_COUNT, players);
             savedStateHandle.set(KEY_STARTING_LIFE, life);
             
@@ -55,11 +82,9 @@ public class MtgLifeViewModel extends ViewModel {
             }
             savedStateHandle.set(KEY_CURRENT_LIVES, lives);
             savedStateHandle.set(KEY_SHOWING_SETUP, false);
-            
-            updateUiState();
-        } catch (NumberFormatException e) {
-            // Invalid input
         }
+
+        updateUiState();
     }
 
     public void incrementLife(int seatIndex) {
@@ -82,6 +107,8 @@ public class MtgLifeViewModel extends ViewModel {
 
     public void resetToSetup() {
         savedStateHandle.set(KEY_SHOWING_SETUP, true);
+        savedStateHandle.set(KEY_PLAYERS_ERROR_RES_ID, null);
+        savedStateHandle.set(KEY_LIFE_ERROR_RES_ID, null);
         updateUiState();
     }
 
@@ -90,6 +117,8 @@ public class MtgLifeViewModel extends ViewModel {
         int playerCount = savedStateHandle.get(KEY_PLAYER_COUNT);
         int startingLife = savedStateHandle.get(KEY_STARTING_LIFE);
         List<Integer> currentLives = savedStateHandle.get(KEY_CURRENT_LIVES);
+        Integer playersErrorResId = savedStateHandle.get(KEY_PLAYERS_ERROR_RES_ID);
+        Integer lifeErrorResId = savedStateHandle.get(KEY_LIFE_ERROR_RES_ID);
 
         List<LifePlayerUiModel> playerModels = new ArrayList<>();
         if (!showingSetup && currentLives != null) {
@@ -98,6 +127,6 @@ public class MtgLifeViewModel extends ViewModel {
             }
         }
 
-        uiState.setValue(new MtgLifeUiState(showingSetup, playerCount, startingLife, playerModels));
+        uiState.setValue(new MtgLifeUiState(showingSetup, playerCount, startingLife, playerModels, playersErrorResId, lifeErrorResId));
     }
 }
