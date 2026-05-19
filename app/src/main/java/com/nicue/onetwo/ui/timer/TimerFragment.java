@@ -21,13 +21,13 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
+import com.google.android.material.color.MaterialColors;
 import com.nicue.onetwo.OneTwoApplication;
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.core.HandlerTimerScheduler;
 import com.nicue.onetwo.databinding.ListItemTimerBinding;
 import com.nicue.onetwo.databinding.MinutesAlertDialogBinding;
 import com.nicue.onetwo.databinding.TimerLayoutBinding;
-import com.google.android.material.color.MaterialColors;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -230,21 +230,37 @@ public class TimerFragment extends Fragment implements MenuProvider {
     private int resolveButtonColor(TimerItemUiModel timer) {
         Context context = requireContext();
         if (timer.isFinished()) {
-            return MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurfaceVariant, "TimerFragment");
+            return MaterialColors.getColor(
+                    context,
+                    com.google.android.material.R.attr.colorSurfaceVariant,
+                    "TimerFragment");
         }
         return timer.isActive() && timer.isEnabled()
-                ? MaterialColors.getColor(context, com.google.android.material.R.attr.colorTertiary, "TimerFragment")
-                : MaterialColors.getColor(context, com.google.android.material.R.attr.colorTertiaryContainer, "TimerFragment");
+                ? MaterialColors.getColor(
+                        context, com.google.android.material.R.attr.colorTertiary, "TimerFragment")
+                : MaterialColors.getColor(
+                        context,
+                        com.google.android.material.R.attr.colorTertiaryContainer,
+                        "TimerFragment");
     }
 
     private int resolveTextColor(TimerItemUiModel timer) {
         Context context = requireContext();
         if (timer.isFinished()) {
-            return MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnSurfaceVariant, "TimerFragment");
+            return MaterialColors.getColor(
+                    context,
+                    com.google.android.material.R.attr.colorOnSurfaceVariant,
+                    "TimerFragment");
         }
         return timer.isActive() && timer.isEnabled()
-                ? MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnTertiary, "TimerFragment")
-                : MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnTertiaryContainer, "TimerFragment");
+                ? MaterialColors.getColor(
+                        context,
+                        com.google.android.material.R.attr.colorOnTertiary,
+                        "TimerFragment")
+                : MaterialColors.getColor(
+                        context,
+                        com.google.android.material.R.attr.colorOnTertiaryContainer,
+                        "TimerFragment");
     }
 
     private void vibrate(long milliseconds) {
