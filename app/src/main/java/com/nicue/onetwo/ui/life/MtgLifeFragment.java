@@ -275,10 +275,10 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     private void bindPlayerCell(
             LifePlayerCellBinding cellBinding, LifePlayerUiModel player, int playerCount) {
         int backgroundColor = player.isTimerExpired()
-                ? ContextCompat.getColor(requireContext(), R.color.secondAccent)
+                ? ContextCompat.getColor(requireContext(), R.color.mtg_expired_background)
                 : ContextCompat.getColor(requireContext(), player.getBackgroundColorRes());
         int foregroundColor = player.isTimerExpired()
-                ? ContextCompat.getColor(requireContext(), android.R.color.white)
+                ? ContextCompat.getColor(requireContext(), R.color.mtg_expired_foreground)
                 : getForegroundColor(backgroundColor);
         int seatIndex = player.getSeatIndex();
 

@@ -64,4 +64,6 @@
     <color name="lifeCounterOnPlayer5">#FFFFFFFF</color>
     <color name="lifeCounterPlayer6">#850009</color>
     <color name="lifeCounterOnPlayer6">#FFFFFFFF</color>
+    <color name="mtg_expired_background">#424242</color>
+    <color name="mtg_expired_foreground">#B0BEC5</color>
 </resources>
