@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
         settingsRepository = getAppContainer().getSettingsRepository();
         settingsRepository.applyNightMode();
         SplashScreen.installSplashScreen(this);
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
