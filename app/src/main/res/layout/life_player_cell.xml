@@ -84,19 +84,18 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_recent_life_change"
-            android:layout_width="0dp"
+            android:id="@+id/tv_recent_life_change_negative"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:gravity="center"
             android:includeFontPadding="false"
             android:maxLines="1"
             android:textSize="20sp"
             android:textStyle="bold"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@id/tv_life_count"
-            app:layout_constraintEnd_toStartOf="@id/btn_plus"
-            app:layout_constraintStart_toEndOf="@id/btn_minus"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_life_count"
@@ -136,6 +135,20 @@
             app:iconPadding="0dp"
             app:iconSize="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_recent_life_change_positive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

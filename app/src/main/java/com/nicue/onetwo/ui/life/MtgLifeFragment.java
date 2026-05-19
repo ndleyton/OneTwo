@@ -256,6 +256,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             cellBinding.commanderDamageGrid.setVisibility(View.GONE);
             cellBinding.playerCellContainer.setRotation(0f);
             cellBinding.innerPlayerLayout.setRotation(seatIndex % 2 == 0 ? 90f : 270f);
+            clearRecentLifeChange(cellBinding.tvRecentLifeChangeNegative);
+            clearRecentLifeChange(cellBinding.tvRecentLifeChangePositive);
         }
     }
 
@@ -293,6 +295,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         cellBinding.tvLifeCount.setContentDescription(String.valueOf(player.getLifeTotal()));
         cellBinding.tvLifeCount.setTextColor(foregroundColor);
         cellBinding.playerCellContainer.setBackgroundColor(backgroundColor);
+        cellBinding.innerPlayerLayout.setRotation(player.getRotationDegrees());
         bindRecentLifeChange(
                 cellBinding,
                 player.getRecentLifeChange(),
@@ -351,7 +354,6 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         bindCommanderDamageSummary(cellBinding, player, playerCount);
 
         cellBinding.playerCellContainer.setRotation(0f);
-        cellBinding.innerPlayerLayout.setRotation(player.getRotationDegrees());
     }
 
     private void bindCommanderDamageSummary(
@@ -441,52 +443,99 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         if (recentLifeChange == 0
                 || recentLifeChangeTimestampMs <= 0
                 || ageMs >= MtgLifeViewModel.RECENT_LIFE_CHANGE_WINDOW_MS) {
-            cellBinding.tvRecentLifeChange.setVisibility(View.GONE);
-            cellBinding.tvRecentLifeChange.setText(null);
-            cellBinding.tvRecentLifeChange.setContentDescription(null);
-            cellBinding.tvRecentLifeChange.setTag(null);
+            clearRecentLifeChange(cellBinding.tvRecentLifeChangeNegative);
+            clearRecentLifeChange(cellBinding.tvRecentLifeChangePositive);
             return;
         }
 
-        String indicatorText =
-                recentLifeChange > 0 ? "+" + recentLifeChange : String.valueOf(recentLifeChange);
-        cellBinding.tvRecentLifeChange.setVisibility(View.VISIBLE);
-        cellBinding.tvRecentLifeChange.setText(indicatorText);
-        cellBinding.tvRecentLifeChange.setTextColor(foregroundColor);
-        cellBinding.tvRecentLifeChange.setContentDescription(indicatorText);
-        cellBinding.tvRecentLifeChange.setTag(recentLifeChangeTimestampMs);
+        if (recentLifeChange < 0) {
+            clearRecentLifeChange(cellBinding.tvRecentLifeChangePositive);
+            bindRecentLifeChangeIndicator(
+                    cellBinding.tvRecentLifeChangeNegative,
+                    String.valueOf(recentLifeChange),
+                    recentLifeChangeTimestampMs,
+                    foregroundColor,
+                    false,
+                    ageMs);
+            return;
+        }
 
-        // Animate the text showing up
-        cellBinding.tvRecentLifeChange.setAlpha(0f);
-        cellBinding.tvRecentLifeChange.setTranslationY(dpToPx(8));
-        cellBinding
-                .tvRecentLifeChange
+        clearRecentLifeChange(cellBinding.tvRecentLifeChangeNegative);
+        bindRecentLifeChangeIndicator(
+                cellBinding.tvRecentLifeChangePositive,
+                "+" + recentLifeChange,
+                recentLifeChangeTimestampMs,
+                foregroundColor,
+                true,
+                ageMs);
+    }
+
+    private void bindRecentLifeChangeIndicator(
+            TextView textView,
+            String indicatorText,
+            long recentLifeChangeTimestampMs,
+            int foregroundColor,
+            boolean isPositive,
+            long ageMs) {
+        Object existingTag = textView.getTag();
+        boolean isSameLifeChange =
+                existingTag instanceof Long timestamp
+                        && timestamp == recentLifeChangeTimestampMs
+                        && textView.getVisibility() == View.VISIBLE;
+
+        textView.setVisibility(View.VISIBLE);
+        textView.setText(indicatorText);
+        textView.setTextColor(foregroundColor);
+        textView.setContentDescription(indicatorText);
+        textView.setTag(recentLifeChangeTimestampMs);
+
+        if (isSameLifeChange) {
+            return;
+        }
+
+        float baseTranslationX = 0f;
+        float startOffsetX = baseTranslationX + (isPositive ? dpToPx(8) : -dpToPx(8));
+        float startOffsetY = -dpToPx(8);
+        textView.animate().cancel();
+        textView.setAlpha(0f);
+        textView.setTranslationX(startOffsetX);
+        textView.setTranslationY(startOffsetY);
+        textView
                 .animate()
                 .alpha(1f)
+                .translationX(baseTranslationX)
                 .translationY(0f)
                 .setDuration(300)
                 .setInterpolator(new android.view.animation.OvershootInterpolator())
                 .start();
 
         long remainingMs = MtgLifeViewModel.RECENT_LIFE_CHANGE_WINDOW_MS - ageMs;
-        cellBinding.tvRecentLifeChange.postDelayed(
+        textView.postDelayed(
                 () -> {
-                    Object tag = cellBinding.tvRecentLifeChange.getTag();
+                    Object tag = textView.getTag();
                     if (tag instanceof Long timestamp && timestamp == recentLifeChangeTimestampMs) {
-                        cellBinding
-                                .tvRecentLifeChange
+                        textView
                                 .animate()
                                 .alpha(0f)
-                                .translationY(dpToPx(-8))
+                                .translationX(startOffsetX)
+                                .translationY(startOffsetY)
                                 .setDuration(300)
-                                .withEndAction(
-                                        () ->
-                                                cellBinding.tvRecentLifeChange.setVisibility(
-                                                        View.GONE))
+                                .withEndAction(() -> clearRecentLifeChange(textView))
                                 .start();
                     }
                 },
                 remainingMs);
+    }
+
+    private void clearRecentLifeChange(TextView textView) {
+        textView.animate().cancel();
+        textView.setVisibility(View.GONE);
+        textView.setText(null);
+        textView.setContentDescription(null);
+        textView.setTag(null);
+        textView.setAlpha(1f);
+        textView.setTranslationX(0f);
+        textView.setTranslationY(0f);
     }
 
     private View createCommanderSummarySpacer() {
