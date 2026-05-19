@@ -710,7 +710,8 @@ public class MtgLifeFragmentTest {
                         View view = fragment.getView();
                         assertNotNull(view);
 
-                        android.widget.CompoundButton timerSwitch = view.findViewById(R.id.turn_timer_switch);
+                        android.widget.CompoundButton timerSwitch =
+                                view.findViewById(R.id.turn_timer_switch);
                         assertNotNull(timerSwitch);
                         timerSwitch.setChecked(true);
 
