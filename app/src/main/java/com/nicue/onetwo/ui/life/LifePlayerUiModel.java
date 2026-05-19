@@ -12,6 +12,11 @@ public class LifePlayerUiModel {
     private final long recentLifeChangeTimestampMs;
     private final boolean commanderDamageVisible;
     private final List<CommanderDamageUiModel> commanderDamages;
+    private final boolean timerVisible;
+    private final String timerDisplay;
+    private final boolean timerActive;
+    private final boolean timerExpired;
+    private final boolean passEnabled;
 
     public LifePlayerUiModel(
             int seatIndex,
@@ -22,7 +27,12 @@ public class LifePlayerUiModel {
             int recentLifeChange,
             long recentLifeChangeTimestampMs,
             boolean commanderDamageVisible,
-            List<CommanderDamageUiModel> commanderDamages) {
+            List<CommanderDamageUiModel> commanderDamages,
+            boolean timerVisible,
+            String timerDisplay,
+            boolean timerActive,
+            boolean timerExpired,
+            boolean passEnabled) {
         this.seatIndex = seatIndex;
         this.lifeTotal = lifeTotal;
         this.rotationDegrees = rotationDegrees;
@@ -32,6 +42,11 @@ public class LifePlayerUiModel {
         this.recentLifeChangeTimestampMs = recentLifeChangeTimestampMs;
         this.commanderDamageVisible = commanderDamageVisible;
         this.commanderDamages = commanderDamages;
+        this.timerVisible = timerVisible;
+        this.timerDisplay = timerDisplay;
+        this.timerActive = timerActive;
+        this.timerExpired = timerExpired;
+        this.passEnabled = passEnabled;
     }
 
     public int getSeatIndex() {
@@ -68,5 +83,25 @@ public class LifePlayerUiModel {
 
     public List<CommanderDamageUiModel> getCommanderDamages() {
         return commanderDamages;
+    }
+
+    public boolean isTimerVisible() {
+        return timerVisible;
+    }
+
+    public String getTimerDisplay() {
+        return timerDisplay;
+    }
+
+    public boolean isTimerActive() {
+        return timerActive;
+    }
+
+    public boolean isTimerExpired() {
+        return timerExpired;
+    }
+
+    public boolean isPassEnabled() {
+        return passEnabled;
     }
 }
