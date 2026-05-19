@@ -37,7 +37,7 @@
         <item name="colorErrorContainer">@color/m3_error_container</item>
         <item name="colorOnErrorContainer">@color/m3_on_error_container</item>
         <item name="android:statusBarColor">@color/m3_primary</item>
-        <item name="android:navigationBarColor">@color/m3_surface</item>
+        <item name="android:navigationBarColor">@color/navigation_bar_background</item>
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.OneTwo.Small</item>
         <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.OneTwo.Container</item>
         <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.OneTwo.Large</item>
@@ -79,7 +79,7 @@
 
     <style name="Widget.OneTwo.FilledIconButton" parent="Widget.Material3.Button.IconButton.Filled.Tonal">
         <item name="iconTint">?attr/colorPrimary</item>
-        <item name="backgroundTint">?attr/colorSecondaryContainer</item>
+        <item name="backgroundTint">@color/counter_adjust_button_background</item>
     </style>
 
     <style name="Widget.OneTwo.DeleteIconButton" parent="Widget.Material3.Button.IconButton.Filled">
