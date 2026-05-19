@@ -353,16 +353,18 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             cellBinding.btnPassTurn.setVisibility(
                     player.isPassEnabled() ? View.VISIBLE : View.INVISIBLE);
             cellBinding.btnPassTurn.setIconTint(ColorStateList.valueOf(foregroundColor));
-            cellBinding.btnPassTurn.setContentDescription(
+
+            cellBinding.timerContainer.setEnabled(player.isPassEnabled());
+            cellBinding.timerContainer.setContentDescription(
                     getString(R.string.mtg_pass_turn_desc, seatIndex + 1));
-            cellBinding.btnPassTurn.setOnClickListener(
+            cellBinding.timerContainer.setOnClickListener(
                     v -> {
                         vibrate(30L);
                         viewModel.passTurn(seatIndex);
                     });
         } else {
             cellBinding.timerContainer.setVisibility(View.GONE);
-            cellBinding.btnPassTurn.setOnClickListener(null);
+            cellBinding.timerContainer.setOnClickListener(null);
         }
 
         bindCommanderDamageSummary(cellBinding, player, playerCount);
