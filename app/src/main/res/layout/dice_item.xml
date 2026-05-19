@@ -29,7 +29,6 @@
             android:paddingHorizontal="8dp"
             android:paddingVertical="2dp"
             android:textAppearance="?attr/textAppearanceLabelMedium"
-            android:textColor="#FFFFFF"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -41,7 +40,6 @@
             android:gravity="center"
             android:includeFontPadding="false"
             android:textAppearance="?attr/textAppearanceDisplayLarge"
-            android:textColor="#FFFFFF"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -58,8 +56,7 @@
             android:importantForAccessibility="no"
             android:src="@drawable/ic_die_custom_wheel"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:tint="#FFFFFF" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

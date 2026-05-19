@@ -9,4 +9,4 @@
     android:paddingStart="@dimen/space_s"
     android:paddingEnd="@dimen/space_s"
     android:textAppearance="?attr/textAppearanceLabelSmall"
-    android:textColor="#FFFFFFFF" />
+    android:textColor="?attr/colorOnPrimary" />

@@ -21,6 +21,7 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
+import com.google.android.material.color.MaterialColors;
 import com.nicue.onetwo.OneTwoApplication;
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.core.HandlerTimerScheduler;
@@ -31,10 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TimerFragment extends Fragment implements MenuProvider {
-    private static final int ACTIVE_COLOR = 0xffbd2430;
-    private static final int IDLE_COLOR = 0xff850009;
-    private static final int FINISHED_COLOR = 0xff424242;
-
     private TimerLayoutBinding binding;
     private final List<ListItemTimerBinding> timerBindings = new ArrayList<>();
     private TimerViewModel viewModel;
@@ -148,8 +145,11 @@ public class TimerFragment extends Fragment implements MenuProvider {
             itemBinding.chrono.setText(timer.getDisplayTime());
             itemBinding.chrono.setEnabled(timer.isEnabled());
             itemBinding.chrono.setClickable(timer.isEnabled());
-            itemBinding.chrono.setBackgroundTintList(
-                    ColorStateList.valueOf(resolveButtonColor(timer)));
+            int bgColor = resolveButtonColor(timer);
+            int textColor = resolveTextColor(timer);
+            itemBinding.chrono.setBackgroundTintList(ColorStateList.valueOf(bgColor));
+            itemBinding.chrono.setTextColor(textColor);
+            itemBinding.cvTimer.setCardBackgroundColor(ColorStateList.valueOf(bgColor));
             itemBinding.cvTimer.setCardElevation(timer.isActive() && !state.isPaused() ? 30f : 2f);
             itemBinding.getRoot().setRotation(i == 0 && timers.size() == 2 ? 180f : 0f);
         }
@@ -228,10 +228,39 @@ public class TimerFragment extends Fragment implements MenuProvider {
     }
 
     private int resolveButtonColor(TimerItemUiModel timer) {
+        Context context = requireContext();
         if (timer.isFinished()) {
-            return FINISHED_COLOR;
+            return MaterialColors.getColor(
+                    context,
+                    com.google.android.material.R.attr.colorSurfaceVariant,
+                    "TimerFragment");
         }
-        return timer.isActive() && timer.isEnabled() ? ACTIVE_COLOR : IDLE_COLOR;
+        return timer.isActive() && timer.isEnabled()
+                ? MaterialColors.getColor(
+                        context, com.google.android.material.R.attr.colorTertiary, "TimerFragment")
+                : MaterialColors.getColor(
+                        context,
+                        com.google.android.material.R.attr.colorTertiaryContainer,
+                        "TimerFragment");
+    }
+
+    private int resolveTextColor(TimerItemUiModel timer) {
+        Context context = requireContext();
+        if (timer.isFinished()) {
+            return MaterialColors.getColor(
+                    context,
+                    com.google.android.material.R.attr.colorOnSurfaceVariant,
+                    "TimerFragment");
+        }
+        return timer.isActive() && timer.isEnabled()
+                ? MaterialColors.getColor(
+                        context,
+                        com.google.android.material.R.attr.colorOnTertiary,
+                        "TimerFragment")
+                : MaterialColors.getColor(
+                        context,
+                        com.google.android.material.R.attr.colorOnTertiaryContainer,
+                        "TimerFragment");
     }
 
     private void vibrate(long milliseconds) {
