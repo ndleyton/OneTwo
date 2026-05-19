@@ -260,6 +260,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             cellBinding.btnMinus.setIconTint(ColorStateList.valueOf(foregroundColor));
             cellBinding.btnPlus.setIconTint(ColorStateList.valueOf(foregroundColor));
             cellBinding.commanderDamageGrid.setVisibility(View.GONE);
+            cellBinding.timerContainer.setVisibility(View.GONE);
+            cellBinding.timerContainer.setOnClickListener(null);
             cellBinding.playerCellContainer.setRotation(0f);
             cellBinding.innerPlayerLayout.setRotation(seatIndex % 2 == 0 ? 90f : 270f);
             clearRecentLifeChange(cellBinding.tvRecentLifeChangeNegative);

@@ -699,6 +699,62 @@ public class MtgLifeFragmentTest {
         }
     }
 
+    @Test
+    public void testTurnTimerResetInPreviewBoardOnReturnToSetup() {
+        try (FragmentScenario<MtgLifeFragment> scenario =
+                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
+
+            // 1. Enable turn timer switch and start a game
+            scenario.onFragment(
+                    fragment -> {
+                        View view = fragment.getView();
+                        assertNotNull(view);
+
+                        android.widget.CompoundButton timerSwitch = view.findViewById(R.id.turn_timer_switch);
+                        assertNotNull(timerSwitch);
+                        timerSwitch.setChecked(true);
+
+                        Button startButton = view.findViewById(R.id.start_game_button);
+                        assertNotNull(startButton);
+                        startButton.performClick();
+                    });
+
+            // 2. Verify we are in game and player cells have timer visible
+            scenario.onFragment(
+                    fragment -> {
+                        View view = fragment.getView();
+                        assertNotNull(view);
+
+                        View player1 = view.findViewById(R.id.player_1);
+                        assertNotNull(player1);
+                        View timerContainer = player1.findViewById(R.id.timer_container);
+                        assertNotNull(timerContainer);
+                        assertEquals(View.VISIBLE, timerContainer.getVisibility());
+                    });
+
+            // 3. Return to setup (New Game)
+            scenario.onFragment(
+                    fragment -> {
+                        org.robolectric.fakes.RoboMenuItem resetMenuItem =
+                                new org.robolectric.fakes.RoboMenuItem(R.id.action_new_game);
+                        fragment.onMenuItemSelected(resetMenuItem);
+                    });
+
+            // 4. Verify that on returning to setup, the preview player cell has timer GONE
+            scenario.onFragment(
+                    fragment -> {
+                        View view = fragment.getView();
+                        assertNotNull(view);
+
+                        View player1 = view.findViewById(R.id.player_1);
+                        assertNotNull(player1);
+                        View timerContainer = player1.findViewById(R.id.timer_container);
+                        assertNotNull(timerContainer);
+                        assertEquals(View.GONE, timerContainer.getVisibility());
+                    });
+        }
+    }
+
     private static View findViewWithContentDescription(View root, CharSequence contentDescription) {
         if (root == null) {
             return null;
