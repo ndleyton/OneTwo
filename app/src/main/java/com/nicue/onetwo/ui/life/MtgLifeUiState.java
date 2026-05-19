@@ -10,6 +10,9 @@ public class MtgLifeUiState {
     private final Integer playersErrorResId;
     private final Integer lifeErrorResId;
     private final boolean commanderDamageEnabled;
+    private final boolean turnTimerEnabled;
+    private final boolean turnTimerPaused;
+    private final boolean turnTimerFinished;
 
     public MtgLifeUiState(
             boolean showingSetup,
@@ -18,7 +21,10 @@ public class MtgLifeUiState {
             List<LifePlayerUiModel> players,
             Integer playersErrorResId,
             Integer lifeErrorResId,
-            boolean commanderDamageEnabled) {
+            boolean commanderDamageEnabled,
+            boolean turnTimerEnabled,
+            boolean turnTimerPaused,
+            boolean turnTimerFinished) {
         this.showingSetup = showingSetup;
         this.playerCount = playerCount;
         this.startingLife = startingLife;
@@ -26,6 +32,9 @@ public class MtgLifeUiState {
         this.playersErrorResId = playersErrorResId;
         this.lifeErrorResId = lifeErrorResId;
         this.commanderDamageEnabled = commanderDamageEnabled;
+        this.turnTimerEnabled = turnTimerEnabled;
+        this.turnTimerPaused = turnTimerPaused;
+        this.turnTimerFinished = turnTimerFinished;
     }
 
     public boolean isShowingSetup() {
@@ -54,5 +63,17 @@ public class MtgLifeUiState {
 
     public boolean isCommanderDamageEnabled() {
         return commanderDamageEnabled;
+    }
+
+    public boolean isTurnTimerEnabled() {
+        return turnTimerEnabled;
+    }
+
+    public boolean isTurnTimerPaused() {
+        return turnTimerPaused;
+    }
+
+    public boolean isTurnTimerFinished() {
+        return turnTimerFinished;
     }
 }

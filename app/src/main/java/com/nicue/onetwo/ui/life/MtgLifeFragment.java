@@ -1,6 +1,7 @@
 package com.nicue.onetwo.ui.life;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -26,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.view.MenuHost;
@@ -45,6 +47,8 @@ import com.nicue.onetwo.databinding.LifeBoard6Binding;
 import com.nicue.onetwo.databinding.LifeFragmentBinding;
 import com.nicue.onetwo.databinding.LifePlayerCellBinding;
 import com.nicue.onetwo.databinding.LifeSetupContentBinding;
+import com.nicue.onetwo.databinding.MinutesAlertDialogBinding;
+import com.nicue.onetwo.utils.TimerBackend;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +106,9 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                     String playersStr = playersText != null ? playersText.toString() : "";
                     String lifeStr = lifeText != null ? lifeText.toString() : "";
                     boolean commanderEnabled = setupBinding.commanderDamageSwitch.isChecked();
-                    viewModel.validateAndStartGame(playersStr, lifeStr, commanderEnabled);
+                    boolean turnTimerEnabled = setupBinding.turnTimerSwitch.isChecked();
+                    viewModel.validateAndStartGame(
+                            playersStr, lifeStr, commanderEnabled, turnTimerEnabled);
                 });
 
         binding.setupOverlay.setOnClickListener(v -> viewModel.dismissSetup());
@@ -174,6 +180,23 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             setupBinding.playersInput.setText(String.valueOf(uiState.getPlayerCount()));
             setupBinding.lifeInput.setText(String.valueOf(uiState.getStartingLife()));
             setupBinding.commanderDamageSwitch.setChecked(uiState.isCommanderDamageEnabled());
+            setupBinding.turnTimerSwitch.setChecked(uiState.isTurnTimerEnabled());
+            long durationMs = viewModel.getTurnTimerDurationMs();
+            setupBinding.btnTurnTimerValue.setText(
+                    TimerBackend.formatRemainingTime(durationMs, 10000L));
+            setupBinding.turnTimerValueRow.setVisibility(
+                    uiState.isTurnTimerEnabled() ? View.VISIBLE : View.GONE);
+
+            setupBinding.turnTimerSwitch.setOnCheckedChangeListener(
+                    (buttonView, isChecked) -> {
+                        setupBinding.turnTimerValueRow.setVisibility(
+                                isChecked ? View.VISIBLE : View.GONE);
+                        viewModel.setTurnTimerEnabled(isChecked);
+                    });
+
+            setupBinding.btnTurnTimerValue.setOnClickListener(
+                    v -> showTurnTimerDurationPicker(setupBinding));
+
             inputsInitialized = true;
         }
 
@@ -237,8 +260,12 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             cellBinding.btnMinus.setIconTint(ColorStateList.valueOf(foregroundColor));
             cellBinding.btnPlus.setIconTint(ColorStateList.valueOf(foregroundColor));
             cellBinding.commanderDamageGrid.setVisibility(View.GONE);
+            cellBinding.timerContainer.setVisibility(View.GONE);
+            cellBinding.timerContainer.setOnClickListener(null);
             cellBinding.playerCellContainer.setRotation(0f);
             cellBinding.innerPlayerLayout.setRotation(seatIndex % 2 == 0 ? 90f : 270f);
+            clearRecentLifeChange(cellBinding.tvRecentLifeChangeNegative);
+            clearRecentLifeChange(cellBinding.tvRecentLifeChangePositive);
         }
     }
 
@@ -258,8 +285,13 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     private void bindPlayerCell(
             LifePlayerCellBinding cellBinding, LifePlayerUiModel player, int playerCount) {
         int backgroundColor =
-                ContextCompat.getColor(requireContext(), player.getBackgroundColorRes());
-        int foregroundColor = getForegroundColor(backgroundColor);
+                player.isTimerExpired()
+                        ? ContextCompat.getColor(requireContext(), R.color.mtg_expired_background)
+                        : ContextCompat.getColor(requireContext(), player.getBackgroundColorRes());
+        int foregroundColor =
+                player.isTimerExpired()
+                        ? ContextCompat.getColor(requireContext(), R.color.mtg_expired_foreground)
+                        : getForegroundColor(backgroundColor);
         int seatIndex = player.getSeatIndex();
 
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
@@ -273,6 +305,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         cellBinding.tvLifeCount.setContentDescription(String.valueOf(player.getLifeTotal()));
         cellBinding.tvLifeCount.setTextColor(foregroundColor);
         cellBinding.playerCellContainer.setBackgroundColor(backgroundColor);
+        cellBinding.innerPlayerLayout.setRotation(player.getRotationDegrees());
         bindRecentLifeChange(
                 cellBinding,
                 player.getRecentLifeChange(),
@@ -304,10 +337,41 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         cellBinding.lifeDecrementZone.setOnTouchListener(this::handleLifeHoldTouch);
         cellBinding.lifeIncrementZone.setOnTouchListener(this::handleLifeHoldTouch);
 
+        if (player.isTimerVisible()) {
+            cellBinding.timerContainer.setVisibility(View.VISIBLE);
+            cellBinding.tvTurnTimer.setText(player.getTimerDisplay());
+            cellBinding.tvTurnTimer.setTextColor(foregroundColor);
+            cellBinding.tvTurnTimer.setContentDescription(
+                    getString(
+                            R.string.mtg_player_timer_desc,
+                            seatIndex + 1,
+                            player.getTimerDisplay()));
+
+            cellBinding.tvTurnTimer.setAlpha(player.isTimerActive() ? 1.0f : 0.5f);
+            cellBinding.tvTurnTimer.setTypeface(
+                    null, player.isTimerActive() ? Typeface.BOLD : Typeface.NORMAL);
+
+            cellBinding.btnPassTurn.setEnabled(player.isPassEnabled());
+            cellBinding.btnPassTurn.setVisibility(
+                    player.isPassEnabled() ? View.VISIBLE : View.INVISIBLE);
+            cellBinding.btnPassTurn.setIconTint(ColorStateList.valueOf(foregroundColor));
+
+            cellBinding.timerContainer.setEnabled(player.isPassEnabled());
+            cellBinding.timerContainer.setContentDescription(
+                    getString(R.string.mtg_pass_turn_desc, seatIndex + 1));
+            cellBinding.timerContainer.setOnClickListener(
+                    v -> {
+                        vibrate(30L);
+                        viewModel.passTurn(seatIndex);
+                    });
+        } else {
+            cellBinding.timerContainer.setVisibility(View.GONE);
+            cellBinding.timerContainer.setOnClickListener(null);
+        }
+
         bindCommanderDamageSummary(cellBinding, player, playerCount);
 
         cellBinding.playerCellContainer.setRotation(0f);
-        cellBinding.innerPlayerLayout.setRotation(player.getRotationDegrees());
     }
 
     private void bindCommanderDamageSummary(
@@ -397,52 +461,97 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         if (recentLifeChange == 0
                 || recentLifeChangeTimestampMs <= 0
                 || ageMs >= MtgLifeViewModel.RECENT_LIFE_CHANGE_WINDOW_MS) {
-            cellBinding.tvRecentLifeChange.setVisibility(View.GONE);
-            cellBinding.tvRecentLifeChange.setText(null);
-            cellBinding.tvRecentLifeChange.setContentDescription(null);
-            cellBinding.tvRecentLifeChange.setTag(null);
+            clearRecentLifeChange(cellBinding.tvRecentLifeChangeNegative);
+            clearRecentLifeChange(cellBinding.tvRecentLifeChangePositive);
             return;
         }
 
-        String indicatorText =
-                recentLifeChange > 0 ? "+" + recentLifeChange : String.valueOf(recentLifeChange);
-        cellBinding.tvRecentLifeChange.setVisibility(View.VISIBLE);
-        cellBinding.tvRecentLifeChange.setText(indicatorText);
-        cellBinding.tvRecentLifeChange.setTextColor(foregroundColor);
-        cellBinding.tvRecentLifeChange.setContentDescription(indicatorText);
-        cellBinding.tvRecentLifeChange.setTag(recentLifeChangeTimestampMs);
+        if (recentLifeChange < 0) {
+            clearRecentLifeChange(cellBinding.tvRecentLifeChangePositive);
+            bindRecentLifeChangeIndicator(
+                    cellBinding.tvRecentLifeChangeNegative,
+                    String.valueOf(recentLifeChange),
+                    recentLifeChangeTimestampMs,
+                    foregroundColor,
+                    false,
+                    ageMs);
+            return;
+        }
 
-        // Animate the text showing up
-        cellBinding.tvRecentLifeChange.setAlpha(0f);
-        cellBinding.tvRecentLifeChange.setTranslationY(dpToPx(8));
-        cellBinding
-                .tvRecentLifeChange
-                .animate()
+        clearRecentLifeChange(cellBinding.tvRecentLifeChangeNegative);
+        bindRecentLifeChangeIndicator(
+                cellBinding.tvRecentLifeChangePositive,
+                "+" + recentLifeChange,
+                recentLifeChangeTimestampMs,
+                foregroundColor,
+                true,
+                ageMs);
+    }
+
+    private void bindRecentLifeChangeIndicator(
+            TextView textView,
+            String indicatorText,
+            long recentLifeChangeTimestampMs,
+            int foregroundColor,
+            boolean isPositive,
+            long ageMs) {
+        Object existingTag = textView.getTag();
+        boolean isSameLifeChange =
+                existingTag instanceof Long timestamp
+                        && timestamp == recentLifeChangeTimestampMs
+                        && textView.getVisibility() == View.VISIBLE;
+
+        textView.setVisibility(View.VISIBLE);
+        textView.setText(indicatorText);
+        textView.setTextColor(foregroundColor);
+        textView.setContentDescription(indicatorText);
+        textView.setTag(recentLifeChangeTimestampMs);
+
+        if (isSameLifeChange) {
+            return;
+        }
+
+        float baseTranslationX = 0f;
+        float startOffsetX = baseTranslationX + (isPositive ? dpToPx(8) : -dpToPx(8));
+        float startOffsetY = -dpToPx(8);
+        textView.animate().cancel();
+        textView.setAlpha(0f);
+        textView.setTranslationX(startOffsetX);
+        textView.setTranslationY(startOffsetY);
+        textView.animate()
                 .alpha(1f)
+                .translationX(baseTranslationX)
                 .translationY(0f)
                 .setDuration(300)
                 .setInterpolator(new android.view.animation.OvershootInterpolator())
                 .start();
 
         long remainingMs = MtgLifeViewModel.RECENT_LIFE_CHANGE_WINDOW_MS - ageMs;
-        cellBinding.tvRecentLifeChange.postDelayed(
+        textView.postDelayed(
                 () -> {
-                    Object tag = cellBinding.tvRecentLifeChange.getTag();
+                    Object tag = textView.getTag();
                     if (tag instanceof Long timestamp && timestamp == recentLifeChangeTimestampMs) {
-                        cellBinding
-                                .tvRecentLifeChange
-                                .animate()
+                        textView.animate()
                                 .alpha(0f)
-                                .translationY(dpToPx(-8))
+                                .translationX(startOffsetX)
+                                .translationY(startOffsetY)
                                 .setDuration(300)
-                                .withEndAction(
-                                        () ->
-                                                cellBinding.tvRecentLifeChange.setVisibility(
-                                                        View.GONE))
+                                .withEndAction(() -> clearRecentLifeChange(textView))
                                 .start();
                     }
                 },
                 remainingMs);
+    }
+
+    private void clearRecentLifeChange(TextView textView) {
+        textView.animate().cancel();
+        textView.setVisibility(View.GONE);
+        textView.setText(null);
+        textView.setContentDescription(null);
+        textView.setTag(null);
+        textView.setAlpha(1f);
+        textView.setTranslationX(0f);
+        textView.setTranslationY(0f);
     }
 
     private View createCommanderSummarySpacer() {
@@ -811,6 +920,69 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             return slotIndex;
         }
         return mapping[slotIndex];
+    }
+
+    private void showTurnTimerDurationPicker(LifeSetupContentBinding setupBinding) {
+        long configuredDuration = viewModel.getTurnTimerDurationMs();
+        MinutesAlertDialogBinding dialogBinding =
+                MinutesAlertDialogBinding.inflate(getLayoutInflater());
+        android.widget.NumberPicker minutePicker = dialogBinding.minutePicker;
+        android.widget.NumberPicker secondPicker = dialogBinding.secondsPicker;
+
+        // Hide increment fields in minutes_alert_dialog
+        android.widget.TextView incrementLabel = dialogBinding.incrementLabel;
+        android.widget.TextView baseTimeLabel = dialogBinding.baseTimeLabel;
+        View incrementPickerContainer = (View) dialogBinding.incrementMinutePicker.getParent();
+
+        incrementLabel.setVisibility(View.GONE);
+        baseTimeLabel.setVisibility(View.GONE);
+        incrementPickerContainer.setVisibility(View.GONE);
+
+        // Configure duration pickers
+        minutePicker.setMinValue(0);
+        minutePicker.setMaxValue(999);
+        minutePicker.setValue((int) ((configuredDuration / 1000L) / 60L));
+        secondPicker.setMinValue(0);
+        secondPicker.setMaxValue(59);
+        secondPicker.setValue((int) ((configuredDuration / 1000L) % 60L));
+        secondPicker.setFormatter(
+                value -> String.format(java.util.Locale.getDefault(), "%02d", value));
+
+        new AlertDialog.Builder(requireContext())
+                .setView(dialogBinding.getRoot())
+                .setTitle(R.string.timer_settings_title)
+                .setPositiveButton(
+                        android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                long durationMs =
+                                        (minutePicker.getValue() * 60L + secondPicker.getValue())
+                                                * 1000L;
+                                viewModel.setTurnTimerDurationMs(durationMs);
+                                setupBinding.btnTurnTimerValue.setText(
+                                        TimerBackend.formatRemainingTime(durationMs, 10000L));
+                            }
+                        })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    @Override
+    public void onStop() {
+        if (!requireActivity().isChangingConfigurations()) {
+            viewModel.pauseForBackground();
+        }
+        super.onStop();
+    }
+
+    private void vibrate(long milliseconds) {
+        android.os.Vibrator vibrator =
+                (android.os.Vibrator)
+                        requireContext().getSystemService(android.content.Context.VIBRATOR_SERVICE);
+        if (vibrator != null) {
+            vibrator.vibrate(milliseconds);
+        }
     }
 
     @Override

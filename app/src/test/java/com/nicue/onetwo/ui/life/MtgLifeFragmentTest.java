@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Dialog;
+import android.graphics.Rect;
 import android.os.Looper;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.fragment.app.testing.FragmentScenario;
 import com.nicue.onetwo.R;
+import com.nicue.onetwo.databinding.LifePlayerCellBinding;
 import java.util.concurrent.TimeUnit;
 import org.junit.Rule;
 import org.junit.Test;
@@ -100,12 +102,20 @@ public class MtgLifeFragmentTest {
                         // Verify starting life totals are 40
                         TextView life1 = player1.findViewById(R.id.tv_life_count);
                         TextView life2 = player2.findViewById(R.id.tv_life_count);
-                        TextView recentChange1 = player1.findViewById(R.id.tv_recent_life_change);
-                        TextView recentChange2 = player2.findViewById(R.id.tv_recent_life_change);
+                        TextView negativeChange1 =
+                                player1.findViewById(R.id.tv_recent_life_change_negative);
+                        TextView positiveChange1 =
+                                player1.findViewById(R.id.tv_recent_life_change_positive);
+                        TextView negativeChange2 =
+                                player2.findViewById(R.id.tv_recent_life_change_negative);
+                        TextView positiveChange2 =
+                                player2.findViewById(R.id.tv_recent_life_change_positive);
                         assertEquals("40", life1.getText().toString());
                         assertEquals("40", life2.getText().toString());
-                        assertEquals(View.GONE, recentChange1.getVisibility());
-                        assertEquals(View.GONE, recentChange2.getVisibility());
+                        assertEquals(View.GONE, negativeChange1.getVisibility());
+                        assertEquals(View.GONE, positiveChange1.getVisibility());
+                        assertEquals(View.GONE, negativeChange2.getVisibility());
+                        assertEquals(View.GONE, positiveChange2.getVisibility());
 
                         // Tap right half for player 1
                         View incrementZone1 = player1.findViewById(R.id.life_increment_zone);
@@ -130,15 +140,23 @@ public class MtgLifeFragmentTest {
                         assertNotNull(player2);
                         TextView life1 = player1.findViewById(R.id.tv_life_count);
                         TextView life2 = player2.findViewById(R.id.tv_life_count);
-                        TextView recentChange1 = player1.findViewById(R.id.tv_recent_life_change);
-                        TextView recentChange2 = player2.findViewById(R.id.tv_recent_life_change);
+                        TextView negativeChange1 =
+                                player1.findViewById(R.id.tv_recent_life_change_negative);
+                        TextView positiveChange1 =
+                                player1.findViewById(R.id.tv_recent_life_change_positive);
+                        TextView negativeChange2 =
+                                player2.findViewById(R.id.tv_recent_life_change_negative);
+                        TextView positiveChange2 =
+                                player2.findViewById(R.id.tv_recent_life_change_positive);
 
                         assertEquals("41", life1.getText().toString());
                         assertEquals("39", life2.getText().toString());
-                        assertEquals(View.VISIBLE, recentChange1.getVisibility());
-                        assertEquals("+1", recentChange1.getText().toString());
-                        assertEquals(View.VISIBLE, recentChange2.getVisibility());
-                        assertEquals("-1", recentChange2.getText().toString());
+                        assertEquals(View.GONE, negativeChange1.getVisibility());
+                        assertEquals(View.VISIBLE, positiveChange1.getVisibility());
+                        assertEquals("+1", positiveChange1.getText().toString());
+                        assertEquals(View.VISIBLE, negativeChange2.getVisibility());
+                        assertEquals("-1", negativeChange2.getText().toString());
+                        assertEquals(View.GONE, positiveChange2.getVisibility());
                     });
         }
     }
@@ -367,12 +385,81 @@ public class MtgLifeFragmentTest {
 
                         TextView life1 = player1.findViewById(R.id.tv_life_count);
                         TextView life2 = player2.findViewById(R.id.tv_life_count);
-                        TextView recentChange1 = player1.findViewById(R.id.tv_recent_life_change);
-                        TextView recentChange2 = player2.findViewById(R.id.tv_recent_life_change);
+                        TextView negativeChange1 =
+                                player1.findViewById(R.id.tv_recent_life_change_negative);
+                        TextView positiveChange1 =
+                                player1.findViewById(R.id.tv_recent_life_change_positive);
+                        TextView negativeChange2 =
+                                player2.findViewById(R.id.tv_recent_life_change_negative);
+                        TextView positiveChange2 =
+                                player2.findViewById(R.id.tv_recent_life_change_positive);
                         assertEquals("50", life1.getText().toString());
                         assertEquals("30", life2.getText().toString());
-                        assertEquals("+10", recentChange1.getText().toString());
-                        assertEquals("-10", recentChange2.getText().toString());
+                        assertEquals(View.GONE, negativeChange1.getVisibility());
+                        assertEquals("+10", positiveChange1.getText().toString());
+                        assertEquals("-10", negativeChange2.getText().toString());
+                        assertEquals(View.GONE, positiveChange2.getVisibility());
+                    });
+        }
+    }
+
+    @Test
+    public void testRecentLifeChangeDoesNotRestartAnimationForSameTimestamp() {
+        try (FragmentScenario<MtgLifeFragment> scenario =
+                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
+
+            scenario.onFragment(
+                    fragment -> {
+                        View view = fragment.requireView();
+                        Button startButton = view.findViewById(R.id.start_game_button);
+                        assertNotNull(startButton);
+                        startButton.performClick();
+                    });
+
+            scenario.onFragment(
+                    fragment -> {
+                        View player1 = fragment.requireView().findViewById(R.id.player_1);
+                        assertNotNull(player1);
+
+                        View incrementZone = player1.findViewById(R.id.life_increment_zone);
+                        TextView recentChange =
+                                player1.findViewById(R.id.tv_recent_life_change_positive);
+                        assertNotNull(incrementZone);
+                        assertNotNull(recentChange);
+
+                        incrementZone.performClick();
+
+                        Object tag = recentChange.getTag();
+                        assertTrue(tag instanceof Long);
+                        long timestamp = (Long) tag;
+
+                        recentChange.setAlpha(0.75f);
+                        recentChange.setTranslationX(5f);
+                        recentChange.setTranslationY(7f);
+
+                        LifePlayerCellBinding cellBinding = LifePlayerCellBinding.bind(player1);
+                        try {
+                            java.lang.reflect.Method bindMethod =
+                                    MtgLifeFragment.class.getDeclaredMethod(
+                                            "bindRecentLifeChange",
+                                            LifePlayerCellBinding.class,
+                                            int.class,
+                                            long.class,
+                                            int.class);
+                            bindMethod.setAccessible(true);
+                            bindMethod.invoke(
+                                    fragment,
+                                    cellBinding,
+                                    1,
+                                    timestamp,
+                                    recentChange.getCurrentTextColor());
+                        } catch (ReflectiveOperationException e) {
+                            throw new AssertionError(e);
+                        }
+
+                        assertEquals(0.75f, recentChange.getAlpha(), 0f);
+                        assertEquals(5f, recentChange.getTranslationX(), 0f);
+                        assertEquals(7f, recentChange.getTranslationY(), 0f);
                     });
         }
     }
@@ -521,9 +608,150 @@ public class MtgLifeFragmentTest {
                         assertNotNull(player1);
 
                         TextView life1 = player1.findViewById(R.id.tv_life_count);
-                        TextView recentChange1 = player1.findViewById(R.id.tv_recent_life_change);
+                        TextView recentChange1 =
+                                player1.findViewById(R.id.tv_recent_life_change_positive);
                         assertEquals("60", life1.getText().toString());
                         assertEquals("+20", recentChange1.getText().toString());
+                    });
+        }
+    }
+
+    @Test
+    public void testThreeDigitLifeDisplayWorks() {
+        try (FragmentScenario<MtgLifeFragment> scenario =
+                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
+
+            scenario.onFragment(
+                    fragment -> {
+                        View view = fragment.getView();
+                        assertNotNull(view);
+                        EditText playersInput = view.findViewById(R.id.players_input);
+                        EditText lifeInput = view.findViewById(R.id.life_input);
+                        playersInput.setText("4");
+                        lifeInput.setText("100");
+
+                        Button startButton = view.findViewById(R.id.start_game_button);
+                        startButton.performClick();
+                    });
+
+            scenario.onFragment(
+                    fragment -> {
+                        View view = fragment.getView();
+                        assertNotNull(view);
+                        View player1 = view.findViewById(R.id.player_1);
+                        assertNotNull(player1);
+
+                        TextView life1 = player1.findViewById(R.id.tv_life_count);
+                        assertEquals("100", life1.getText().toString());
+                    });
+        }
+    }
+
+    @Test
+    public void testSixPlayerLayoutIncrementShowsVisiblePositiveDelta() {
+        try (FragmentScenario<MtgLifeFragment> scenario =
+                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
+
+            scenario.onFragment(
+                    fragment -> {
+                        View view = fragment.getView();
+                        assertNotNull(view);
+                        EditText playersInput = view.findViewById(R.id.players_input);
+                        EditText lifeInput = view.findViewById(R.id.life_input);
+                        assertNotNull(playersInput);
+                        assertNotNull(lifeInput);
+                        playersInput.setText("6");
+                        lifeInput.setText("40");
+
+                        Button startButton = view.findViewById(R.id.start_game_button);
+                        assertNotNull(startButton);
+                        startButton.performClick();
+                    });
+
+            scenario.onFragment(
+                    fragment -> {
+                        View player6 = fragment.requireView().findViewById(R.id.player_6);
+                        assertNotNull(player6);
+
+                        View incrementZone = player6.findViewById(R.id.life_increment_zone);
+                        assertNotNull(incrementZone);
+                        incrementZone.performClick();
+                    });
+
+            scenario.onFragment(
+                    fragment -> {
+                        View player6 = fragment.requireView().findViewById(R.id.player_6);
+                        assertNotNull(player6);
+
+                        TextView life6 = player6.findViewById(R.id.tv_life_count);
+                        TextView positiveDelta =
+                                player6.findViewById(R.id.tv_recent_life_change_positive);
+                        assertNotNull(life6);
+                        assertNotNull(positiveDelta);
+                        assertEquals("41", life6.getText().toString());
+                        assertEquals(View.VISIBLE, positiveDelta.getVisibility());
+                        assertEquals("+1", positiveDelta.getText().toString());
+                        Rect visibleRect = new Rect();
+                        assertTrue(positiveDelta.getGlobalVisibleRect(visibleRect));
+                        assertTrue(visibleRect.width() > 0);
+                        assertTrue(visibleRect.height() > 0);
+                    });
+        }
+    }
+
+    @Test
+    public void testTurnTimerResetInPreviewBoardOnReturnToSetup() {
+        try (FragmentScenario<MtgLifeFragment> scenario =
+                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
+
+            // 1. Enable turn timer switch and start a game
+            scenario.onFragment(
+                    fragment -> {
+                        View view = fragment.getView();
+                        assertNotNull(view);
+
+                        android.widget.CompoundButton timerSwitch =
+                                view.findViewById(R.id.turn_timer_switch);
+                        assertNotNull(timerSwitch);
+                        timerSwitch.setChecked(true);
+
+                        Button startButton = view.findViewById(R.id.start_game_button);
+                        assertNotNull(startButton);
+                        startButton.performClick();
+                    });
+
+            // 2. Verify we are in game and player cells have timer visible
+            scenario.onFragment(
+                    fragment -> {
+                        View view = fragment.getView();
+                        assertNotNull(view);
+
+                        View player1 = view.findViewById(R.id.player_1);
+                        assertNotNull(player1);
+                        View timerContainer = player1.findViewById(R.id.timer_container);
+                        assertNotNull(timerContainer);
+                        assertEquals(View.VISIBLE, timerContainer.getVisibility());
+                    });
+
+            // 3. Return to setup (New Game)
+            scenario.onFragment(
+                    fragment -> {
+                        org.robolectric.fakes.RoboMenuItem resetMenuItem =
+                                new org.robolectric.fakes.RoboMenuItem(R.id.action_new_game);
+                        fragment.onMenuItemSelected(resetMenuItem);
+                    });
+
+            // 4. Verify that on returning to setup, the preview player cell has timer GONE
+            scenario.onFragment(
+                    fragment -> {
+                        View view = fragment.getView();
+                        assertNotNull(view);
+
+                        View player1 = view.findViewById(R.id.player_1);
+                        assertNotNull(player1);
+                        View timerContainer = player1.findViewById(R.id.timer_container);
+                        assertNotNull(timerContainer);
+                        assertEquals(View.GONE, timerContainer.getVisibility());
                     });
         }
     }

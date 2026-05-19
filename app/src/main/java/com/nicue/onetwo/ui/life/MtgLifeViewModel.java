@@ -6,6 +6,10 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
 import com.nicue.onetwo.R;
+import com.nicue.onetwo.core.HandlerTimerScheduler;
+import com.nicue.onetwo.core.TimerScheduler;
+import com.nicue.onetwo.utils.TimerBackend;
+import com.nicue.onetwo.utils.TurnTimerEngine;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,31 +25,59 @@ public class MtgLifeViewModel extends ViewModel {
     private static final String KEY_COMMANDER_DAMAGE_ENABLED = "commanderDamageEnabled";
     private static final String KEY_COMMANDER_DAMAGE_MATRIX = "commanderDamageMatrix";
 
+    private static final String KEY_TURN_TIMER_ENABLED = "turnTimerEnabled";
+    private static final String KEY_TURN_TIMER_DURATION_MS = "turnTimerDurationMs";
+    private static final String KEY_TURN_TIMER_REMAINING_TIMES = "turnTimerRemainingTimes";
+    private static final String KEY_TURN_TIMER_ACTIVE_SEAT_INDEX = "turnTimerActiveSeatIndex";
+    private static final String KEY_TURN_TIMER_PAUSED = "turnTimerPaused";
+    private static final String KEY_TURN_TIMER_FINISHED = "turnTimerFinished";
+    private static final String KEY_TURN_TIMER_LAST_TICK_TIME_MS = "turnTimerLastTickTimeMs";
+
     private static final int DEFAULT_PLAYER_COUNT = 4;
     private static final int DEFAULT_STARTING_LIFE = 40;
     private static final int MIN_PLAYER_COUNT = 1;
     private static final int MAX_PLAYER_COUNT = 6;
     private static final int COMMANDER_LETHAL_DAMAGE = 21;
+    private static final long DEFAULT_TURN_TIMER_DURATION_MS = 300000L;
     public static final long RECENT_LIFE_CHANGE_WINDOW_MS = 2000L;
 
     private final SavedStateHandle savedStateHandle;
     private final MutableLiveData<MtgLifeUiState> uiState = new MutableLiveData<>();
     private final NowProvider nowProvider;
+    private final TimerScheduler timerScheduler;
+    private final TurnTimerEngine timerEngine;
 
     interface NowProvider {
         long now();
     }
 
     public MtgLifeViewModel(SavedStateHandle savedStateHandle) {
-        this(savedStateHandle, SystemClock::elapsedRealtime);
+        this(savedStateHandle, SystemClock::elapsedRealtime, new HandlerTimerScheduler());
     }
 
     MtgLifeViewModel(SavedStateHandle savedStateHandle, NowProvider nowProvider) {
+        this(savedStateHandle, nowProvider, new HandlerTimerScheduler());
+    }
+
+    MtgLifeViewModel(
+            SavedStateHandle savedStateHandle,
+            NowProvider nowProvider,
+            TimerScheduler timerScheduler) {
         this.savedStateHandle = savedStateHandle;
         this.nowProvider = nowProvider;
+        this.timerScheduler = timerScheduler;
+        this.timerEngine = new TurnTimerEngine(DEFAULT_TURN_TIMER_DURATION_MS, 0L);
 
         if (!savedStateHandle.contains(KEY_SHOWING_SETUP)) {
             initializeDefaultState();
+        }
+        restoreTurnTimerState();
+
+        // Resume turn timer ticking if it was running before recreation
+        if (getTurnTimerEnabled() && !getTurnTimerPaused() && !getTurnTimerFinished()) {
+            timerEngine.setLastTickTimeMs(nowProvider.now());
+            persistTurnTimerState();
+            timerScheduler.start(this::handleTick);
         }
 
         updateUiState();
@@ -55,12 +87,76 @@ public class MtgLifeViewModel extends ViewModel {
         return uiState;
     }
 
+    public boolean getTurnTimerEnabled() {
+        Boolean enabled = savedStateHandle.get(KEY_TURN_TIMER_ENABLED);
+        return enabled != null && enabled;
+    }
+
+    public long getTurnTimerDurationMs() {
+        return timerEngine.getConfiguredDurationMs();
+    }
+
+    public void setTurnTimerEnabled(boolean enabled) {
+        savedStateHandle.set(KEY_TURN_TIMER_ENABLED, enabled);
+        if (!enabled) {
+            timerScheduler.stop();
+            timerEngine.setPaused(true);
+            savedStateHandle.set(KEY_TURN_TIMER_FINISHED, false);
+            savedStateHandle.set(KEY_TURN_TIMER_REMAINING_TIMES, null);
+            savedStateHandle.set(KEY_TURN_TIMER_ACTIVE_SEAT_INDEX, 0);
+            savedStateHandle.set(KEY_TURN_TIMER_PAUSED, true);
+            savedStateHandle.set(KEY_TURN_TIMER_LAST_TICK_TIME_MS, 0L);
+        }
+        updateUiState();
+    }
+
+    public void setTurnTimerDurationMs(long durationMs) {
+        timerEngine.setConfiguredDurationMs(durationMs);
+        savedStateHandle.set(KEY_TURN_TIMER_DURATION_MS, durationMs);
+        updateUiState();
+    }
+
+    public ArrayList<Long> getTurnTimerRemainingTimes() {
+        return new ArrayList<>(timerEngine.getRemainingTimes());
+    }
+
+    public int getTurnTimerActiveSeatIndex() {
+        return timerEngine.getRunningIndex();
+    }
+
+    public boolean getTurnTimerPaused() {
+        return timerEngine.isPaused();
+    }
+
+    public boolean getTurnTimerFinished() {
+        Boolean finished = savedStateHandle.get(KEY_TURN_TIMER_FINISHED);
+        return finished != null && finished;
+    }
+
+    private long getTurnTimerLastTickTimeMs() {
+        return timerEngine.getLastTickTimeMs();
+    }
+
+    private void setTurnTimerLastTickTimeMs(long timeMs) {
+        timerEngine.setLastTickTimeMs(timeMs);
+        savedStateHandle.set(KEY_TURN_TIMER_LAST_TICK_TIME_MS, timeMs);
+    }
+
     public void validateAndStartGame(String playersStr, String lifeStr) {
-        validateAndStartGame(playersStr, lifeStr, getCommanderDamageEnabled());
+        validateAndStartGame(
+                playersStr, lifeStr, getCommanderDamageEnabled(), getTurnTimerEnabled());
     }
 
     public void validateAndStartGame(
             String playersStr, String lifeStr, boolean commanderDamageEnabled) {
+        validateAndStartGame(playersStr, lifeStr, commanderDamageEnabled, getTurnTimerEnabled());
+    }
+
+    public void validateAndStartGame(
+            String playersStr,
+            String lifeStr,
+            boolean commanderDamageEnabled,
+            boolean turnTimerEnabled) {
         Integer parsedPlayerCount = parsePlayerCount(playersStr);
         Integer parsedStartingLife = parseStartingLife(lifeStr);
 
@@ -88,6 +184,33 @@ public class MtgLifeViewModel extends ViewModel {
         savedStateHandle.set(KEY_COMMANDER_DAMAGE_ENABLED, commanderDamageEnabled);
         savedStateHandle.set(
                 KEY_COMMANDER_DAMAGE_MATRIX, createCommanderDamageMatrix(parsedPlayerCount));
+
+        savedStateHandle.set(KEY_TURN_TIMER_ENABLED, turnTimerEnabled);
+        if (turnTimerEnabled) {
+            long duration = getTurnTimerDurationMs();
+            ArrayList<Long> initialRemaining = new ArrayList<>();
+            for (int i = 0; i < parsedPlayerCount; i++) {
+                initialRemaining.add(duration);
+            }
+            timerEngine.setRemainingTimes(initialRemaining);
+            timerEngine.setRunningIndex(0);
+            timerEngine.setPaused(true);
+            timerEngine.setLastTickTimeMs(0L);
+            savedStateHandle.set(KEY_TURN_TIMER_FINISHED, duration <= 0L);
+            persistTurnTimerState();
+        } else {
+            timerScheduler.stop();
+            timerEngine.setRemainingTimes(new ArrayList<>());
+            timerEngine.setRunningIndex(0);
+            timerEngine.setPaused(true);
+            timerEngine.setLastTickTimeMs(0L);
+            savedStateHandle.set(KEY_TURN_TIMER_REMAINING_TIMES, null);
+            savedStateHandle.set(KEY_TURN_TIMER_ACTIVE_SEAT_INDEX, 0);
+            savedStateHandle.set(KEY_TURN_TIMER_PAUSED, true);
+            savedStateHandle.set(KEY_TURN_TIMER_FINISHED, false);
+            savedStateHandle.set(KEY_TURN_TIMER_LAST_TICK_TIME_MS, 0L);
+        }
+
         savedStateHandle.set(KEY_SHOWING_SETUP, false);
 
         updateUiState();
@@ -117,7 +240,79 @@ public class MtgLifeViewModel extends ViewModel {
         updateCommanderDamage(defenderSeatIndex, sourceSeatIndex, -1);
     }
 
+    public void passTurn(int seatIndex) {
+        if (!getTurnTimerEnabled()
+                || getTurnTimerFinished()
+                || seatIndex != getTurnTimerActiveSeatIndex()) {
+            return;
+        }
+
+        long nowMs = nowProvider.now();
+        int totalPlayers = getPlayerCount();
+        int nextSeat = getNextSeatClockwise(seatIndex, totalPlayers);
+
+        if (getTurnTimerPaused()) {
+            timerEngine.setRunningIndex(nextSeat);
+            startTimer(nowMs);
+        } else {
+            boolean expired = timerEngine.tick(nowMs);
+            if (expired) {
+                finishTurnTimer();
+                return;
+            }
+            timerEngine.advanceTo(nextSeat, nowMs);
+            persistTurnTimerState();
+            updateUiState();
+        }
+    }
+
+    public void pauseForBackground() {
+        pauseTimer();
+    }
+
+    @Override
+    protected void onCleared() {
+        timerScheduler.stop();
+        super.onCleared();
+    }
+
+    private void startTimer(long nowMs) {
+        if (!getTurnTimerEnabled() || getTurnTimerFinished()) {
+            return;
+        }
+        timerEngine.start(nowMs);
+        if (!timerEngine.isPaused()) {
+            timerScheduler.start(this::handleTick);
+        }
+        persistTurnTimerState();
+        updateUiState();
+    }
+
+    private void pauseTimer() {
+        if (!getTurnTimerEnabled() || getTurnTimerPaused()) {
+            return;
+        }
+        timerScheduler.stop();
+        timerEngine.pause();
+        persistTurnTimerState();
+        updateUiState();
+    }
+
+    private void handleTick(long nowMs) {
+        if (!getTurnTimerEnabled() || getTurnTimerPaused() || getTurnTimerFinished()) {
+            return;
+        }
+        boolean expired = timerEngine.tick(nowMs);
+        if (expired) {
+            finishTurnTimer();
+            return;
+        }
+        persistTurnTimerState();
+        updateUiState();
+    }
+
     public void resetToSetup() {
+        pauseTimer();
         savedStateHandle.set(KEY_SHOWING_SETUP, true);
         savedStateHandle.set(KEY_PLAYERS_ERROR_RES_ID, null);
         savedStateHandle.set(KEY_LIFE_ERROR_RES_ID, null);
@@ -147,6 +342,19 @@ public class MtgLifeViewModel extends ViewModel {
         savedStateHandle.set(KEY_LIFE_ERROR_RES_ID, null);
         savedStateHandle.set(KEY_COMMANDER_DAMAGE_ENABLED, true);
         savedStateHandle.set(KEY_COMMANDER_DAMAGE_MATRIX, new ArrayList<ArrayList<Integer>>());
+
+        savedStateHandle.set(KEY_TURN_TIMER_ENABLED, false);
+        savedStateHandle.set(KEY_TURN_TIMER_DURATION_MS, DEFAULT_TURN_TIMER_DURATION_MS);
+        timerEngine.setConfiguredDurationMs(DEFAULT_TURN_TIMER_DURATION_MS);
+        timerEngine.setRemainingTimes(new ArrayList<>());
+        timerEngine.setRunningIndex(0);
+        timerEngine.setPaused(true);
+        timerEngine.setLastTickTimeMs(0L);
+        savedStateHandle.set(KEY_TURN_TIMER_REMAINING_TIMES, null);
+        savedStateHandle.set(KEY_TURN_TIMER_ACTIVE_SEAT_INDEX, 0);
+        savedStateHandle.set(KEY_TURN_TIMER_PAUSED, true);
+        savedStateHandle.set(KEY_TURN_TIMER_FINISHED, false);
+        savedStateHandle.set(KEY_TURN_TIMER_LAST_TICK_TIME_MS, 0L);
     }
 
     private Integer parsePlayerCount(String playersStr) {
@@ -401,6 +609,44 @@ public class MtgLifeViewModel extends ViewModel {
         return damages;
     }
 
+    private int getNextSeatClockwise(int activeSeat, int totalPlayers) {
+        return switch (totalPlayers) {
+            case 1 -> 0;
+            case 2 -> activeSeat == 0 ? 1 : 0;
+            case 3 ->
+                    switch (activeSeat) {
+                        case 0 -> 1;
+                        case 1 -> 2;
+                        default -> 0;
+                    };
+            case 4 ->
+                    switch (activeSeat) {
+                        case 0 -> 1;
+                        case 1 -> 3;
+                        case 3 -> 2;
+                        default -> 0;
+                    };
+            case 5 ->
+                    switch (activeSeat) {
+                        case 0 -> 1;
+                        case 1 -> 3;
+                        case 3 -> 4;
+                        case 4 -> 2;
+                        default -> 0;
+                    };
+            case 6 ->
+                    switch (activeSeat) {
+                        case 0 -> 1;
+                        case 1 -> 3;
+                        case 3 -> 5;
+                        case 5 -> 4;
+                        case 4 -> 2;
+                        default -> 0;
+                    };
+            default -> 0;
+        };
+    }
+
     private void updateUiState() {
         boolean showingSetup = isShowingSetup();
         int playerCount = getPlayerCount();
@@ -412,6 +658,12 @@ public class MtgLifeViewModel extends ViewModel {
         ArrayList<ArrayList<Integer>> commanderDamageMatrix = getCommanderDamageMatrix();
         List<Integer> recentLifeChanges = getRecentLifeChanges();
         List<Long> recentLifeChangeTimestamps = getRecentLifeChangeTimestamps();
+
+        boolean turnTimerEnabled = getTurnTimerEnabled();
+        boolean turnTimerPaused = getTurnTimerPaused();
+        boolean turnTimerFinished = getTurnTimerFinished();
+        int activeSeatIndex = getTurnTimerActiveSeatIndex();
+        ArrayList<Long> remainingTimes = getTurnTimerRemainingTimes();
 
         List<LifePlayerUiModel> players = new ArrayList<>();
         if (!showingSetup && currentLives != null) {
@@ -426,6 +678,24 @@ public class MtgLifeViewModel extends ViewModel {
                                         && seatIndex < recentLifeChangeTimestamps.size()
                                 ? recentLifeChangeTimestamps.get(seatIndex)
                                 : 0L;
+
+                boolean timerVisible =
+                        turnTimerEnabled
+                                && remainingTimes != null
+                                && seatIndex < remainingTimes.size();
+                String timerDisplay = "";
+                boolean timerActive = false;
+                boolean timerExpired = false;
+                boolean passEnabled = false;
+
+                if (timerVisible) {
+                    long remainingTime = remainingTimes.get(seatIndex);
+                    timerDisplay = TimerBackend.formatRemainingTime(remainingTime, 10000L);
+                    timerActive = seatIndex == activeSeatIndex;
+                    timerExpired = remainingTime <= 0L;
+                    passEnabled = timerActive && !turnTimerFinished && remainingTime > 0L;
+                }
+
                 players.add(
                         new LifePlayerUiModel(
                                 seatIndex,
@@ -437,7 +707,12 @@ public class MtgLifeViewModel extends ViewModel {
                                 recentLifeChangeTimestampMs,
                                 commanderDamageEnabled && totalPlayers > 1,
                                 buildCommanderDamages(
-                                        seatIndex, commanderDamageMatrix, totalPlayers)));
+                                        seatIndex, commanderDamageMatrix, totalPlayers),
+                                timerVisible,
+                                timerDisplay,
+                                timerActive,
+                                timerExpired,
+                                passEnabled));
             }
         }
 
@@ -449,6 +724,43 @@ public class MtgLifeViewModel extends ViewModel {
                         players,
                         playersErrorResId,
                         lifeErrorResId,
-                        commanderDamageEnabled));
+                        commanderDamageEnabled,
+                        turnTimerEnabled,
+                        turnTimerPaused,
+                        turnTimerFinished));
+    }
+
+    private void restoreTurnTimerState() {
+        Long savedConfiguredDuration = savedStateHandle.get(KEY_TURN_TIMER_DURATION_MS);
+        ArrayList<Long> savedRemainingTimes = savedStateHandle.get(KEY_TURN_TIMER_REMAINING_TIMES);
+        Integer savedActiveSeat = savedStateHandle.get(KEY_TURN_TIMER_ACTIVE_SEAT_INDEX);
+        Boolean savedPaused = savedStateHandle.get(KEY_TURN_TIMER_PAUSED);
+        Long savedLastTick = savedStateHandle.get(KEY_TURN_TIMER_LAST_TICK_TIME_MS);
+
+        timerEngine.setConfiguredDurationMs(
+                savedConfiguredDuration == null
+                        ? DEFAULT_TURN_TIMER_DURATION_MS
+                        : savedConfiguredDuration);
+        timerEngine.setRemainingTimes(
+                savedRemainingTimes == null ? new ArrayList<>() : savedRemainingTimes);
+        timerEngine.setRunningIndex(savedActiveSeat == null ? 0 : savedActiveSeat);
+        timerEngine.setPaused(savedPaused == null || savedPaused);
+        timerEngine.setLastTickTimeMs(savedLastTick == null ? 0L : savedLastTick);
+    }
+
+    private void persistTurnTimerState() {
+        savedStateHandle.set(KEY_TURN_TIMER_DURATION_MS, timerEngine.getConfiguredDurationMs());
+        savedStateHandle.set(
+                KEY_TURN_TIMER_REMAINING_TIMES, new ArrayList<>(timerEngine.getRemainingTimes()));
+        savedStateHandle.set(KEY_TURN_TIMER_ACTIVE_SEAT_INDEX, timerEngine.getRunningIndex());
+        savedStateHandle.set(KEY_TURN_TIMER_PAUSED, timerEngine.isPaused());
+        savedStateHandle.set(KEY_TURN_TIMER_LAST_TICK_TIME_MS, timerEngine.getLastTickTimeMs());
+    }
+
+    private void finishTurnTimer() {
+        timerScheduler.stop();
+        savedStateHandle.set(KEY_TURN_TIMER_FINISHED, true);
+        persistTurnTimerState();
+        updateUiState();
     }
 }

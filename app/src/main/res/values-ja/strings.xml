@@ -59,5 +59,10 @@
     <string name="colon">:</string>
     <string name="content_desc_add_counter">カウンターを追加</string>
     <string name="content_desc_roll_dice">サイコロを振る</string>
+    <string name="mtg_setup_turn_timer">ターンタイマー</string>
+    <string name="mtg_setup_time">時間</string>
+    <string name="mtg_pass_turn">パス</string>
+    <string name="mtg_pass_turn_desc">プレイヤー%1$dのターンを次のプレイヤーに渡す</string>
+    <string name="mtg_player_timer_desc">プレイヤー%1$dの残り時間: %2$s</string>
 
 </resources>

@@ -94,4 +94,9 @@
     <string name="mtg_btn_minus_commander_damage_desc">Decrease commander damage from player %1$d</string>
     <string name="mtg_btn_plus_commander_damage_desc">Increase commander damage from player %1$d</string>
 
+    <string name="mtg_setup_turn_timer">Turn Timer</string>
+    <string name="mtg_setup_time">Time</string>
+    <string name="mtg_pass_turn">Pass</string>
+    <string name="mtg_pass_turn_desc">Pass turn from player %1$d to next player</string>
+    <string name="mtg_player_timer_desc">Player %1$d remaining time: %2$s</string>
 </resources>
