@@ -405,6 +405,22 @@ public class MtgLifeViewModelTest {
     }
 
     @Test
+    public void testZeroDurationTurnTimerStartsFinishedAndDisablesPass() throws Exception {
+        viewModel.setTurnTimerDurationMs(0L);
+        viewModel.validateAndStartGame("2", "40", true, true);
+
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertTrue(state.isTurnTimerEnabled());
+        assertTrue(state.isTurnTimerPaused());
+        assertTrue(state.isTurnTimerFinished());
+
+        List<LifePlayerUiModel> players = state.getPlayers();
+        assertEquals("0:00:00", players.get(0).getTimerDisplay());
+        assertTrue(players.get(0).isTimerExpired());
+        assertFalse(players.get(0).isPassEnabled());
+    }
+
+    @Test
     public void testStartGameWithTurnTimerEnabled() throws Exception {
         viewModel.setTurnTimerDurationMs(180000L);
         viewModel.validateAndStartGame("3", "40", true, true);
