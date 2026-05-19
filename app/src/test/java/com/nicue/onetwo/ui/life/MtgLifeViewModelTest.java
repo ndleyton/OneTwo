@@ -559,7 +559,7 @@ public class MtgLifeViewModelTest {
         assertEquals(1, viewModel.getTurnTimerActiveSeatIndex());
 
         LifePlayerUiModel player1 = state.getPlayers().get(1);
-        assertEquals("0:00", player1.getTimerDisplay());
+        assertEquals("0:00:00", player1.getTimerDisplay());
         assertTrue(player1.isTimerExpired());
         assertFalse(player1.isPassEnabled());
     }
