@@ -563,4 +563,35 @@ public class MtgLifeViewModelTest {
         assertTrue(player1.isTimerExpired());
         assertFalse(player1.isPassEnabled());
     }
+
+    @Test
+    public void testPassTurnChargesCorrectPlayer() throws Exception {
+        FakeTimerScheduler fakeScheduler = new FakeTimerScheduler(nowProvider);
+        viewModel = new MtgLifeViewModel(new SavedStateHandle(), nowProvider, fakeScheduler);
+
+        viewModel.setTurnTimerDurationMs(300000L);
+        viewModel.validateAndStartGame("2", "40", true, true);
+
+        // Turn timer starts paused for player 0.
+        // Pass player 0 -> switches active seat to 1 and starts the timer.
+        viewModel.passTurn(0);
+        assertEquals(1, viewModel.getTurnTimerActiveSeatIndex());
+
+        // Player 1's turn runs for 5 seconds.
+        nowProvider.advanceBy(5000L);
+
+        // Player 1 passes turn -> charges player 1 and switches active seat to 0.
+        viewModel.passTurn(1);
+        assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
+
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        LifePlayerUiModel player0 = state.getPlayers().get(0);
+        LifePlayerUiModel player1 = state.getPlayers().get(1);
+
+        // Player 1 should have been charged 5 seconds (displaying "4:55").
+        assertEquals("4:55", player1.getTimerDisplay());
+        // Player 0 should not have been charged (displaying "5:00").
+        assertEquals("5:00", player0.getTimerDisplay());
+    }
 }
+

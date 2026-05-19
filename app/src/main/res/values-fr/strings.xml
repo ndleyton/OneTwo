@@ -59,5 +59,10 @@
     <string name="colon">:</string>
     <string name="content_desc_add_counter">Ajouter un score</string>
     <string name="content_desc_roll_dice">Lancer les dés</string>
+    <string name="mtg_setup_turn_timer">Minuteur de tour</string>
+    <string name="mtg_setup_time">Temps</string>
+    <string name="mtg_pass_turn">Passer</string>
+    <string name="mtg_pass_turn_desc">Passer le tour du joueur %1$d au joueur suivant</string>
+    <string name="mtg_player_timer_desc">Temps restant du joueur %1$d : %2$s</string>
 
 </resources>

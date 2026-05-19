@@ -81,4 +81,9 @@
     <string name="default_mtg_life">40</string>
     <string name="mtg_commander_damage_self_label">yo</string>
     <string name="mtg_commander_damage_manage_desc">Haz clic para gestionar el daño de comandante del jugador %1$d</string>
+    <string name="mtg_setup_turn_timer">Reloj de turno</string>
+    <string name="mtg_setup_time">Tiempo</string>
+    <string name="mtg_pass_turn">Pasar</string>
+    <string name="mtg_pass_turn_desc">Pasar el turno del jugador %1$d al siguiente jugador</string>
+    <string name="mtg_player_timer_desc">Tiempo restante del jugador %1$d: %2$s</string>
 </resources>
