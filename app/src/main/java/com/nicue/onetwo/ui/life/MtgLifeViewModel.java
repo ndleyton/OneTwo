@@ -132,19 +132,12 @@ public class MtgLifeViewModel extends ViewModel {
 
     public void validateAndStartGame(String playersStr, String lifeStr) {
         validateAndStartGame(
-                playersStr,
-                lifeStr,
-                getCommanderDamageEnabled(),
-                getTurnTimerEnabled());
+                playersStr, lifeStr, getCommanderDamageEnabled(), getTurnTimerEnabled());
     }
 
     public void validateAndStartGame(
             String playersStr, String lifeStr, boolean commanderDamageEnabled) {
-        validateAndStartGame(
-                playersStr,
-                lifeStr,
-                commanderDamageEnabled,
-                getTurnTimerEnabled());
+        validateAndStartGame(playersStr, lifeStr, commanderDamageEnabled, getTurnTimerEnabled());
     }
 
     public void validateAndStartGame(
@@ -227,7 +220,9 @@ public class MtgLifeViewModel extends ViewModel {
     }
 
     public void passTurn(int seatIndex) {
-        if (!getTurnTimerEnabled() || getTurnTimerFinished() || seatIndex != getTurnTimerActiveSeatIndex()) {
+        if (!getTurnTimerEnabled()
+                || getTurnTimerFinished()
+                || seatIndex != getTurnTimerActiveSeatIndex()) {
             return;
         }
 
@@ -669,7 +664,10 @@ public class MtgLifeViewModel extends ViewModel {
                                 ? recentLifeChangeTimestamps.get(seatIndex)
                                 : 0L;
 
-                boolean timerVisible = turnTimerEnabled && remainingTimes != null && seatIndex < remainingTimes.size();
+                boolean timerVisible =
+                        turnTimerEnabled
+                                && remainingTimes != null
+                                && seatIndex < remainingTimes.size();
                 String timerDisplay = "";
                 boolean timerActive = false;
                 boolean timerExpired = false;

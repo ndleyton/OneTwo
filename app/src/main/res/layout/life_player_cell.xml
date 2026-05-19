@@ -50,16 +50,18 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_pass_turn"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
+                android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:textSize="12sp"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
                 android:minHeight="0dp"
                 android:minWidth="0dp"
-                android:text="@string/mtg_pass_turn" />
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
+                app:icon="@drawable/ic_update_24"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="20dp" />
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -87,7 +89,7 @@
             android:id="@+id/tv_recent_life_change_negative"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="20dp"
             android:gravity="center"
             android:includeFontPadding="false"
             android:maxLines="1"
@@ -142,7 +144,7 @@
             android:id="@+id/tv_recent_life_change_positive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="20dp"
             android:gravity="center"
             android:includeFontPadding="false"
             android:maxLines="1"

@@ -1,6 +1,7 @@
 package com.nicue.onetwo.ui.life;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -26,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.view.MenuHost;
@@ -34,8 +36,6 @@ import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.appcompat.app.AlertDialog;
-import android.content.DialogInterface;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.databinding.LifeBoard1Binding;
@@ -107,7 +107,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                     String lifeStr = lifeText != null ? lifeText.toString() : "";
                     boolean commanderEnabled = setupBinding.commanderDamageSwitch.isChecked();
                     boolean turnTimerEnabled = setupBinding.turnTimerSwitch.isChecked();
-                    viewModel.validateAndStartGame(playersStr, lifeStr, commanderEnabled, turnTimerEnabled);
+                    viewModel.validateAndStartGame(
+                            playersStr, lifeStr, commanderEnabled, turnTimerEnabled);
                 });
 
         binding.setupOverlay.setOnClickListener(v -> viewModel.dismissSetup());
@@ -181,15 +182,20 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             setupBinding.commanderDamageSwitch.setChecked(uiState.isCommanderDamageEnabled());
             setupBinding.turnTimerSwitch.setChecked(uiState.isTurnTimerEnabled());
             long durationMs = viewModel.getTurnTimerDurationMs();
-            setupBinding.btnTurnTimerValue.setText(TimerBackend.formatRemainingTime(durationMs, 10000L));
-            setupBinding.turnTimerValueRow.setVisibility(uiState.isTurnTimerEnabled() ? View.VISIBLE : View.GONE);
+            setupBinding.btnTurnTimerValue.setText(
+                    TimerBackend.formatRemainingTime(durationMs, 10000L));
+            setupBinding.turnTimerValueRow.setVisibility(
+                    uiState.isTurnTimerEnabled() ? View.VISIBLE : View.GONE);
 
-            setupBinding.turnTimerSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                setupBinding.turnTimerValueRow.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-                viewModel.setTurnTimerEnabled(isChecked);
-            });
+            setupBinding.turnTimerSwitch.setOnCheckedChangeListener(
+                    (buttonView, isChecked) -> {
+                        setupBinding.turnTimerValueRow.setVisibility(
+                                isChecked ? View.VISIBLE : View.GONE);
+                        viewModel.setTurnTimerEnabled(isChecked);
+                    });
 
-            setupBinding.btnTurnTimerValue.setOnClickListener(v -> showTurnTimerDurationPicker(setupBinding));
+            setupBinding.btnTurnTimerValue.setOnClickListener(
+                    v -> showTurnTimerDurationPicker(setupBinding));
 
             inputsInitialized = true;
         }
@@ -276,12 +282,14 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
 
     private void bindPlayerCell(
             LifePlayerCellBinding cellBinding, LifePlayerUiModel player, int playerCount) {
-        int backgroundColor = player.isTimerExpired()
-                ? ContextCompat.getColor(requireContext(), R.color.mtg_expired_background)
-                : ContextCompat.getColor(requireContext(), player.getBackgroundColorRes());
-        int foregroundColor = player.isTimerExpired()
-                ? ContextCompat.getColor(requireContext(), R.color.mtg_expired_foreground)
-                : getForegroundColor(backgroundColor);
+        int backgroundColor =
+                player.isTimerExpired()
+                        ? ContextCompat.getColor(requireContext(), R.color.mtg_expired_background)
+                        : ContextCompat.getColor(requireContext(), player.getBackgroundColorRes());
+        int foregroundColor =
+                player.isTimerExpired()
+                        ? ContextCompat.getColor(requireContext(), R.color.mtg_expired_foreground)
+                        : getForegroundColor(backgroundColor);
         int seatIndex = player.getSeatIndex();
 
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
@@ -332,20 +340,26 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             cellBinding.tvTurnTimer.setText(player.getTimerDisplay());
             cellBinding.tvTurnTimer.setTextColor(foregroundColor);
             cellBinding.tvTurnTimer.setContentDescription(
-                    getString(R.string.mtg_player_timer_desc, seatIndex + 1, player.getTimerDisplay()));
+                    getString(
+                            R.string.mtg_player_timer_desc,
+                            seatIndex + 1,
+                            player.getTimerDisplay()));
 
             cellBinding.tvTurnTimer.setAlpha(player.isTimerActive() ? 1.0f : 0.5f);
-            cellBinding.tvTurnTimer.setTypeface(null, player.isTimerActive() ? Typeface.BOLD : Typeface.NORMAL);
+            cellBinding.tvTurnTimer.setTypeface(
+                    null, player.isTimerActive() ? Typeface.BOLD : Typeface.NORMAL);
 
             cellBinding.btnPassTurn.setEnabled(player.isPassEnabled());
-            cellBinding.btnPassTurn.setVisibility(player.isPassEnabled() ? View.VISIBLE : View.INVISIBLE);
-            cellBinding.btnPassTurn.setTextColor(foregroundColor);
+            cellBinding.btnPassTurn.setVisibility(
+                    player.isPassEnabled() ? View.VISIBLE : View.INVISIBLE);
+            cellBinding.btnPassTurn.setIconTint(ColorStateList.valueOf(foregroundColor));
             cellBinding.btnPassTurn.setContentDescription(
                     getString(R.string.mtg_pass_turn_desc, seatIndex + 1));
-            cellBinding.btnPassTurn.setOnClickListener(v -> {
-                vibrate(30L);
-                viewModel.passTurn(seatIndex);
-            });
+            cellBinding.btnPassTurn.setOnClickListener(
+                    v -> {
+                        vibrate(30L);
+                        viewModel.passTurn(seatIndex);
+                    });
         } else {
             cellBinding.timerContainer.setVisibility(View.GONE);
             cellBinding.btnPassTurn.setOnClickListener(null);
@@ -500,8 +514,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         textView.setAlpha(0f);
         textView.setTranslationX(startOffsetX);
         textView.setTranslationY(startOffsetY);
-        textView
-                .animate()
+        textView.animate()
                 .alpha(1f)
                 .translationX(baseTranslationX)
                 .translationY(0f)
@@ -514,8 +527,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                 () -> {
                     Object tag = textView.getTag();
                     if (tag instanceof Long timestamp && timestamp == recentLifeChangeTimestampMs) {
-                        textView
-                                .animate()
+                        textView.animate()
                                 .alpha(0f)
                                 .translationX(startOffsetX)
                                 .translationY(startOffsetY)
@@ -929,7 +941,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         secondPicker.setMinValue(0);
         secondPicker.setMaxValue(59);
         secondPicker.setValue((int) ((configuredDuration / 1000L) % 60L));
-        secondPicker.setFormatter(value -> String.format(java.util.Locale.getDefault(), "%02d", value));
+        secondPicker.setFormatter(
+                value -> String.format(java.util.Locale.getDefault(), "%02d", value));
 
         new AlertDialog.Builder(requireContext())
                 .setView(dialogBinding.getRoot())
@@ -960,7 +973,9 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     }
 
     private void vibrate(long milliseconds) {
-        android.os.Vibrator vibrator = (android.os.Vibrator) requireContext().getSystemService(android.content.Context.VIBRATOR_SERVICE);
+        android.os.Vibrator vibrator =
+                (android.os.Vibrator)
+                        requireContext().getSystemService(android.content.Context.VIBRATOR_SERVICE);
         if (vibrator != null) {
             vibrator.vibrate(milliseconds);
         }

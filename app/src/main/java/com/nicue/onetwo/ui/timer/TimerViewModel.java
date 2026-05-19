@@ -114,7 +114,9 @@ public class TimerViewModel extends ViewModel {
     }
 
     private void startTimer() {
-        if (!timerEngine.isPaused() || timerEngine.getRemainingTimes().isEmpty() || timerEngine.getRemainingTimes().get(timerEngine.getRunningIndex()) <= 0L) {
+        if (!timerEngine.isPaused()
+                || timerEngine.getRemainingTimes().isEmpty()
+                || timerEngine.getRemainingTimes().get(timerEngine.getRunningIndex()) <= 0L) {
             return;
         }
         timerEngine.start(timerScheduler.now());
@@ -165,11 +167,13 @@ public class TimerViewModel extends ViewModel {
             timerEngine.setRunningIndex(savedRunningIndex == null ? 0 : savedRunningIndex);
             timerEngine.setPaused(savedPaused == null || savedPaused);
             timerEngine.setConfiguredDurationMs(
-                    savedConfiguredDuration == null ? DEFAULT_DURATION_MS : savedConfiguredDuration);
+                    savedConfiguredDuration == null
+                            ? DEFAULT_DURATION_MS
+                            : savedConfiguredDuration);
             timerEngine.setConfiguredIncrementMs(
                     savedConfiguredIncrement == null
-                              ? DEFAULT_INCREMENT_MS
-                              : savedConfiguredIncrement);
+                            ? DEFAULT_INCREMENT_MS
+                            : savedConfiguredIncrement);
             return;
         }
 

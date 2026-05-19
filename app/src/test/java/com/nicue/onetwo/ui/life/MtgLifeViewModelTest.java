@@ -594,4 +594,3 @@ public class MtgLifeViewModelTest {
         assertEquals("5:00", player0.getTimerDisplay());
     }
 }
-
