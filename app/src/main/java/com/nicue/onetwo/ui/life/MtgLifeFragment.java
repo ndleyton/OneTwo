@@ -910,6 +910,13 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         super.onStop();
     }
 
+    private void vibrate(long milliseconds) {
+        android.os.Vibrator vibrator = (android.os.Vibrator) requireContext().getSystemService(android.content.Context.VIBRATOR_SERVICE);
+        if (vibrator != null) {
+            vibrator.vibrate(milliseconds);
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();

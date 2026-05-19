@@ -353,4 +353,214 @@ public class MtgLifeViewModelTest {
         assertTrue(state.isShowingSetup());
         assertFalse(state.isCommanderDamageEnabled());
     }
+
+    private static final class FakeTimerScheduler implements com.nicue.onetwo.core.TimerScheduler {
+        private TickListener listener;
+        private final FakeNowProvider nowProvider;
+
+        FakeTimerScheduler(FakeNowProvider nowProvider) {
+            this.nowProvider = nowProvider;
+        }
+
+        @Override
+        public void start(TickListener listener) {
+            this.listener = listener;
+        }
+
+        @Override
+        public void stop() {
+            this.listener = null;
+        }
+
+        @Override
+        public long now() {
+            return nowProvider.now();
+        }
+
+        void triggerTick() {
+            if (listener != null) {
+                listener.onTick(nowProvider.now());
+            }
+        }
+    }
+
+    @Test
+    public void testDefaultTurnTimerState() throws Exception {
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertFalse(viewModel.getTurnTimerEnabled());
+        assertEquals(300000L, viewModel.getTurnTimerDurationMs());
+        assertFalse(state.isTurnTimerEnabled());
+        assertTrue(state.isTurnTimerPaused());
+        assertFalse(state.isTurnTimerFinished());
+    }
+
+    @Test
+    public void testTurnTimerSettingsState() throws Exception {
+        viewModel.setTurnTimerEnabled(true);
+        viewModel.setTurnTimerDurationMs(180000L);
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertTrue(viewModel.getTurnTimerEnabled());
+        assertEquals(180000L, viewModel.getTurnTimerDurationMs());
+        assertTrue(state.isTurnTimerEnabled());
+    }
+
+    @Test
+    public void testStartGameWithTurnTimerEnabled() throws Exception {
+        viewModel.setTurnTimerDurationMs(180000L);
+        viewModel.validateAndStartGame("3", "40", true, true);
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+
+        assertFalse(state.isShowingSetup());
+        assertTrue(state.isTurnTimerEnabled());
+        assertTrue(state.isTurnTimerPaused());
+        assertFalse(state.isTurnTimerFinished());
+
+        List<LifePlayerUiModel> players = state.getPlayers();
+        assertEquals(3, players.size());
+        for (int i = 0; i < 3; i++) {
+            LifePlayerUiModel p = players.get(i);
+            assertTrue(p.isTimerVisible());
+            assertEquals("3:00", p.getTimerDisplay());
+            assertEquals(i == 0, p.isTimerActive());
+            assertFalse(p.isTimerExpired());
+            assertEquals(i == 0, p.isPassEnabled());
+        }
+    }
+
+    @Test
+    public void testPassTurnStartsTimerAndAdvancesClockwise() throws Exception {
+        FakeTimerScheduler fakeScheduler = new FakeTimerScheduler(nowProvider);
+        viewModel = new MtgLifeViewModel(new SavedStateHandle(), nowProvider, fakeScheduler);
+
+        viewModel.setTurnTimerDurationMs(300000L);
+        viewModel.validateAndStartGame("4", "40", true, true);
+
+        assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
+        assertTrue(viewModel.getTurnTimerPaused());
+
+        viewModel.passTurn(0);
+
+        assertEquals(1, viewModel.getTurnTimerActiveSeatIndex());
+        assertFalse(viewModel.getTurnTimerPaused());
+        assertTrue(fakeScheduler.listener != null);
+
+        viewModel.passTurn(1);
+        assertEquals(3, viewModel.getTurnTimerActiveSeatIndex());
+
+        viewModel.passTurn(3);
+        assertEquals(2, viewModel.getTurnTimerActiveSeatIndex());
+
+        viewModel.passTurn(2);
+        assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
+    }
+
+    @Test
+    public void testPassFromNonActiveSeatDoesNothing() throws Exception {
+        viewModel.validateAndStartGame("3", "40", true, true);
+        assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
+
+        viewModel.passTurn(1);
+        assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
+    }
+
+    @Test
+    public void testClockwiseOrderForVariousPlayerCounts() throws Exception {
+        FakeTimerScheduler fakeScheduler = new FakeTimerScheduler(nowProvider);
+
+        // 2 players: 0 -> 1 -> 0
+        viewModel = new MtgLifeViewModel(new SavedStateHandle(), nowProvider, fakeScheduler);
+        viewModel.validateAndStartGame("2", "40", true, true);
+        assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
+        viewModel.passTurn(0);
+        assertEquals(1, viewModel.getTurnTimerActiveSeatIndex());
+        viewModel.passTurn(1);
+        assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
+
+        // 3 players: 0 -> 1 -> 2 -> 0
+        viewModel = new MtgLifeViewModel(new SavedStateHandle(), nowProvider, fakeScheduler);
+        viewModel.validateAndStartGame("3", "40", true, true);
+        assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
+        viewModel.passTurn(0);
+        assertEquals(1, viewModel.getTurnTimerActiveSeatIndex());
+        viewModel.passTurn(1);
+        assertEquals(2, viewModel.getTurnTimerActiveSeatIndex());
+        viewModel.passTurn(2);
+        assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
+
+        // 5 players: 0 -> 1 -> 3 -> 4 -> 2 -> 0
+        viewModel = new MtgLifeViewModel(new SavedStateHandle(), nowProvider, fakeScheduler);
+        viewModel.validateAndStartGame("5", "40", true, true);
+        assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
+        viewModel.passTurn(0);
+        assertEquals(1, viewModel.getTurnTimerActiveSeatIndex());
+        viewModel.passTurn(1);
+        assertEquals(3, viewModel.getTurnTimerActiveSeatIndex());
+        viewModel.passTurn(3);
+        assertEquals(4, viewModel.getTurnTimerActiveSeatIndex());
+        viewModel.passTurn(4);
+        assertEquals(2, viewModel.getTurnTimerActiveSeatIndex());
+        viewModel.passTurn(2);
+        assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
+
+        // 6 players: 0 -> 1 -> 3 -> 5 -> 4 -> 2 -> 0
+        viewModel = new MtgLifeViewModel(new SavedStateHandle(), nowProvider, fakeScheduler);
+        viewModel.validateAndStartGame("6", "40", true, true);
+        assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
+        viewModel.passTurn(0);
+        assertEquals(1, viewModel.getTurnTimerActiveSeatIndex());
+        viewModel.passTurn(1);
+        assertEquals(3, viewModel.getTurnTimerActiveSeatIndex());
+        viewModel.passTurn(3);
+        assertEquals(5, viewModel.getTurnTimerActiveSeatIndex());
+        viewModel.passTurn(5);
+        assertEquals(4, viewModel.getTurnTimerActiveSeatIndex());
+        viewModel.passTurn(4);
+        assertEquals(2, viewModel.getTurnTimerActiveSeatIndex());
+        viewModel.passTurn(2);
+        assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
+    }
+
+    @Test
+    public void testTickingReducesActivePlayerRemainingTime() throws Exception {
+        FakeTimerScheduler fakeScheduler = new FakeTimerScheduler(nowProvider);
+        viewModel = new MtgLifeViewModel(new SavedStateHandle(), nowProvider, fakeScheduler);
+
+        viewModel.setTurnTimerDurationMs(300000L);
+        viewModel.validateAndStartGame("2", "40", true, true);
+
+        viewModel.passTurn(0);
+        assertEquals(1, viewModel.getTurnTimerActiveSeatIndex());
+
+        nowProvider.advanceBy(5000L);
+        fakeScheduler.triggerTick();
+
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertEquals("4:55", state.getPlayers().get(1).getTimerDisplay());
+        assertEquals("5:00", state.getPlayers().get(0).getTimerDisplay());
+    }
+
+    @Test
+    public void testTimerExpirationFlow() throws Exception {
+        FakeTimerScheduler fakeScheduler = new FakeTimerScheduler(nowProvider);
+        viewModel = new MtgLifeViewModel(new SavedStateHandle(), nowProvider, fakeScheduler);
+
+        viewModel.setTurnTimerDurationMs(10000L);
+        viewModel.validateAndStartGame("2", "40", true, true);
+
+        viewModel.passTurn(0);
+        assertFalse(viewModel.getTurnTimerPaused());
+
+        nowProvider.advanceBy(12000L);
+        fakeScheduler.triggerTick();
+
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertTrue(viewModel.getTurnTimerPaused());
+        assertTrue(viewModel.getTurnTimerFinished());
+        assertEquals(1, viewModel.getTurnTimerActiveSeatIndex());
+
+        LifePlayerUiModel player1 = state.getPlayers().get(1);
+        assertEquals("0:00", player1.getTimerDisplay());
+        assertTrue(player1.isTimerExpired());
+        assertFalse(player1.isPassEnabled());
+    }
 }
