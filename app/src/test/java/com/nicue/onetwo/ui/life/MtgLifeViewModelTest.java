@@ -214,7 +214,7 @@ public class MtgLifeViewModelTest {
         // 3 Players
         viewModel.validateAndStartGame("3", "40");
         MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
-        assertEquals(180, state.getPlayers().get(0).getRotationDegrees());
+        assertEquals(0, state.getPlayers().get(0).getRotationDegrees());
         assertEquals(90, state.getPlayers().get(1).getRotationDegrees());
         assertEquals(270, state.getPlayers().get(2).getRotationDegrees());
 

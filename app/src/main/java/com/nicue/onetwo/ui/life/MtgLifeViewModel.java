@@ -324,7 +324,7 @@ public class MtgLifeViewModel extends ViewModel {
             case 2 -> seatIndex == 0 ? 180 : 0;
             case 3 ->
                     switch (seatIndex) {
-                        case 0 -> 180;
+                        case 0 -> 0;
                         case 1 -> 90;
                         default -> 270;
                     };

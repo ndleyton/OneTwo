@@ -415,7 +415,9 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         // Animate the text showing up
         cellBinding.tvRecentLifeChange.setAlpha(0f);
         cellBinding.tvRecentLifeChange.setTranslationY(dpToPx(8));
-        cellBinding.tvRecentLifeChange.animate()
+        cellBinding
+                .tvRecentLifeChange
+                .animate()
                 .alpha(1f)
                 .translationY(0f)
                 .setDuration(300)
@@ -427,11 +429,16 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                 () -> {
                     Object tag = cellBinding.tvRecentLifeChange.getTag();
                     if (tag instanceof Long timestamp && timestamp == recentLifeChangeTimestampMs) {
-                        cellBinding.tvRecentLifeChange.animate()
+                        cellBinding
+                                .tvRecentLifeChange
+                                .animate()
                                 .alpha(0f)
                                 .translationY(dpToPx(-8))
                                 .setDuration(300)
-                                .withEndAction(() -> cellBinding.tvRecentLifeChange.setVisibility(View.GONE))
+                                .withEndAction(
+                                        () ->
+                                                cellBinding.tvRecentLifeChange.setVisibility(
+                                                        View.GONE))
                                 .start();
                     }
                 },
