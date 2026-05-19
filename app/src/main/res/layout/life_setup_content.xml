@@ -5,7 +5,7 @@
     android:layout_width="320dp"
     android:layout_height="wrap_content"
     android:layout_margin="32dp"
-    app:cardBackgroundColor="#FFFFFF"
+    app:cardBackgroundColor="?attr/colorSurface"
     app:cardElevation="4dp"
     app:strokeWidth="0dp"
     app:shapeAppearanceOverlay="@style/ShapeAppearance.OneTwo.Container">
