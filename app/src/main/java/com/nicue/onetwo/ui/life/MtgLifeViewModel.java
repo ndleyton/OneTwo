@@ -235,12 +235,15 @@ public class MtgLifeViewModel extends ViewModel {
         int totalPlayers = getPlayerCount();
         int nextSeat = getNextSeatClockwise(seatIndex, totalPlayers);
 
-        savedStateHandle.set(KEY_TURN_TIMER_ACTIVE_SEAT_INDEX, nextSeat);
-
         if (getTurnTimerPaused()) {
+            savedStateHandle.set(KEY_TURN_TIMER_ACTIVE_SEAT_INDEX, nextSeat);
             startTimer(nowMs);
         } else {
             handleTick(nowMs);
+            if (getTurnTimerFinished()) {
+                return;
+            }
+            savedStateHandle.set(KEY_TURN_TIMER_ACTIVE_SEAT_INDEX, nextSeat);
             setTurnTimerLastTickTimeMs(nowMs);
             updateUiState();
         }
