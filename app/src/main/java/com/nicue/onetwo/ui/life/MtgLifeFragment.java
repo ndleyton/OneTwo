@@ -52,7 +52,7 @@ import java.util.Map;
 public class MtgLifeFragment extends Fragment implements MenuProvider {
     private static final int PREVIEW_PLAYER_COUNT = 4;
     private static final int LIFE_LONG_PRESS_DELTA = 10;
-    private static final long LIFE_HOLD_REPEAT_INTERVAL_MS = 1000L;
+    private static final long LIFE_HOLD_REPEAT_INTERVAL_MS = 800L;
 
     private LifeFragmentBinding binding;
     private MtgLifeViewModel viewModel;
@@ -412,12 +412,34 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         cellBinding.tvRecentLifeChange.setContentDescription(indicatorText);
         cellBinding.tvRecentLifeChange.setTag(recentLifeChangeTimestampMs);
 
+        // Animate the text showing up
+        cellBinding.tvRecentLifeChange.setAlpha(0f);
+        cellBinding.tvRecentLifeChange.setTranslationY(dpToPx(8));
+        cellBinding
+                .tvRecentLifeChange
+                .animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(300)
+                .setInterpolator(new android.view.animation.OvershootInterpolator())
+                .start();
+
         long remainingMs = MtgLifeViewModel.RECENT_LIFE_CHANGE_WINDOW_MS - ageMs;
         cellBinding.tvRecentLifeChange.postDelayed(
                 () -> {
                     Object tag = cellBinding.tvRecentLifeChange.getTag();
                     if (tag instanceof Long timestamp && timestamp == recentLifeChangeTimestampMs) {
-                        cellBinding.tvRecentLifeChange.setVisibility(View.GONE);
+                        cellBinding
+                                .tvRecentLifeChange
+                                .animate()
+                                .alpha(0f)
+                                .translationY(dpToPx(-8))
+                                .setDuration(300)
+                                .withEndAction(
+                                        () ->
+                                                cellBinding.tvRecentLifeChange.setVisibility(
+                                                        View.GONE))
+                                .start();
                     }
                 },
                 remainingMs);

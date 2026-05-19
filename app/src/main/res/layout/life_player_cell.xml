@@ -135,7 +135,7 @@
             android:visibility="gone"
             android:elevation="2dp"
             app:layout_constraintWidth_percent="0.6"
-            app:layout_constraintWidth_max="140dp"
+            app:layout_constraintWidth_max="60dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
