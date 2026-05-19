@@ -34,6 +34,8 @@ import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.appcompat.app.AlertDialog;
+import android.content.DialogInterface;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.databinding.LifeBoard1Binding;
@@ -45,6 +47,8 @@ import com.nicue.onetwo.databinding.LifeBoard6Binding;
 import com.nicue.onetwo.databinding.LifeFragmentBinding;
 import com.nicue.onetwo.databinding.LifePlayerCellBinding;
 import com.nicue.onetwo.databinding.LifeSetupContentBinding;
+import com.nicue.onetwo.databinding.MinutesAlertDialogBinding;
+import com.nicue.onetwo.utils.TimerBackend;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +106,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                     String playersStr = playersText != null ? playersText.toString() : "";
                     String lifeStr = lifeText != null ? lifeText.toString() : "";
                     boolean commanderEnabled = setupBinding.commanderDamageSwitch.isChecked();
-                    viewModel.validateAndStartGame(playersStr, lifeStr, commanderEnabled);
+                    boolean turnTimerEnabled = setupBinding.turnTimerSwitch.isChecked();
+                    viewModel.validateAndStartGame(playersStr, lifeStr, commanderEnabled, turnTimerEnabled);
                 });
 
         binding.setupOverlay.setOnClickListener(v -> viewModel.dismissSetup());
@@ -174,6 +179,18 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             setupBinding.playersInput.setText(String.valueOf(uiState.getPlayerCount()));
             setupBinding.lifeInput.setText(String.valueOf(uiState.getStartingLife()));
             setupBinding.commanderDamageSwitch.setChecked(uiState.isCommanderDamageEnabled());
+            setupBinding.turnTimerSwitch.setChecked(uiState.isTurnTimerEnabled());
+            long durationMs = viewModel.getTurnTimerDurationMs();
+            setupBinding.btnTurnTimerValue.setText(TimerBackend.formatRemainingTime(durationMs, 10000L));
+            setupBinding.turnTimerValueRow.setVisibility(uiState.isTurnTimerEnabled() ? View.VISIBLE : View.GONE);
+
+            setupBinding.turnTimerSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                setupBinding.turnTimerValueRow.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                viewModel.setTurnTimerEnabled(isChecked);
+            });
+
+            setupBinding.btnTurnTimerValue.setOnClickListener(v -> showTurnTimerDurationPicker(setupBinding));
+
             inputsInitialized = true;
         }
 
@@ -257,9 +274,12 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
 
     private void bindPlayerCell(
             LifePlayerCellBinding cellBinding, LifePlayerUiModel player, int playerCount) {
-        int backgroundColor =
-                ContextCompat.getColor(requireContext(), player.getBackgroundColorRes());
-        int foregroundColor = getForegroundColor(backgroundColor);
+        int backgroundColor = player.isTimerExpired()
+                ? ContextCompat.getColor(requireContext(), R.color.secondAccent)
+                : ContextCompat.getColor(requireContext(), player.getBackgroundColorRes());
+        int foregroundColor = player.isTimerExpired()
+                ? ContextCompat.getColor(requireContext(), android.R.color.white)
+                : getForegroundColor(backgroundColor);
         int seatIndex = player.getSeatIndex();
 
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
@@ -303,6 +323,30 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                 });
         cellBinding.lifeDecrementZone.setOnTouchListener(this::handleLifeHoldTouch);
         cellBinding.lifeIncrementZone.setOnTouchListener(this::handleLifeHoldTouch);
+
+        if (player.isTimerVisible()) {
+            cellBinding.timerContainer.setVisibility(View.VISIBLE);
+            cellBinding.tvTurnTimer.setText(player.getTimerDisplay());
+            cellBinding.tvTurnTimer.setTextColor(foregroundColor);
+            cellBinding.tvTurnTimer.setContentDescription(
+                    getString(R.string.mtg_player_timer_desc, seatIndex + 1, player.getTimerDisplay()));
+
+            cellBinding.tvTurnTimer.setAlpha(player.isTimerActive() ? 1.0f : 0.5f);
+            cellBinding.tvTurnTimer.setTypeface(null, player.isTimerActive() ? Typeface.BOLD : Typeface.NORMAL);
+
+            cellBinding.btnPassTurn.setEnabled(player.isPassEnabled());
+            cellBinding.btnPassTurn.setVisibility(player.isPassEnabled() ? View.VISIBLE : View.INVISIBLE);
+            cellBinding.btnPassTurn.setTextColor(foregroundColor);
+            cellBinding.btnPassTurn.setContentDescription(
+                    getString(R.string.mtg_pass_turn_desc, seatIndex + 1));
+            cellBinding.btnPassTurn.setOnClickListener(v -> {
+                vibrate(30L);
+                viewModel.passTurn(seatIndex);
+            });
+        } else {
+            cellBinding.timerContainer.setVisibility(View.GONE);
+            cellBinding.btnPassTurn.setOnClickListener(null);
+        }
 
         bindCommanderDamageSummary(cellBinding, player, playerCount);
 
@@ -811,6 +855,59 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             return slotIndex;
         }
         return mapping[slotIndex];
+    }
+
+    private void showTurnTimerDurationPicker(LifeSetupContentBinding setupBinding) {
+        long configuredDuration = viewModel.getTurnTimerDurationMs();
+        MinutesAlertDialogBinding dialogBinding =
+                MinutesAlertDialogBinding.inflate(getLayoutInflater());
+        android.widget.NumberPicker minutePicker = dialogBinding.minutePicker;
+        android.widget.NumberPicker secondPicker = dialogBinding.secondsPicker;
+
+        // Hide increment fields in minutes_alert_dialog
+        android.widget.TextView incrementLabel = dialogBinding.incrementLabel;
+        android.widget.TextView baseTimeLabel = dialogBinding.baseTimeLabel;
+        View incrementPickerContainer = (View) dialogBinding.incrementMinutePicker.getParent();
+
+        incrementLabel.setVisibility(View.GONE);
+        baseTimeLabel.setVisibility(View.GONE);
+        incrementPickerContainer.setVisibility(View.GONE);
+
+        // Configure duration pickers
+        minutePicker.setMinValue(0);
+        minutePicker.setMaxValue(999);
+        minutePicker.setValue((int) ((configuredDuration / 1000L) / 60L));
+        secondPicker.setMinValue(0);
+        secondPicker.setMaxValue(59);
+        secondPicker.setValue((int) ((configuredDuration / 1000L) % 60L));
+        secondPicker.setFormatter(value -> String.format(java.util.Locale.getDefault(), "%02d", value));
+
+        new AlertDialog.Builder(requireContext())
+                .setView(dialogBinding.getRoot())
+                .setTitle(R.string.timer_settings_title)
+                .setPositiveButton(
+                        android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                long durationMs =
+                                        (minutePicker.getValue() * 60L + secondPicker.getValue())
+                                                * 1000L;
+                                viewModel.setTurnTimerDurationMs(durationMs);
+                                setupBinding.btnTurnTimerValue.setText(
+                                        TimerBackend.formatRemainingTime(durationMs, 10000L));
+                            }
+                        })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    @Override
+    public void onStop() {
+        if (!requireActivity().isChangingConfigurations()) {
+            viewModel.pauseForBackground();
+        }
+        super.onStop();
     }
 
     @Override
