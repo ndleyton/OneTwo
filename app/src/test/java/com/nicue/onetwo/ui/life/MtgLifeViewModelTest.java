@@ -617,4 +617,45 @@ public class MtgLifeViewModelTest {
         assertFalse(viewModel.validateAndStartGame("4", "0"));
         assertFalse(viewModel.validateAndStartGame("abc", "xyz"));
     }
+
+    @Test
+    public void testStartingPlayerProgrammatic() {
+        assertNull(viewModel.getStartingPlayer());
+        viewModel.setStartingPlayer(2);
+        assertEquals(Integer.valueOf(2), viewModel.getStartingPlayer());
+        viewModel.setStartingPlayer(null);
+        assertNull(viewModel.getStartingPlayer());
+    }
+
+    @Test
+    public void testStartingPlayerFromIntentExtraInteger() {
+        SavedStateHandle handle = new SavedStateHandle();
+        handle.set("starting_player", 1);
+        MtgLifeViewModel vm = new MtgLifeViewModel(handle, nowProvider);
+        assertEquals(Integer.valueOf(1), vm.getStartingPlayer());
+    }
+
+    @Test
+    public void testStartingPlayerFromIntentExtraString() {
+        SavedStateHandle handle = new SavedStateHandle();
+        handle.set("starting_player", "3");
+        MtgLifeViewModel vm = new MtgLifeViewModel(handle, nowProvider);
+        assertEquals(Integer.valueOf(3), vm.getStartingPlayer());
+    }
+
+    @Test
+    public void testStartingPlayerFromIntentExtraCamelCase() {
+        SavedStateHandle handle = new SavedStateHandle();
+        handle.set("startingPlayer", 4);
+        MtgLifeViewModel vm = new MtgLifeViewModel(handle, nowProvider);
+        assertEquals(Integer.valueOf(4), vm.getStartingPlayer());
+    }
+
+    @Test
+    public void testStartingPlayerFromIntentExtraInvalid() {
+        SavedStateHandle handle = new SavedStateHandle();
+        handle.set("starting_player", "not_an_int");
+        MtgLifeViewModel vm = new MtgLifeViewModel(handle, nowProvider);
+        assertNull(vm.getStartingPlayer());
+    }
 }

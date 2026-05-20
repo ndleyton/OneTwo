@@ -24,6 +24,7 @@ public class MtgLifeViewModel extends ViewModel {
     private static final String KEY_LIFE_ERROR_RES_ID = "lifeErrorResId";
     private static final String KEY_COMMANDER_DAMAGE_ENABLED = "commanderDamageEnabled";
     private static final String KEY_COMMANDER_DAMAGE_MATRIX = "commanderDamageMatrix";
+    private static final String KEY_STARTING_PLAYER = "startingPlayer";
 
     private static final String KEY_TURN_TIMER_ENABLED = "turnTimerEnabled";
     private static final String KEY_TURN_TIMER_DURATION_MS = "turnTimerDurationMs";
@@ -80,11 +81,20 @@ public class MtgLifeViewModel extends ViewModel {
             timerScheduler.start(this::handleTick);
         }
 
+        initStartingPlayer();
         updateUiState();
     }
 
     public LiveData<MtgLifeUiState> getUiState() {
         return uiState;
+    }
+
+    public void setStartingPlayer(Integer seatIndex) {
+        savedStateHandle.set(KEY_STARTING_PLAYER, seatIndex);
+    }
+
+    public Integer getStartingPlayer() {
+        return savedStateHandle.get(KEY_STARTING_PLAYER);
     }
 
     public boolean getTurnTimerEnabled() {
@@ -769,5 +779,32 @@ public class MtgLifeViewModel extends ViewModel {
         savedStateHandle.set(KEY_TURN_TIMER_FINISHED, true);
         persistTurnTimerState();
         updateUiState();
+    }
+
+    private void initStartingPlayer() {
+        if (savedStateHandle.contains("starting_player")) {
+            Object val = savedStateHandle.get("starting_player");
+            Integer parsed = parseInteger(val);
+            if (parsed != null) {
+                savedStateHandle.set(KEY_STARTING_PLAYER, parsed);
+            }
+        } else if (savedStateHandle.contains(KEY_STARTING_PLAYER)) {
+            Object val = savedStateHandle.get(KEY_STARTING_PLAYER);
+            Integer parsed = parseInteger(val);
+            if (parsed != null) {
+                savedStateHandle.set(KEY_STARTING_PLAYER, parsed);
+            }
+        }
+    }
+
+    private Integer parseInteger(Object val) {
+        if (val instanceof Integer) {
+            return (Integer) val;
+        } else if (val instanceof String) {
+            try {
+                return Integer.parseInt((String) val);
+            } catch (NumberFormatException ignored) {}
+        }
+        return null;
     }
 }
