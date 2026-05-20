@@ -21,6 +21,7 @@ public class ChooserFragment extends Fragment {
     private ChooserLayoutBinding binding;
     private ChooserViewModel viewModel;
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable navigateBackRunnable;
     private final Runnable hideInstructionRunnable =
             new Runnable() {
                 @Override
@@ -74,6 +75,33 @@ public class ChooserFragment extends Fragment {
                         return false;
                     }
                 });
+
+        Bundle arguments = getArguments();
+        boolean returnOnSelection = arguments != null && arguments.getBoolean("return_on_selection", false);
+        if (returnOnSelection) {
+            binding.chooserView.setOnSelectionListener(
+                    new com.nicue.onetwo.utils.TouchDisplayView.OnSelectionListener() {
+                        @Override
+                        public void onSelectionMade() {
+                            if (navigateBackRunnable != null) {
+                                handler.removeCallbacks(navigateBackRunnable);
+                            }
+                            navigateBackRunnable =
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (isAdded()) {
+                                                androidx.navigation.fragment.NavHostFragment.findNavController(ChooserFragment.this)
+                                                        .popBackStack();
+                                            }
+                                        }
+                                    };
+                            handler.postDelayed(
+                                    navigateBackRunnable,
+                                    com.nicue.onetwo.utils.TouchDisplayView.SELECTION_REVEAL_DURATION_MS + 1500L);
+                        }
+                    });
+        }
     }
 
     @Override
@@ -87,6 +115,13 @@ public class ChooserFragment extends Fragment {
     @Override
     public void onDestroyView() {
         handler.removeCallbacks(hideInstructionRunnable);
+        if (navigateBackRunnable != null) {
+            handler.removeCallbacks(navigateBackRunnable);
+            navigateBackRunnable = null;
+        }
+        if (binding != null && binding.chooserView != null) {
+            binding.chooserView.setOnSelectionListener(null);
+        }
         binding = null;
         super.onDestroyView();
     }

@@ -5,4 +5,9 @@
         android:id="@+id/action_new_game"
         android:title="@string/mtg_setup_title"
         app:showAsAction="always|withText" />
+    <item
+        android:id="@+id/action_chooser"
+        android:icon="@drawable/fingerprint"
+        android:title="@string/menu_chooser"
+        app:showAsAction="always" />
 </menu>
