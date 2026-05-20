@@ -54,7 +54,7 @@
     <color name="lifeCounterPlayer1">#1C5F8C</color>
     <color name="lifeCounterOnPlayer1">#FFFFFFFF</color>
     <color name="lifeCounterPlayer2">#F3BB21</color>
-    <color name="lifeCounterOnPlayer2">#FF000000</color>
+    <color name="lifeCounterOnPlayer2">#FFFFFFFF</color>
     <color name="lifeCounterPlayer3">#BD2430</color>
     <color name="lifeCounterOnPlayer3">#FFFFFFFF</color>
     <color name="lifeCounterPlayer4">#F65B59</color>

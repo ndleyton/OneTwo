@@ -458,6 +458,14 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         cellBinding.commanderDamageGrid.setVisibility(View.VISIBLE);
         cellBinding.commanderDamageGrid.removeAllViews();
 
+        GradientDrawable pillBackground = new GradientDrawable();
+        pillBackground.setCornerRadius(dpToPx(12));
+        pillBackground.setColor(0x20FFFFFF);
+        pillBackground.setStroke(dpToPx(1), 0x30FFFFFF);
+        cellBinding.commanderDamageGrid.setBackground(pillBackground);
+        int pillPadding = dpToPx(4);
+        cellBinding.commanderDamageGrid.setPadding(pillPadding, pillPadding, pillPadding, pillPadding);
+
         int rows = getCommanderGridRowCount(totalPlayers);
         int cols = getCommanderGridColumnCount(totalPlayers);
         List<CommanderDamageUiModel> damages = player.getCommanderDamages();
@@ -492,6 +500,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     }
 
     private View createCommanderSummaryCell(CommanderDamageUiModel damage, int defenderSeatIndex) {
+
         TextView summaryCell = new TextView(requireContext());
         summaryCell.setGravity(Gravity.CENTER);
         summaryCell.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
