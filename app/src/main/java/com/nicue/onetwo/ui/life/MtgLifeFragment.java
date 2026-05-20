@@ -106,7 +106,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             // Safe to ignore in unit tests where the fragment is launched outside a NavHost
         }
         if (navController != null) {
-            androidx.navigation.NavBackStackEntry currentEntry = navController.getCurrentBackStackEntry();
+            androidx.navigation.NavBackStackEntry currentEntry =
+                    navController.getCurrentBackStackEntry();
             if (currentEntry != null) {
                 androidx.lifecycle.LiveData<Integer> chosenSeatLiveData =
                         currentEntry.getSavedStateHandle().getLiveData("chosen_seat_index");
@@ -464,7 +465,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         pillBackground.setStroke(dpToPx(1), 0x30FFFFFF);
         cellBinding.commanderDamageGrid.setBackground(pillBackground);
         int pillPadding = dpToPx(4);
-        cellBinding.commanderDamageGrid.setPadding(pillPadding, pillPadding, pillPadding, pillPadding);
+        cellBinding.commanderDamageGrid.setPadding(
+                pillPadding, pillPadding, pillPadding, pillPadding);
 
         int rows = getCommanderGridRowCount(totalPlayers);
         int cols = getCommanderGridColumnCount(totalPlayers);

@@ -676,7 +676,8 @@ public class MtgLifeViewModelTest {
         viewModel.setTurnTimerDurationMs(180000L);
         viewModel.validateAndStartGame("2", "40", true, true);
 
-        // Before starting: active player (0) should have start button visible, inactive player (1) should not
+        // Before starting: active player (0) should have start button visible, inactive player (1)
+        // should not
         MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
         assertTrue(state.getPlayers().get(0).isStartTimerVisible());
         assertFalse(state.getPlayers().get(1).isStartTimerVisible());

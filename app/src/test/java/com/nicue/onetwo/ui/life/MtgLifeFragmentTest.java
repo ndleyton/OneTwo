@@ -7,13 +7,11 @@ import static org.junit.Assert.assertTrue;
 import android.app.Dialog;
 import android.graphics.Rect;
 import android.os.Looper;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.testing.FragmentScenario;
@@ -727,7 +725,6 @@ public class MtgLifeFragmentTest {
         }
     }
 
-
     @Test
     public void testChooseAndStartButtonNavigatesToChooser() {
         try (ActivityScenario<MainActivity> scenario =
@@ -763,7 +760,8 @@ public class MtgLifeFragmentTest {
                         lifeInput.setText("40");
 
                         // Press Choose 1st & Start button
-                        Button chooseAndStartButton = view.findViewById(R.id.choose_and_start_button);
+                        Button chooseAndStartButton =
+                                view.findViewById(R.id.choose_and_start_button);
                         assertNotNull(chooseAndStartButton);
                         chooseAndStartButton.performClick();
 

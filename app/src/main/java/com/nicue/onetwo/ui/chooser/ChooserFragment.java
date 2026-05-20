@@ -92,14 +92,22 @@ public class ChooserFragment extends Fragment {
                                     int width = binding.chooserView.getWidth();
                                     int height = binding.chooserView.getHeight();
                                     if (width > 0 && height > 0) {
-                                        int closestSeatIndex = getClosestSeatIndex(chosenX, chosenY, width, height, playerCount);
+                                        int closestSeatIndex =
+                                                getClosestSeatIndex(
+                                                        chosenX,
+                                                        chosenY,
+                                                        width,
+                                                        height,
+                                                        playerCount);
                                         try {
                                             androidx.navigation.NavBackStackEntry prevEntry =
                                                     androidx.navigation.fragment.NavHostFragment
                                                             .findNavController(ChooserFragment.this)
                                                             .getPreviousBackStackEntry();
                                             if (prevEntry != null) {
-                                                prevEntry.getSavedStateHandle().set("chosen_seat_index", closestSeatIndex);
+                                                prevEntry
+                                                        .getSavedStateHandle()
+                                                        .set("chosen_seat_index", closestSeatIndex);
                                             }
                                         } catch (Exception e) {
                                             // Handle/ignore if navigation entry not available
@@ -242,10 +250,11 @@ public class ChooserFragment extends Fragment {
                 break;
         }
 
-        return new float[]{x, y};
+        return new float[] {x, y};
     }
 
-    static int getClosestSeatIndex(float touchX, float touchY, float width, float height, int playerCount) {
+    static int getClosestSeatIndex(
+            float touchX, float touchY, float width, float height, int playerCount) {
         int closestIndex = 0;
         double minDistanceSq = Double.MAX_VALUE;
 

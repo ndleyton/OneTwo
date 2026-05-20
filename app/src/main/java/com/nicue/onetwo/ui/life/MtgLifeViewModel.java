@@ -179,7 +179,8 @@ public class MtgLifeViewModel extends ViewModel {
 
     public boolean validateAndStartGame(
             String playersStr, String lifeStr, boolean commanderDamageEnabled) {
-        return validateAndStartGame(playersStr, lifeStr, commanderDamageEnabled, getTurnTimerEnabled());
+        return validateAndStartGame(
+                playersStr, lifeStr, commanderDamageEnabled, getTurnTimerEnabled());
     }
 
     public boolean validateAndStartGame(
@@ -828,7 +829,8 @@ public class MtgLifeViewModel extends ViewModel {
         } else if (val instanceof String) {
             try {
                 return Integer.parseInt((String) val);
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) {
+            }
         }
         return null;
     }
