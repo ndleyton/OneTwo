@@ -7,13 +7,20 @@ import static org.junit.Assert.assertTrue;
 import android.app.Dialog;
 import android.graphics.Rect;
 import android.os.Looper;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.testing.FragmentScenario;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.test.core.app.ActivityScenario;
+import com.nicue.onetwo.MainActivity;
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.databinding.LifePlayerCellBinding;
 import java.util.concurrent.TimeUnit;
@@ -717,34 +724,47 @@ public class MtgLifeFragmentTest {
                         assertNotNull(timerContainer);
                         assertEquals(View.GONE, timerContainer.getVisibility());
                     });
+        }
+    }
+
     @Test
+    @SuppressWarnings("RestrictedApi")
     public void testChooserMenuItemNavigatesToChooser() {
-        try (androidx.test.core.app.ActivityScenario<com.nicue.onetwo.MainActivity> scenario =
-                androidx.test.core.app.ActivityScenario.launch(com.nicue.onetwo.MainActivity.class)) {
+        try (ActivityScenario<MainActivity> scenario =
+                ActivityScenario.launch(MainActivity.class)) {
             scenario.onActivity(
                     activity -> {
-                        androidx.fragment.app.Fragment fragment =
+                        Fragment fragment =
                                 activity.getSupportFragmentManager()
                                         .findFragmentById(R.id.nav_host_fragment);
                         assertNotNull(fragment);
-                        androidx.navigation.NavController navController =
-                                ((androidx.navigation.fragment.NavHostFragment) fragment).getNavController();
+                        NavController navController =
+                                ((NavHostFragment) fragment).getNavController();
 
                         // Currently at start destination (nav_mtg_life)
-                        assertEquals(R.id.nav_mtg_life, navController.getCurrentDestination().getId());
+                        assertEquals(
+                                R.id.nav_mtg_life, navController.getCurrentDestination().getId());
 
-                        // Find the visible Fragment
-                        androidx.fragment.app.Fragment currentFragment = fragment.getChildFragmentManager().getFragments().get(0);
+                        Fragment currentFragment =
+                                fragment.getChildFragmentManager().getFragments().get(0);
                         assertTrue(currentFragment instanceof MtgLifeFragment);
                         MtgLifeFragment mtgLifeFragment = (MtgLifeFragment) currentFragment;
 
-                        // Click the chooser menu item
-                        org.robolectric.fakes.RoboMenuItem chooserMenuItem =
-                                new org.robolectric.fakes.RoboMenuItem(R.id.action_chooser);
+                        View view = mtgLifeFragment.requireView();
+                        View setupContent = view.findViewById(R.id.setup_content);
+                        assertNotNull(setupContent);
+                        assertEquals(View.GONE, setupContent.getVisibility());
+
+                        MenuBuilder menu = new MenuBuilder(activity);
+                        mtgLifeFragment.onCreateMenu(menu, activity.getMenuInflater());
+                        MenuItem chooserMenuItem = menu.findItem(R.id.action_chooser);
+                        assertNotNull(chooserMenuItem);
+                        assertTrue(chooserMenuItem.isVisible());
+
                         mtgLifeFragment.onMenuItemSelected(chooserMenuItem);
 
-                        // Assert we navigated to nav_chooser
-                        assertEquals(R.id.nav_chooser, navController.getCurrentDestination().getId());
+                        assertEquals(
+                                R.id.nav_chooser, navController.getCurrentDestination().getId());
                     });
         }
     }

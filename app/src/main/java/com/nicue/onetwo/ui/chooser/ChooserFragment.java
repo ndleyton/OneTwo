@@ -77,7 +77,8 @@ public class ChooserFragment extends Fragment {
                 });
 
         Bundle arguments = getArguments();
-        boolean returnOnSelection = arguments != null && arguments.getBoolean("return_on_selection", false);
+        boolean returnOnSelection =
+                arguments != null && arguments.getBoolean("return_on_selection", false);
         if (returnOnSelection) {
             binding.chooserView.setOnSelectionListener(
                     new com.nicue.onetwo.utils.TouchDisplayView.OnSelectionListener() {
@@ -91,14 +92,17 @@ public class ChooserFragment extends Fragment {
                                         @Override
                                         public void run() {
                                             if (isAdded()) {
-                                                androidx.navigation.fragment.NavHostFragment.findNavController(ChooserFragment.this)
+                                                androidx.navigation.fragment.NavHostFragment
+                                                        .findNavController(ChooserFragment.this)
                                                         .popBackStack();
                                             }
                                         }
                                     };
                             handler.postDelayed(
                                     navigateBackRunnable,
-                                    com.nicue.onetwo.utils.TouchDisplayView.SELECTION_REVEAL_DURATION_MS + 1500L);
+                                    com.nicue.onetwo.utils.TouchDisplayView
+                                                    .SELECTION_REVEAL_DURATION_MS
+                                            + 1500L);
                         }
                     });
         }

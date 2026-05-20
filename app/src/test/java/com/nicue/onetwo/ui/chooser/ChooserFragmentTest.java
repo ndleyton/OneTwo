@@ -43,10 +43,15 @@ public class ChooserFragmentTest {
                         Bundle args = new Bundle();
                         args.putBoolean("return_on_selection", true);
                         navController.navigate(R.id.nav_chooser, args);
-                        assertEquals(R.id.nav_chooser, navController.getCurrentDestination().getId());
+                        activity.getSupportFragmentManager().executePendingTransactions();
+                        fragment.getChildFragmentManager().executePendingTransactions();
+                        assertEquals(
+                                R.id.nav_chooser, navController.getCurrentDestination().getId());
 
                         // Retrieve the fragment view and invoke TouchDisplayView's callback
-                        Fragment currentFragment = fragment.getChildFragmentManager().getFragments().get(0);
+                        Fragment currentFragment =
+                                fragment.getChildFragmentManager().getPrimaryNavigationFragment();
+                        assertNotNull(currentFragment);
                         assertTrue(currentFragment instanceof ChooserFragment);
                         ChooserFragment chooserFragment = (ChooserFragment) currentFragment;
 
@@ -56,7 +61,8 @@ public class ChooserFragmentTest {
                         assertNotNull(chooserView);
 
                         // Add a touch so mTouches is not empty
-                        MotionEvent eventDown = MotionEvent.obtain(0L, 0L, MotionEvent.ACTION_DOWN, 100f, 100f, 0);
+                        MotionEvent eventDown =
+                                MotionEvent.obtain(0L, 0L, MotionEvent.ACTION_DOWN, 100f, 100f, 0);
                         chooserView.dispatchTouchEvent(eventDown);
                         eventDown.recycle();
 
@@ -75,10 +81,13 @@ public class ChooserFragmentTest {
 
                         // Idle main looper for delay
                         Shadows.shadowOf(Looper.getMainLooper())
-                                .idleFor(TouchDisplayView.SELECTION_REVEAL_DURATION_MS + 1500L, TimeUnit.MILLISECONDS);
+                                .idleFor(
+                                        TouchDisplayView.SELECTION_REVEAL_DURATION_MS + 1500L,
+                                        TimeUnit.MILLISECONDS);
 
                         // Assert we popped back to nav_mtg_life
-                        assertEquals(R.id.nav_mtg_life, navController.getCurrentDestination().getId());
+                        assertEquals(
+                                R.id.nav_mtg_life, navController.getCurrentDestination().getId());
                     });
         }
     }
