@@ -91,6 +91,30 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_start_timer"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:elevation="4dp"
+            android:visibility="gone"
+            app:icon="@drawable/ic_play_arrow_24"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconSize="16dp"
+            app:layout_constraintStart_toEndOf="@id/timer_container"
+            app:layout_constraintTop_toTopOf="@id/timer_container"
+            app:layout_constraintBottom_toBottomOf="@id/timer_container"
+            android:layout_marginStart="8dp" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_minus"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="56dp"

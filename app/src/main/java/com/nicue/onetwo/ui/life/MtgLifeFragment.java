@@ -285,6 +285,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             cellBinding.commanderDamageGrid.setVisibility(View.GONE);
             cellBinding.timerContainer.setVisibility(View.GONE);
             cellBinding.timerContainer.setOnClickListener(null);
+            cellBinding.btnStartTimer.setVisibility(View.GONE);
+            cellBinding.btnStartTimer.setOnClickListener(null);
             cellBinding.playerCellContainer.setRotation(0f);
             cellBinding.innerPlayerLayout.setRotation(seatIndex % 2 == 0 ? 90f : 270f);
             clearRecentLifeChange(cellBinding.tvRecentLifeChangeNegative);
@@ -387,9 +389,24 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                         vibrate(30L);
                         viewModel.passTurn(seatIndex);
                     });
+
+            if (player.isStartTimerVisible()) {
+                cellBinding.btnStartTimer.setVisibility(View.VISIBLE);
+                cellBinding.btnStartTimer.setIconTint(ColorStateList.valueOf(foregroundColor));
+                cellBinding.btnStartTimer.setOnClickListener(
+                        v -> {
+                            vibrate(30L);
+                            viewModel.startTimer();
+                        });
+            } else {
+                cellBinding.btnStartTimer.setVisibility(View.GONE);
+                cellBinding.btnStartTimer.setOnClickListener(null);
+            }
         } else {
             cellBinding.timerContainer.setVisibility(View.GONE);
             cellBinding.timerContainer.setOnClickListener(null);
+            cellBinding.btnStartTimer.setVisibility(View.GONE);
+            cellBinding.btnStartTimer.setOnClickListener(null);
         }
 
         bindCommanderDamageSummary(cellBinding, player, playerCount);

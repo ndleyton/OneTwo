@@ -97,6 +97,10 @@ public class MtgLifeViewModel extends ViewModel {
         return savedStateHandle.get(KEY_STARTING_PLAYER);
     }
 
+    public void startTimer() {
+        startTimer(nowProvider.now());
+    }
+
     public boolean getTurnTimerEnabled() {
         Boolean enabled = savedStateHandle.get(KEY_TURN_TIMER_ENABLED);
         return enabled != null && enabled;
@@ -704,6 +708,7 @@ public class MtgLifeViewModel extends ViewModel {
                 boolean timerActive = false;
                 boolean timerExpired = false;
                 boolean passEnabled = false;
+                boolean startTimerVisible = false;
 
                 if (timerVisible) {
                     long remainingTime = remainingTimes.get(seatIndex);
@@ -711,6 +716,7 @@ public class MtgLifeViewModel extends ViewModel {
                     timerActive = seatIndex == activeSeatIndex;
                     timerExpired = remainingTime <= 0L;
                     passEnabled = timerActive && !turnTimerFinished && remainingTime > 0L;
+                    startTimerVisible = timerActive && turnTimerPaused && !turnTimerFinished;
                 }
 
                 players.add(
@@ -729,7 +735,8 @@ public class MtgLifeViewModel extends ViewModel {
                                 timerDisplay,
                                 timerActive,
                                 timerExpired,
-                                passEnabled));
+                                passEnabled,
+                                startTimerVisible));
             }
         }
 
