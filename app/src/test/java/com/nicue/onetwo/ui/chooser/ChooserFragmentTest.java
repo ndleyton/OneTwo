@@ -91,4 +91,23 @@ public class ChooserFragmentTest {
                     });
         }
     }
+
+    @Test
+    public void testClosestSeatIndexCalculation() {
+        float width = 400f;
+        float height = 400f;
+
+        // Player count 4: Top-Left (0), Top-Right (1), Bottom-Left (2), Bottom-Right (3)
+        assertEquals(0, ChooserFragment.getClosestSeatIndex(50f, 50f, width, height, 4));
+        assertEquals(0, ChooserFragment.getClosestSeatIndex(150f, 150f, width, height, 4));
+        assertEquals(1, ChooserFragment.getClosestSeatIndex(350f, 50f, width, height, 4));
+        assertEquals(1, ChooserFragment.getClosestSeatIndex(250f, 150f, width, height, 4));
+        assertEquals(2, ChooserFragment.getClosestSeatIndex(50f, 350f, width, height, 4));
+        assertEquals(3, ChooserFragment.getClosestSeatIndex(350f, 350f, width, height, 4));
+
+        // Player count 3: player_1 is bottom (0), player_2 top left (1), player_3 top right (2)
+        assertEquals(0, ChooserFragment.getClosestSeatIndex(200f, 350f, width, height, 3));
+        assertEquals(1, ChooserFragment.getClosestSeatIndex(50f, 50f, width, height, 3));
+        assertEquals(2, ChooserFragment.getClosestSeatIndex(350f, 50f, width, height, 3));
+    }
 }

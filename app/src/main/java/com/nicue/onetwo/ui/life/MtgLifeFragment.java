@@ -123,6 +123,10 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                             playersStr, lifeStr, commanderEnabled, turnTimerEnabled)) {
                         Bundle args = new Bundle();
                         args.putBoolean("return_on_selection", true);
+                        MtgLifeUiState state = viewModel.getUiState().getValue();
+                        if (state != null) {
+                            args.putInt("player_count", state.getPlayerCount());
+                        }
                         androidx.navigation.fragment.NavHostFragment.findNavController(this)
                                 .navigate(R.id.nav_chooser, args);
                     }

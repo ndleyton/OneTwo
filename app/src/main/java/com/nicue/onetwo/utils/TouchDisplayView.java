@@ -618,4 +618,12 @@ public class TouchDisplayView extends View {
     public boolean getChoosingOrder() {
         return choosingOrder;
     }
+
+    public float getSelectionRevealCenterX() {
+        return selectionRevealCenterX;
+    }
+
+    public float getSelectionRevealCenterY() {
+        return selectionRevealCenterY;
+    }
 }
