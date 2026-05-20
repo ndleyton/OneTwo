@@ -658,4 +658,26 @@ public class MtgLifeViewModelTest {
         MtgLifeViewModel vm = new MtgLifeViewModel(handle, nowProvider);
         assertNull(vm.getStartingPlayer());
     }
+
+    @Test
+    public void testStartTimerVisibilityFlow() throws Exception {
+        FakeTimerScheduler fakeScheduler = new FakeTimerScheduler(nowProvider);
+        viewModel = new MtgLifeViewModel(new SavedStateHandle(), nowProvider, fakeScheduler);
+        viewModel.setTurnTimerDurationMs(180000L);
+        viewModel.validateAndStartGame("2", "40", true, true);
+
+        // Before starting: active player (0) should have start button visible, inactive player (1) should not
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertTrue(state.getPlayers().get(0).isStartTimerVisible());
+        assertFalse(state.getPlayers().get(1).isStartTimerVisible());
+
+        // Start the timer
+        viewModel.startTimer();
+
+        // After starting: active player's start button should be gone
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertFalse(state.getPlayers().get(0).isStartTimerVisible());
+        assertFalse(state.getPlayers().get(1).isStartTimerVisible());
+        assertFalse(state.isTurnTimerPaused());
+    }
 }
