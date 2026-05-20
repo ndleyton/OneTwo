@@ -342,7 +342,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         int foregroundColor =
                 player.isTimerExpired()
                         ? ContextCompat.getColor(requireContext(), R.color.mtg_expired_foreground)
-                        : getForegroundColor(backgroundColor);
+                        : ContextCompat.getColor(requireContext(), player.getForegroundColorRes());
         int seatIndex = player.getSeatIndex();
 
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
