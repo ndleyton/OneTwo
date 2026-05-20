@@ -680,4 +680,25 @@ public class MtgLifeViewModelTest {
         assertFalse(state.getPlayers().get(1).isStartTimerVisible());
         assertFalse(state.isTurnTimerPaused());
     }
+
+    @Test
+    public void testTogglePlayPause() throws Exception {
+        FakeTimerScheduler fakeScheduler = new FakeTimerScheduler(nowProvider);
+        viewModel = new MtgLifeViewModel(new SavedStateHandle(), nowProvider, fakeScheduler);
+        viewModel.setTurnTimerDurationMs(180000L);
+        viewModel.validateAndStartGame("2", "40", true, true);
+
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertTrue(state.isTurnTimerPaused());
+
+        // Toggle to play (start)
+        viewModel.togglePlayPause();
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertFalse(state.isTurnTimerPaused());
+
+        // Toggle to pause
+        viewModel.togglePlayPause();
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertTrue(state.isTurnTimerPaused());
+    }
 }

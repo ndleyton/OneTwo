@@ -101,6 +101,17 @@ public class MtgLifeViewModel extends ViewModel {
         startTimer(nowProvider.now());
     }
 
+    public void togglePlayPause() {
+        if (!getTurnTimerEnabled() || getTurnTimerFinished()) {
+            return;
+        }
+        if (getTurnTimerPaused()) {
+            startTimer();
+        } else {
+            pauseTimer();
+        }
+    }
+
     public boolean getTurnTimerEnabled() {
         Boolean enabled = savedStateHandle.get(KEY_TURN_TIMER_ENABLED);
         return enabled != null && enabled;

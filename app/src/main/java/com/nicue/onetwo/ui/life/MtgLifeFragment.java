@@ -285,6 +285,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             cellBinding.commanderDamageGrid.setVisibility(View.GONE);
             cellBinding.timerContainer.setVisibility(View.GONE);
             cellBinding.timerContainer.setOnClickListener(null);
+            cellBinding.timerContainer.setOnLongClickListener(null);
             cellBinding.btnStartTimer.setVisibility(View.GONE);
             cellBinding.btnStartTimer.setOnClickListener(null);
             cellBinding.playerCellContainer.setRotation(0f);
@@ -389,6 +390,12 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                         vibrate(30L);
                         viewModel.passTurn(seatIndex);
                     });
+            cellBinding.timerContainer.setOnLongClickListener(
+                    v -> {
+                        vibrate(50L);
+                        viewModel.togglePlayPause();
+                        return true;
+                    });
 
             if (player.isStartTimerVisible()) {
                 cellBinding.btnStartTimer.setVisibility(View.VISIBLE);
@@ -405,6 +412,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         } else {
             cellBinding.timerContainer.setVisibility(View.GONE);
             cellBinding.timerContainer.setOnClickListener(null);
+            cellBinding.timerContainer.setOnLongClickListener(null);
             cellBinding.btnStartTimer.setVisibility(View.GONE);
             cellBinding.btnStartTimer.setOnClickListener(null);
         }
