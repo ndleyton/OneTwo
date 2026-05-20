@@ -27,19 +27,36 @@
             android:id="@+id/timer_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minWidth="108dp"
             android:elevation="4dp"
             android:visibility="gone"
             android:background="@drawable/bg_timer_pill"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             android:clickable="true"
             android:focusable="true"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="4dp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_turn_timer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"
+                android:clickable="false"
+                android:focusable="false"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_start_timer"
@@ -63,22 +80,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_turn_timer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"
-                android:clickable="false"
-                android:focusable="false"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="6dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/btn_start_timer"
-                app:layout_constraintEnd_toStartOf="@id/btn_pass_turn" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_pass_turn"
