@@ -39,6 +39,10 @@
     <color name="m3_on_error">#690005</color>
     <color name="m3_error_container">#93000A</color>
     <color name="m3_on_error_container">#FFDAD6</color>
+    <color name="navigation_bar_background">#FFFBFF</color>
+    <color name="counter_adjust_button_background">@color/m3_secondary_container</color>
+    <color name="timer_idle_background">@color/m3_tertiary_container</color>
+    <color name="timer_idle_foreground">@color/m3_on_tertiary_container</color>
 
     <color name="diceColor0">#850009</color>
     <color name="diceColor1">#b9d529</color>

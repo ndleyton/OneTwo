@@ -16,6 +16,7 @@ import android.widget.NumberPicker;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
@@ -238,10 +239,7 @@ public class TimerFragment extends Fragment implements MenuProvider {
         return timer.isActive() && timer.isEnabled()
                 ? MaterialColors.getColor(
                         context, com.google.android.material.R.attr.colorTertiary, "TimerFragment")
-                : MaterialColors.getColor(
-                        context,
-                        com.google.android.material.R.attr.colorTertiaryContainer,
-                        "TimerFragment");
+                : ContextCompat.getColor(context, R.color.timer_idle_background);
     }
 
     private int resolveTextColor(TimerItemUiModel timer) {
@@ -257,10 +255,7 @@ public class TimerFragment extends Fragment implements MenuProvider {
                         context,
                         com.google.android.material.R.attr.colorOnTertiary,
                         "TimerFragment")
-                : MaterialColors.getColor(
-                        context,
-                        com.google.android.material.R.attr.colorOnTertiaryContainer,
-                        "TimerFragment");
+                : ContextCompat.getColor(context, R.color.timer_idle_foreground);
     }
 
     private void vibrate(long milliseconds) {
