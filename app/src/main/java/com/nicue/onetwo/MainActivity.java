@@ -42,11 +42,11 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
         NavController navController = navHostFragment.getNavController();
         appBarConfiguration =
                 new AppBarConfiguration.Builder(
-                                R.id.nav_counter,
+                                R.id.nav_mtg_life,
                                 R.id.nav_dice,
                                 R.id.nav_chooser,
                                 R.id.nav_timer,
-                                R.id.nav_mtg_life,
+                                R.id.nav_counter,
                                 R.id.nav_settings)
                         .setOpenableLayout(binding.drawerLayout)
                         .build();
