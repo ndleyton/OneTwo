@@ -85,5 +85,7 @@
     <string name="mtg_setup_time">Tiempo</string>
     <string name="mtg_pass_turn">Pasar</string>
     <string name="mtg_pass_turn_desc">Pasar el turno del jugador %1$d al siguiente jugador</string>
+    <string name="mtg_start_timer_desc">Iniciar temporizador para el jugador %1$d</string>
     <string name="mtg_player_timer_desc">Tiempo restante del jugador %1$d: %2$s</string>
+    <string name="mtg_setup_choose_and_start">Elegir 1º y empezar</string>
 </resources>

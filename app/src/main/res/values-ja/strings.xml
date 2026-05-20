@@ -63,6 +63,7 @@
     <string name="mtg_setup_time">時間</string>
     <string name="mtg_pass_turn">パス</string>
     <string name="mtg_pass_turn_desc">プレイヤー%1$dのターンを次のプレイヤーに渡す</string>
+    <string name="mtg_start_timer_desc">プレイヤー%1$dのタイマーを開始する</string>
     <string name="mtg_player_timer_desc">プレイヤー%1$dの残り時間: %2$s</string>
 
 </resources>

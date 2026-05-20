@@ -609,4 +609,107 @@ public class MtgLifeViewModelTest {
         // Player 0 should not have been charged (displaying "5:00").
         assertEquals("5:00", player0.getTimerDisplay());
     }
+
+    @Test
+    public void testValidateAndStartGameReturnsCorrectBoolean() {
+        assertTrue(viewModel.validateAndStartGame("4", "40"));
+        assertFalse(viewModel.validateAndStartGame("0", "40"));
+        assertFalse(viewModel.validateAndStartGame("4", "0"));
+        assertFalse(viewModel.validateAndStartGame("abc", "xyz"));
+    }
+
+    @Test
+    public void testStartingPlayerProgrammatic() {
+        assertNull(viewModel.getStartingPlayer());
+        viewModel.setStartingPlayer(2);
+        assertEquals(Integer.valueOf(2), viewModel.getStartingPlayer());
+        viewModel.setStartingPlayer(null);
+        assertNull(viewModel.getStartingPlayer());
+    }
+
+    @Test
+    public void testStartingPlayerUpdatesTurnTimerActiveSeat() {
+        viewModel.validateAndStartGame("4", "40", true, true);
+        assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
+
+        viewModel.setStartingPlayer(2);
+        assertEquals(Integer.valueOf(2), viewModel.getStartingPlayer());
+        assertEquals(2, viewModel.getTurnTimerActiveSeatIndex());
+    }
+
+    @Test
+    public void testStartingPlayerFromIntentExtraInteger() {
+        SavedStateHandle handle = new SavedStateHandle();
+        handle.set("starting_player", 1);
+        MtgLifeViewModel vm = new MtgLifeViewModel(handle, nowProvider);
+        assertEquals(Integer.valueOf(1), vm.getStartingPlayer());
+    }
+
+    @Test
+    public void testStartingPlayerFromIntentExtraString() {
+        SavedStateHandle handle = new SavedStateHandle();
+        handle.set("starting_player", "3");
+        MtgLifeViewModel vm = new MtgLifeViewModel(handle, nowProvider);
+        assertEquals(Integer.valueOf(3), vm.getStartingPlayer());
+    }
+
+    @Test
+    public void testStartingPlayerFromIntentExtraCamelCase() {
+        SavedStateHandle handle = new SavedStateHandle();
+        handle.set("startingPlayer", 4);
+        MtgLifeViewModel vm = new MtgLifeViewModel(handle, nowProvider);
+        assertEquals(Integer.valueOf(4), vm.getStartingPlayer());
+    }
+
+    @Test
+    public void testStartingPlayerFromIntentExtraInvalid() {
+        SavedStateHandle handle = new SavedStateHandle();
+        handle.set("starting_player", "not_an_int");
+        MtgLifeViewModel vm = new MtgLifeViewModel(handle, nowProvider);
+        assertNull(vm.getStartingPlayer());
+    }
+
+    @Test
+    public void testStartTimerVisibilityFlow() throws Exception {
+        FakeTimerScheduler fakeScheduler = new FakeTimerScheduler(nowProvider);
+        viewModel = new MtgLifeViewModel(new SavedStateHandle(), nowProvider, fakeScheduler);
+        viewModel.setTurnTimerDurationMs(180000L);
+        viewModel.validateAndStartGame("2", "40", true, true);
+
+        // Before starting: active player (0) should have start button visible, inactive player (1)
+        // should not
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertTrue(state.getPlayers().get(0).isStartTimerVisible());
+        assertFalse(state.getPlayers().get(1).isStartTimerVisible());
+
+        // Start the timer
+        viewModel.startTimer();
+
+        // After starting: active player's start button should be gone
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertFalse(state.getPlayers().get(0).isStartTimerVisible());
+        assertFalse(state.getPlayers().get(1).isStartTimerVisible());
+        assertFalse(state.isTurnTimerPaused());
+    }
+
+    @Test
+    public void testTogglePlayPause() throws Exception {
+        FakeTimerScheduler fakeScheduler = new FakeTimerScheduler(nowProvider);
+        viewModel = new MtgLifeViewModel(new SavedStateHandle(), nowProvider, fakeScheduler);
+        viewModel.setTurnTimerDurationMs(180000L);
+        viewModel.validateAndStartGame("2", "40", true, true);
+
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertTrue(state.isTurnTimerPaused());
+
+        // Toggle to play (start)
+        viewModel.togglePlayPause();
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertFalse(state.isTurnTimerPaused());
+
+        // Toggle to pause
+        viewModel.togglePlayPause();
+        state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertTrue(state.isTurnTimerPaused());
+    }
 }

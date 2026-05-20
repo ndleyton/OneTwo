@@ -24,6 +24,7 @@ public class MtgLifeViewModel extends ViewModel {
     private static final String KEY_LIFE_ERROR_RES_ID = "lifeErrorResId";
     private static final String KEY_COMMANDER_DAMAGE_ENABLED = "commanderDamageEnabled";
     private static final String KEY_COMMANDER_DAMAGE_MATRIX = "commanderDamageMatrix";
+    private static final String KEY_STARTING_PLAYER = "startingPlayer";
 
     private static final String KEY_TURN_TIMER_ENABLED = "turnTimerEnabled";
     private static final String KEY_TURN_TIMER_DURATION_MS = "turnTimerDurationMs";
@@ -80,11 +81,40 @@ public class MtgLifeViewModel extends ViewModel {
             timerScheduler.start(this::handleTick);
         }
 
+        initStartingPlayer();
         updateUiState();
     }
 
     public LiveData<MtgLifeUiState> getUiState() {
         return uiState;
+    }
+
+    public void setStartingPlayer(Integer seatIndex) {
+        savedStateHandle.set(KEY_STARTING_PLAYER, seatIndex);
+        if (seatIndex != null) {
+            timerEngine.setRunningIndex(seatIndex);
+            savedStateHandle.set(KEY_TURN_TIMER_ACTIVE_SEAT_INDEX, seatIndex);
+        }
+        updateUiState();
+    }
+
+    public Integer getStartingPlayer() {
+        return savedStateHandle.get(KEY_STARTING_PLAYER);
+    }
+
+    public void startTimer() {
+        startTimer(nowProvider.now());
+    }
+
+    public void togglePlayPause() {
+        if (!getTurnTimerEnabled() || getTurnTimerFinished()) {
+            return;
+        }
+        if (getTurnTimerPaused()) {
+            startTimer();
+        } else {
+            pauseTimer();
+        }
     }
 
     public boolean getTurnTimerEnabled() {
@@ -142,17 +172,18 @@ public class MtgLifeViewModel extends ViewModel {
         savedStateHandle.set(KEY_TURN_TIMER_LAST_TICK_TIME_MS, timeMs);
     }
 
-    public void validateAndStartGame(String playersStr, String lifeStr) {
-        validateAndStartGame(
+    public boolean validateAndStartGame(String playersStr, String lifeStr) {
+        return validateAndStartGame(
                 playersStr, lifeStr, getCommanderDamageEnabled(), getTurnTimerEnabled());
     }
 
-    public void validateAndStartGame(
+    public boolean validateAndStartGame(
             String playersStr, String lifeStr, boolean commanderDamageEnabled) {
-        validateAndStartGame(playersStr, lifeStr, commanderDamageEnabled, getTurnTimerEnabled());
+        return validateAndStartGame(
+                playersStr, lifeStr, commanderDamageEnabled, getTurnTimerEnabled());
     }
 
-    public void validateAndStartGame(
+    public boolean validateAndStartGame(
             String playersStr,
             String lifeStr,
             boolean commanderDamageEnabled,
@@ -170,7 +201,7 @@ public class MtgLifeViewModel extends ViewModel {
         if (parsedPlayerCount == null || parsedStartingLife == null) {
             savedStateHandle.set(KEY_SHOWING_SETUP, true);
             updateUiState();
-            return;
+            return false;
         }
 
         savedStateHandle.set(KEY_PLAYER_COUNT, parsedPlayerCount);
@@ -187,6 +218,8 @@ public class MtgLifeViewModel extends ViewModel {
                 KEY_COMMANDER_DAMAGE_MATRIX, createCommanderDamageMatrix(parsedPlayerCount));
 
         savedStateHandle.set(KEY_TURN_TIMER_ENABLED, turnTimerEnabled);
+        Integer startingPlayer = getStartingPlayer();
+        int initialActiveSeat = startingPlayer == null ? 0 : startingPlayer;
         if (turnTimerEnabled) {
             long duration = getTurnTimerDurationMs();
             ArrayList<Long> initialRemaining = new ArrayList<>();
@@ -194,7 +227,7 @@ public class MtgLifeViewModel extends ViewModel {
                 initialRemaining.add(duration);
             }
             timerEngine.setRemainingTimes(initialRemaining);
-            timerEngine.setRunningIndex(0);
+            timerEngine.setRunningIndex(initialActiveSeat);
             timerEngine.setPaused(true);
             timerEngine.setLastTickTimeMs(0L);
             savedStateHandle.set(KEY_TURN_TIMER_FINISHED, duration <= 0L);
@@ -202,11 +235,11 @@ public class MtgLifeViewModel extends ViewModel {
         } else {
             timerScheduler.stop();
             timerEngine.setRemainingTimes(new ArrayList<>());
-            timerEngine.setRunningIndex(0);
+            timerEngine.setRunningIndex(initialActiveSeat);
             timerEngine.setPaused(true);
             timerEngine.setLastTickTimeMs(0L);
             savedStateHandle.set(KEY_TURN_TIMER_REMAINING_TIMES, null);
-            savedStateHandle.set(KEY_TURN_TIMER_ACTIVE_SEAT_INDEX, 0);
+            savedStateHandle.set(KEY_TURN_TIMER_ACTIVE_SEAT_INDEX, initialActiveSeat);
             savedStateHandle.set(KEY_TURN_TIMER_PAUSED, true);
             savedStateHandle.set(KEY_TURN_TIMER_FINISHED, false);
             savedStateHandle.set(KEY_TURN_TIMER_LAST_TICK_TIME_MS, 0L);
@@ -215,6 +248,7 @@ public class MtgLifeViewModel extends ViewModel {
         savedStateHandle.set(KEY_SHOWING_SETUP, false);
 
         updateUiState();
+        return true;
     }
 
     public void incrementLife(int seatIndex) {
@@ -693,6 +727,7 @@ public class MtgLifeViewModel extends ViewModel {
                 boolean timerActive = false;
                 boolean timerExpired = false;
                 boolean passEnabled = false;
+                boolean startTimerVisible = false;
 
                 if (timerVisible) {
                     long remainingTime = remainingTimes.get(seatIndex);
@@ -700,6 +735,7 @@ public class MtgLifeViewModel extends ViewModel {
                     timerActive = seatIndex == activeSeatIndex;
                     timerExpired = remainingTime <= 0L;
                     passEnabled = timerActive && !turnTimerFinished && remainingTime > 0L;
+                    startTimerVisible = timerActive && turnTimerPaused && !turnTimerFinished;
                 }
 
                 players.add(
@@ -718,7 +754,8 @@ public class MtgLifeViewModel extends ViewModel {
                                 timerDisplay,
                                 timerActive,
                                 timerExpired,
-                                passEnabled));
+                                passEnabled,
+                                startTimerVisible));
             }
         }
 
@@ -768,5 +805,33 @@ public class MtgLifeViewModel extends ViewModel {
         savedStateHandle.set(KEY_TURN_TIMER_FINISHED, true);
         persistTurnTimerState();
         updateUiState();
+    }
+
+    private void initStartingPlayer() {
+        if (savedStateHandle.contains("starting_player")) {
+            Object val = savedStateHandle.get("starting_player");
+            Integer parsed = parseInteger(val);
+            if (parsed != null) {
+                setStartingPlayer(parsed);
+            }
+        } else if (savedStateHandle.contains(KEY_STARTING_PLAYER)) {
+            Object val = savedStateHandle.get(KEY_STARTING_PLAYER);
+            Integer parsed = parseInteger(val);
+            if (parsed != null) {
+                setStartingPlayer(parsed);
+            }
+        }
+    }
+
+    private Integer parseInteger(Object val) {
+        if (val instanceof Integer) {
+            return (Integer) val;
+        } else if (val instanceof String) {
+            try {
+                return Integer.parseInt((String) val);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return null;
     }
 }

@@ -99,6 +99,32 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                             }
                         });
 
+        androidx.navigation.NavController navController = null;
+        try {
+            navController = androidx.navigation.fragment.NavHostFragment.findNavController(this);
+        } catch (IllegalStateException e) {
+            // Safe to ignore in unit tests where the fragment is launched outside a NavHost
+        }
+        if (navController != null) {
+            androidx.navigation.NavBackStackEntry currentEntry =
+                    navController.getCurrentBackStackEntry();
+            if (currentEntry != null) {
+                androidx.lifecycle.LiveData<Integer> chosenSeatLiveData =
+                        currentEntry.getSavedStateHandle().getLiveData("chosen_seat_index");
+                chosenSeatLiveData.observe(
+                        getViewLifecycleOwner(),
+                        new androidx.lifecycle.Observer<Integer>() {
+                            @Override
+                            public void onChanged(Integer seatIndex) {
+                                if (seatIndex != null) {
+                                    viewModel.setStartingPlayer(seatIndex);
+                                    currentEntry.getSavedStateHandle().remove("chosen_seat_index");
+                                }
+                            }
+                        });
+            }
+        }
+
         setupBinding.startGameButton.setOnClickListener(
                 v -> {
                     Editable playersText = setupBinding.playersInput.getText();
@@ -109,6 +135,27 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                     boolean turnTimerEnabled = setupBinding.turnTimerSwitch.isChecked();
                     viewModel.validateAndStartGame(
                             playersStr, lifeStr, commanderEnabled, turnTimerEnabled);
+                });
+
+        setupBinding.chooseAndStartButton.setOnClickListener(
+                v -> {
+                    Editable playersText = setupBinding.playersInput.getText();
+                    Editable lifeText = setupBinding.lifeInput.getText();
+                    String playersStr = playersText != null ? playersText.toString() : "";
+                    String lifeStr = lifeText != null ? lifeText.toString() : "";
+                    boolean commanderEnabled = setupBinding.commanderDamageSwitch.isChecked();
+                    boolean turnTimerEnabled = setupBinding.turnTimerSwitch.isChecked();
+                    if (viewModel.validateAndStartGame(
+                            playersStr, lifeStr, commanderEnabled, turnTimerEnabled)) {
+                        Bundle args = new Bundle();
+                        args.putBoolean("return_on_selection", true);
+                        MtgLifeUiState state = viewModel.getUiState().getValue();
+                        if (state != null) {
+                            args.putInt("player_count", state.getPlayerCount());
+                        }
+                        androidx.navigation.fragment.NavHostFragment.findNavController(this)
+                                .navigate(R.id.nav_chooser, args);
+                    }
                 });
 
         binding.setupOverlay.setOnClickListener(v -> viewModel.dismissSetup());
@@ -124,8 +171,10 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         MenuItem newGameItem = menu.findItem(R.id.action_new_game);
         MtgLifeUiState currentUiState =
                 viewModel != null ? viewModel.getUiState().getValue() : null;
-        if (newGameItem != null && currentUiState != null) {
-            newGameItem.setVisible(!currentUiState.isShowingSetup());
+        if (currentUiState != null) {
+            if (newGameItem != null) {
+                newGameItem.setVisible(!currentUiState.isShowingSetup());
+            }
         }
     }
 
@@ -262,6 +311,9 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             cellBinding.commanderDamageGrid.setVisibility(View.GONE);
             cellBinding.timerContainer.setVisibility(View.GONE);
             cellBinding.timerContainer.setOnClickListener(null);
+            cellBinding.timerContainer.setOnLongClickListener(null);
+            cellBinding.btnStartTimer.setVisibility(View.GONE);
+            cellBinding.btnStartTimer.setOnClickListener(null);
             cellBinding.playerCellContainer.setRotation(0f);
             cellBinding.innerPlayerLayout.setRotation(seatIndex % 2 == 0 ? 90f : 270f);
             clearRecentLifeChange(cellBinding.tvRecentLifeChangeNegative);
@@ -291,7 +343,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         int foregroundColor =
                 player.isTimerExpired()
                         ? ContextCompat.getColor(requireContext(), R.color.mtg_expired_foreground)
-                        : getForegroundColor(backgroundColor);
+                        : ContextCompat.getColor(requireContext(), player.getForegroundColorRes());
         int seatIndex = player.getSeatIndex();
 
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
@@ -356,17 +408,36 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                     player.isPassEnabled() ? View.VISIBLE : View.INVISIBLE);
             cellBinding.btnPassTurn.setIconTint(ColorStateList.valueOf(foregroundColor));
 
-            cellBinding.timerContainer.setEnabled(player.isPassEnabled());
+            boolean pillActive = player.isStartTimerVisible() || player.isPassEnabled();
+            cellBinding.timerContainer.setEnabled(pillActive);
             cellBinding.timerContainer.setContentDescription(
-                    getString(R.string.mtg_pass_turn_desc, seatIndex + 1));
+                    player.isStartTimerVisible()
+                            ? getString(R.string.mtg_start_timer_desc, seatIndex + 1)
+                            : getString(R.string.mtg_pass_turn_desc, seatIndex + 1));
             cellBinding.timerContainer.setOnClickListener(
                     v -> {
                         vibrate(30L);
-                        viewModel.passTurn(seatIndex);
+                        if (player.isStartTimerVisible()) {
+                            viewModel.startTimer();
+                        } else {
+                            viewModel.passTurn(seatIndex);
+                        }
                     });
+            cellBinding.timerContainer.setOnLongClickListener(
+                    v -> {
+                        vibrate(50L);
+                        viewModel.togglePlayPause();
+                        return true;
+                    });
+
+            cellBinding.btnStartTimer.setVisibility(
+                    player.isStartTimerVisible() ? View.VISIBLE : View.GONE);
+            cellBinding.btnStartTimer.setIconTint(ColorStateList.valueOf(foregroundColor));
         } else {
             cellBinding.timerContainer.setVisibility(View.GONE);
             cellBinding.timerContainer.setOnClickListener(null);
+            cellBinding.timerContainer.setOnLongClickListener(null);
+            cellBinding.btnStartTimer.setVisibility(View.GONE);
         }
 
         bindCommanderDamageSummary(cellBinding, player, playerCount);
@@ -384,6 +455,15 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
 
         cellBinding.commanderDamageGrid.setVisibility(View.VISIBLE);
         cellBinding.commanderDamageGrid.removeAllViews();
+
+        GradientDrawable pillBackground = new GradientDrawable();
+        pillBackground.setCornerRadius(dpToPx(12));
+        pillBackground.setColor(0x20FFFFFF);
+        pillBackground.setStroke(dpToPx(1), 0x30FFFFFF);
+        cellBinding.commanderDamageGrid.setBackground(pillBackground);
+        int pillPadding = dpToPx(4);
+        cellBinding.commanderDamageGrid.setPadding(
+                pillPadding, pillPadding, pillPadding, pillPadding);
 
         int rows = getCommanderGridRowCount(totalPlayers);
         int cols = getCommanderGridColumnCount(totalPlayers);
@@ -419,6 +499,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     }
 
     private View createCommanderSummaryCell(CommanderDamageUiModel damage, int defenderSeatIndex) {
+
         TextView summaryCell = new TextView(requireContext());
         summaryCell.setGravity(Gravity.CENTER);
         summaryCell.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);

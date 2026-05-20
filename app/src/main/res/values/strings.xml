@@ -98,5 +98,7 @@
     <string name="mtg_setup_time">Time</string>
     <string name="mtg_pass_turn">Pass</string>
     <string name="mtg_pass_turn_desc">Pass turn from player %1$d to next player</string>
+    <string name="mtg_start_timer_desc">Start timer for player %1$d</string>
     <string name="mtg_player_timer_desc">Player %1$d remaining time: %2$s</string>
+    <string name="mtg_setup_choose_and_start">Choose 1st &amp; Start</string>
 </resources>

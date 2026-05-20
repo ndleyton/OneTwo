@@ -198,6 +198,16 @@
             android:textColor="?attr/colorOnPrimary"
             android:text="@string/mtg_setup_start" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/choose_and_start_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:minHeight="56dp"
+            style="@style/Widget.Material3.Button.TonalButton"
+            app:cornerRadius="@dimen/shape_corner_soft"
+            android:text="@string/mtg_setup_choose_and_start" />
+
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

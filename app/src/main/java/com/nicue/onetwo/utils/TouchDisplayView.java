@@ -25,7 +25,7 @@ public class TouchDisplayView extends View {
     private boolean alreadyChosen = false;
     private boolean choosingOrder = false;
     // private int fingers = 0;
-    private static final long SELECTION_REVEAL_DURATION_MS = 650L;
+    public static final long SELECTION_REVEAL_DURATION_MS = 650L;
     private static final int SELECTED_TOUCH_ALPHA = 255;
     private static final int DIMMED_TOUCH_ALPHA = 105;
     private static final int TOUCH_HALO_ALPHA = 125;
@@ -57,6 +57,16 @@ public class TouchDisplayView extends View {
         0xFF7D5260 // M3 Maroon
     };
 
+    public interface OnSelectionListener {
+        void onSelectionMade();
+    }
+
+    private OnSelectionListener mSelectionListener;
+
+    public void setOnSelectionListener(OnSelectionListener listener) {
+        this.mSelectionListener = listener;
+    }
+
     // A Handler to check if all fingers have been pressed down for x time
     private final Handler handler = new Handler();
     private final Runnable runnable =
@@ -81,6 +91,10 @@ public class TouchDisplayView extends View {
                 long[] pattern = {0, 20, 10, 50};
                 v.vibrate(pattern, -1);
                 invalidate();
+
+                if (mSelectionListener != null) {
+                    mSelectionListener.onSelectionMade();
+                }
             }
         }
     }
@@ -603,5 +617,13 @@ public class TouchDisplayView extends View {
 
     public boolean getChoosingOrder() {
         return choosingOrder;
+    }
+
+    public float getSelectionRevealCenterX() {
+        return selectionRevealCenterX;
+    }
+
+    public float getSelectionRevealCenterY() {
+        return selectionRevealCenterY;
     }
 }

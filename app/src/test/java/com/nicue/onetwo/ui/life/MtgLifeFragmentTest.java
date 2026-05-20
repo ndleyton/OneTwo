@@ -13,7 +13,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.testing.FragmentScenario;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.test.core.app.ActivityScenario;
+import com.nicue.onetwo.MainActivity;
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.databinding.LifePlayerCellBinding;
 import java.util.concurrent.TimeUnit;
@@ -716,6 +721,53 @@ public class MtgLifeFragmentTest {
                         View timerContainer = player1.findViewById(R.id.timer_container);
                         assertNotNull(timerContainer);
                         assertEquals(View.GONE, timerContainer.getVisibility());
+                    });
+        }
+    }
+
+    @Test
+    public void testChooseAndStartButtonNavigatesToChooser() {
+        try (ActivityScenario<MainActivity> scenario =
+                ActivityScenario.launch(MainActivity.class)) {
+            scenario.onActivity(
+                    activity -> {
+                        Fragment fragment =
+                                activity.getSupportFragmentManager()
+                                        .findFragmentById(R.id.nav_host_fragment);
+                        assertNotNull(fragment);
+                        NavController navController =
+                                ((NavHostFragment) fragment).getNavController();
+
+                        // Navigate to setup content first
+                        Fragment currentFragment =
+                                fragment.getChildFragmentManager().getFragments().get(0);
+                        assertTrue(currentFragment instanceof MtgLifeFragment);
+                        MtgLifeFragment mtgLifeFragment = (MtgLifeFragment) currentFragment;
+
+                        org.robolectric.fakes.RoboMenuItem newGameItem =
+                                new org.robolectric.fakes.RoboMenuItem(R.id.action_new_game);
+                        mtgLifeFragment.onMenuItemSelected(newGameItem);
+
+                        View view = mtgLifeFragment.requireView();
+                        View setupContent = view.findViewById(R.id.setup_content);
+                        assertNotNull(setupContent);
+                        assertEquals(View.VISIBLE, setupContent.getVisibility());
+
+                        // Fill details
+                        EditText playersInput = view.findViewById(R.id.players_input);
+                        EditText lifeInput = view.findViewById(R.id.life_input);
+                        playersInput.setText("4");
+                        lifeInput.setText("40");
+
+                        // Press Choose 1st & Start button
+                        Button chooseAndStartButton =
+                                view.findViewById(R.id.choose_and_start_button);
+                        assertNotNull(chooseAndStartButton);
+                        chooseAndStartButton.performClick();
+
+                        // Assert we navigated to nav_chooser
+                        assertEquals(
+                                R.id.nav_chooser, navController.getCurrentDestination().getId());
                     });
         }
     }

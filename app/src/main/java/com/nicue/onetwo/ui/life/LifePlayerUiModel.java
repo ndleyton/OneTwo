@@ -17,6 +17,7 @@ public class LifePlayerUiModel {
     private final boolean timerActive;
     private final boolean timerExpired;
     private final boolean passEnabled;
+    private final boolean startTimerVisible;
 
     public LifePlayerUiModel(
             int seatIndex,
@@ -32,7 +33,8 @@ public class LifePlayerUiModel {
             String timerDisplay,
             boolean timerActive,
             boolean timerExpired,
-            boolean passEnabled) {
+            boolean passEnabled,
+            boolean startTimerVisible) {
         this.seatIndex = seatIndex;
         this.lifeTotal = lifeTotal;
         this.rotationDegrees = rotationDegrees;
@@ -47,6 +49,7 @@ public class LifePlayerUiModel {
         this.timerActive = timerActive;
         this.timerExpired = timerExpired;
         this.passEnabled = passEnabled;
+        this.startTimerVisible = startTimerVisible;
     }
 
     public int getSeatIndex() {
@@ -103,5 +106,9 @@ public class LifePlayerUiModel {
 
     public boolean isPassEnabled() {
         return passEnabled;
+    }
+
+    public boolean isStartTimerVisible() {
+        return startTimerVisible;
     }
 }
