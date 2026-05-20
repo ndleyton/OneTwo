@@ -47,12 +47,12 @@ public class MtgLifeViewModelTest {
     @Test
     public void testDefaultSetupState() throws Exception {
         MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
-        assertTrue(state.isShowingSetup());
+        assertFalse(state.isShowingSetup());
         assertEquals(4, state.getPlayerCount());
         assertEquals(40, state.getStartingLife());
         assertNull(state.getPlayersErrorResId());
         assertNull(state.getLifeErrorResId());
-        assertTrue(state.getPlayers().isEmpty());
+        assertEquals(4, state.getPlayers().size());
     }
 
     @Test

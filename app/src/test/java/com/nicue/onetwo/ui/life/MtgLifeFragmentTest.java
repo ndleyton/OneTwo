@@ -32,7 +32,7 @@ public class MtgLifeFragmentTest {
     @Rule public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     @Test
-    public void testSetupStateVisibleOnFirstLaunchAndPrefilled() {
+    public void testSetupStateHiddenOnFirstLaunchAndPrefilledOnNewGame() {
         try (FragmentScenario<MtgLifeFragment> scenario =
                 FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
 
@@ -43,11 +43,27 @@ public class MtgLifeFragmentTest {
 
                         View setupContent = view.findViewById(R.id.setup_content);
                         assertNotNull(setupContent);
-                        assertEquals(View.VISIBLE, setupContent.getVisibility());
+                        assertEquals(View.GONE, setupContent.getVisibility());
 
                         View boardContainer = view.findViewById(R.id.board_container);
                         assertNotNull(boardContainer);
                         assertEquals(View.VISIBLE, boardContainer.getVisibility());
+                    });
+
+            scenario.onFragment(
+                    fragment -> {
+                        org.robolectric.fakes.RoboMenuItem resetMenuItem =
+                                new org.robolectric.fakes.RoboMenuItem(R.id.action_new_game);
+                        fragment.onMenuItemSelected(resetMenuItem);
+                    });
+
+            scenario.onFragment(
+                    fragment -> {
+                        View view = fragment.getView();
+                        assertNotNull(view);
+
+                        View setupContent = view.findViewById(R.id.setup_content);
+                        assertEquals(View.VISIBLE, setupContent.getVisibility());
 
                         EditText playersInput = view.findViewById(R.id.players_input);
                         EditText lifeInput = view.findViewById(R.id.life_input);
@@ -66,9 +82,12 @@ public class MtgLifeFragmentTest {
         try (FragmentScenario<MtgLifeFragment> scenario =
                 FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
 
-            // 1. Press Start Game with defaults (4 players, 40 life)
             scenario.onFragment(
                     fragment -> {
+                        org.robolectric.fakes.RoboMenuItem resetMenuItem =
+                                new org.robolectric.fakes.RoboMenuItem(R.id.action_new_game);
+                        fragment.onMenuItemSelected(resetMenuItem);
+
                         View view = fragment.getView();
                         assertNotNull(view);
                         Button startButton = view.findViewById(R.id.start_game_button);
@@ -76,7 +95,6 @@ public class MtgLifeFragmentTest {
                         startButton.performClick();
                     });
 
-            // 2. Verify we transitioned to playing board state (4 players board)
             scenario.onFragment(
                     fragment -> {
                         View view = fragment.getView();
@@ -87,8 +105,6 @@ public class MtgLifeFragmentTest {
                         View boardContainer = view.findViewById(R.id.board_container);
                         assertEquals(View.VISIBLE, boardContainer.getVisibility());
 
-                        // 4-player board is inflated, check that R.id.player_1, player_2, player_3,
-                        // player_4 are present
                         View player1 = view.findViewById(R.id.player_1);
                         View player2 = view.findViewById(R.id.player_2);
                         View player3 = view.findViewById(R.id.player_3);
@@ -99,7 +115,6 @@ public class MtgLifeFragmentTest {
                         assertNotNull(player3);
                         assertNotNull(player4);
 
-                        // Verify starting life totals are 40
                         TextView life1 = player1.findViewById(R.id.tv_life_count);
                         TextView life2 = player2.findViewById(R.id.tv_life_count);
                         TextView negativeChange1 =
@@ -117,18 +132,15 @@ public class MtgLifeFragmentTest {
                         assertEquals(View.GONE, negativeChange2.getVisibility());
                         assertEquals(View.GONE, positiveChange2.getVisibility());
 
-                        // Tap right half for player 1
                         View incrementZone1 = player1.findViewById(R.id.life_increment_zone);
                         assertNotNull(incrementZone1);
                         incrementZone1.performClick();
 
-                        // Tap left half for player 2
                         View decrementZone2 = player2.findViewById(R.id.life_decrement_zone);
                         assertNotNull(decrementZone2);
                         decrementZone2.performClick();
                     });
 
-            // 3. Verify life totals are updated accordingly
             scenario.onFragment(
                     fragment -> {
                         View view = fragment.getView();
@@ -166,9 +178,12 @@ public class MtgLifeFragmentTest {
         try (FragmentScenario<MtgLifeFragment> scenario =
                 FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
 
-            // 1. Enter non-default setup, e.g., 3 players, 30 life, and start game
             scenario.onFragment(
                     fragment -> {
+                        org.robolectric.fakes.RoboMenuItem resetMenuItem =
+                                new org.robolectric.fakes.RoboMenuItem(R.id.action_new_game);
+                        fragment.onMenuItemSelected(resetMenuItem);
+
                         View view = fragment.getView();
                         assertNotNull(view);
                         EditText playersInput = view.findViewById(R.id.players_input);
@@ -180,7 +195,6 @@ public class MtgLifeFragmentTest {
                         startButton.performClick();
                     });
 
-            // 2. Verify we are playing 3 players game
             scenario.onFragment(
                     fragment -> {
                         View view = fragment.getView();
@@ -200,7 +214,6 @@ public class MtgLifeFragmentTest {
                         assertEquals("30", life1.getText().toString());
                     });
 
-            // 3. Trigger app-bar "New Game" menu action (action_new_game)
             scenario.onFragment(
                     fragment -> {
                         org.robolectric.fakes.RoboMenuItem resetMenuItem =
@@ -208,9 +221,6 @@ public class MtgLifeFragmentTest {
                         fragment.onMenuItemSelected(resetMenuItem);
                     });
 
-            // 4. Verify we are back on the setup screen and inputs are prefilled with last-used
-            // values
-            // (3 and 30)
             scenario.onFragment(
                     fragment -> {
                         View view = fragment.getView();
@@ -234,16 +244,6 @@ public class MtgLifeFragmentTest {
         try (FragmentScenario<MtgLifeFragment> scenario =
                 FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
 
-            // 1. Start a game with default settings
-            scenario.onFragment(
-                    fragment -> {
-                        View view = fragment.getView();
-                        assertNotNull(view);
-                        Button startButton = view.findViewById(R.id.start_game_button);
-                        startButton.performClick();
-                    });
-
-            // 2. Go back to setup screen via menu action
             scenario.onFragment(
                     fragment -> {
                         org.robolectric.fakes.RoboMenuItem resetMenuItem =
@@ -251,7 +251,6 @@ public class MtgLifeFragmentTest {
                         fragment.onMenuItemSelected(resetMenuItem);
                     });
 
-            // 3. Verify setup overlay is visible
             scenario.onFragment(
                     fragment -> {
                         View view = fragment.getView();
@@ -260,7 +259,6 @@ public class MtgLifeFragmentTest {
                         assertEquals(View.VISIBLE, setupOverlay.getVisibility());
                     });
 
-            // 4. Tap the overlay (clicking outside the card)
             scenario.onFragment(
                     fragment -> {
                         View view = fragment.getView();
@@ -269,7 +267,6 @@ public class MtgLifeFragmentTest {
                         setupOverlay.performClick();
                     });
 
-            // 5. Verify setup overlay is now GONE (modal dismissed/escaped)
             scenario.onFragment(
                     fragment -> {
                         View view = fragment.getView();
@@ -284,14 +281,6 @@ public class MtgLifeFragmentTest {
     public void testCommanderDamageDialogHalfTapZonesUpdateSummary() {
         try (FragmentScenario<MtgLifeFragment> scenario =
                 FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
-
-            scenario.onFragment(
-                    fragment -> {
-                        View view = fragment.getView();
-                        assertNotNull(view);
-                        Button startButton = view.findViewById(R.id.start_game_button);
-                        startButton.performClick();
-                    });
 
             scenario.onFragment(
                     fragment -> {
@@ -351,15 +340,6 @@ public class MtgLifeFragmentTest {
 
             scenario.onFragment(
                     fragment -> {
-                        View view = fragment.getView();
-                        assertNotNull(view);
-                        Button startButton = view.findViewById(R.id.start_game_button);
-                        assertNotNull(startButton);
-                        startButton.performClick();
-                    });
-
-            scenario.onFragment(
-                    fragment -> {
                         View view = fragment.requireView();
                         View player1 = view.findViewById(R.id.player_1);
                         View player2 = view.findViewById(R.id.player_2);
@@ -407,14 +387,6 @@ public class MtgLifeFragmentTest {
     public void testRecentLifeChangeDoesNotRestartAnimationForSameTimestamp() {
         try (FragmentScenario<MtgLifeFragment> scenario =
                 FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
-
-            scenario.onFragment(
-                    fragment -> {
-                        View view = fragment.requireView();
-                        Button startButton = view.findViewById(R.id.start_game_button);
-                        assertNotNull(startButton);
-                        startButton.performClick();
-                    });
 
             scenario.onFragment(
                     fragment -> {
@@ -469,9 +441,12 @@ public class MtgLifeFragmentTest {
         try (FragmentScenario<MtgLifeFragment> scenario =
                 FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
 
-            // 1. Enter 5 players setup and start game
             scenario.onFragment(
                     fragment -> {
+                        org.robolectric.fakes.RoboMenuItem resetMenuItem =
+                                new org.robolectric.fakes.RoboMenuItem(R.id.action_new_game);
+                        fragment.onMenuItemSelected(resetMenuItem);
+
                         View view = fragment.getView();
                         assertNotNull(view);
                         EditText playersInput = view.findViewById(R.id.players_input);
@@ -483,7 +458,6 @@ public class MtgLifeFragmentTest {
                         startButton.performClick();
                     });
 
-            // 2. Open commander damage dialog for player 5 (seat 4)
             scenario.onFragment(
                     fragment -> {
                         View player5 = fragment.requireView().findViewById(R.id.player_5);
@@ -510,10 +484,6 @@ public class MtgLifeFragmentTest {
                                 decorView.findViewWithTag("commander_dialog_content");
                         assertNotNull(dialogContent);
 
-                        // Verify that row 0 has the expected cells:
-                        // Col 0: Player 1 (source seat 0) -> visible
-                        // Col 1: Player 2 (source seat 1) -> visible
-                        // Col 2: Player 5 (source seat 4, self) -> invisible
                         android.widget.LinearLayout row0 =
                                 (android.widget.LinearLayout) dialogContent.getChildAt(0);
                         View cell0 = row0.getChildAt(0);
@@ -524,7 +494,6 @@ public class MtgLifeFragmentTest {
                         assertEquals(View.VISIBLE, cell1.getVisibility());
                         assertEquals(View.INVISIBLE, cell2.getVisibility());
 
-                        // Verify increment zones exist in cell0 and cell1
                         View incZone0 =
                                 findViewWithContentDescription(
                                         cell0,
@@ -538,10 +507,6 @@ public class MtgLifeFragmentTest {
                         assertNotNull(incZone0);
                         assertNotNull(incZone1);
 
-                        // Verify that row 1 has the expected cells:
-                        // Col 0: Player 3 (source seat 2) -> visible
-                        // Col 1: Player 4 (source seat 3) -> visible
-                        // Col 2: Spacer (seat 5) -> invisible
                         android.widget.LinearLayout row1 =
                                 (android.widget.LinearLayout) dialogContent.getChildAt(1);
                         View cell3 = row1.getChildAt(0);
@@ -572,15 +537,6 @@ public class MtgLifeFragmentTest {
     public void testHoldingLifeZoneRepeatsTenPointChangeEveryOnePointFiveSeconds() {
         try (FragmentScenario<MtgLifeFragment> scenario =
                 FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
-
-            scenario.onFragment(
-                    fragment -> {
-                        View view = fragment.getView();
-                        assertNotNull(view);
-                        Button startButton = view.findViewById(R.id.start_game_button);
-                        assertNotNull(startButton);
-                        startButton.performClick();
-                    });
 
             scenario.onFragment(
                     fragment -> {
@@ -623,6 +579,10 @@ public class MtgLifeFragmentTest {
 
             scenario.onFragment(
                     fragment -> {
+                        org.robolectric.fakes.RoboMenuItem resetMenuItem =
+                                new org.robolectric.fakes.RoboMenuItem(R.id.action_new_game);
+                        fragment.onMenuItemSelected(resetMenuItem);
+
                         View view = fragment.getView();
                         assertNotNull(view);
                         EditText playersInput = view.findViewById(R.id.players_input);
@@ -654,6 +614,10 @@ public class MtgLifeFragmentTest {
 
             scenario.onFragment(
                     fragment -> {
+                        org.robolectric.fakes.RoboMenuItem resetMenuItem =
+                                new org.robolectric.fakes.RoboMenuItem(R.id.action_new_game);
+                        fragment.onMenuItemSelected(resetMenuItem);
+
                         View view = fragment.getView();
                         assertNotNull(view);
                         EditText playersInput = view.findViewById(R.id.players_input);
@@ -704,9 +668,12 @@ public class MtgLifeFragmentTest {
         try (FragmentScenario<MtgLifeFragment> scenario =
                 FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
 
-            // 1. Enable turn timer switch and start a game
             scenario.onFragment(
                     fragment -> {
+                        org.robolectric.fakes.RoboMenuItem resetMenuItem =
+                                new org.robolectric.fakes.RoboMenuItem(R.id.action_new_game);
+                        fragment.onMenuItemSelected(resetMenuItem);
+
                         View view = fragment.getView();
                         assertNotNull(view);
 
@@ -720,7 +687,6 @@ public class MtgLifeFragmentTest {
                         startButton.performClick();
                     });
 
-            // 2. Verify we are in game and player cells have timer visible
             scenario.onFragment(
                     fragment -> {
                         View view = fragment.getView();
@@ -733,7 +699,6 @@ public class MtgLifeFragmentTest {
                         assertEquals(View.VISIBLE, timerContainer.getVisibility());
                     });
 
-            // 3. Return to setup (New Game)
             scenario.onFragment(
                     fragment -> {
                         org.robolectric.fakes.RoboMenuItem resetMenuItem =
@@ -741,7 +706,6 @@ public class MtgLifeFragmentTest {
                         fragment.onMenuItemSelected(resetMenuItem);
                     });
 
-            // 4. Verify that on returning to setup, the preview player cell has timer GONE
             scenario.onFragment(
                     fragment -> {
                         View view = fragment.getView();
