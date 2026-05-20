@@ -111,6 +111,23 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                             playersStr, lifeStr, commanderEnabled, turnTimerEnabled);
                 });
 
+        setupBinding.chooseAndStartButton.setOnClickListener(
+                v -> {
+                    Editable playersText = setupBinding.playersInput.getText();
+                    Editable lifeText = setupBinding.lifeInput.getText();
+                    String playersStr = playersText != null ? playersText.toString() : "";
+                    String lifeStr = lifeText != null ? lifeText.toString() : "";
+                    boolean commanderEnabled = setupBinding.commanderDamageSwitch.isChecked();
+                    boolean turnTimerEnabled = setupBinding.turnTimerSwitch.isChecked();
+                    if (viewModel.validateAndStartGame(
+                            playersStr, lifeStr, commanderEnabled, turnTimerEnabled)) {
+                        Bundle args = new Bundle();
+                        args.putBoolean("return_on_selection", true);
+                        androidx.navigation.fragment.NavHostFragment.findNavController(this)
+                                .navigate(R.id.nav_chooser, args);
+                    }
+                });
+
         binding.setupOverlay.setOnClickListener(v -> viewModel.dismissSetup());
         setupBinding.getRoot().setOnClickListener(v -> {});
 

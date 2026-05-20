@@ -609,4 +609,12 @@ public class MtgLifeViewModelTest {
         // Player 0 should not have been charged (displaying "5:00").
         assertEquals("5:00", player0.getTimerDisplay());
     }
+
+    @Test
+    public void testValidateAndStartGameReturnsCorrectBoolean() {
+        assertTrue(viewModel.validateAndStartGame("4", "40"));
+        assertFalse(viewModel.validateAndStartGame("0", "40"));
+        assertFalse(viewModel.validateAndStartGame("4", "0"));
+        assertFalse(viewModel.validateAndStartGame("abc", "xyz"));
+    }
 }

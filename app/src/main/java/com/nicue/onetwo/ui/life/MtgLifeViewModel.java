@@ -142,17 +142,17 @@ public class MtgLifeViewModel extends ViewModel {
         savedStateHandle.set(KEY_TURN_TIMER_LAST_TICK_TIME_MS, timeMs);
     }
 
-    public void validateAndStartGame(String playersStr, String lifeStr) {
-        validateAndStartGame(
+    public boolean validateAndStartGame(String playersStr, String lifeStr) {
+        return validateAndStartGame(
                 playersStr, lifeStr, getCommanderDamageEnabled(), getTurnTimerEnabled());
     }
 
-    public void validateAndStartGame(
+    public boolean validateAndStartGame(
             String playersStr, String lifeStr, boolean commanderDamageEnabled) {
-        validateAndStartGame(playersStr, lifeStr, commanderDamageEnabled, getTurnTimerEnabled());
+        return validateAndStartGame(playersStr, lifeStr, commanderDamageEnabled, getTurnTimerEnabled());
     }
 
-    public void validateAndStartGame(
+    public boolean validateAndStartGame(
             String playersStr,
             String lifeStr,
             boolean commanderDamageEnabled,
@@ -170,7 +170,7 @@ public class MtgLifeViewModel extends ViewModel {
         if (parsedPlayerCount == null || parsedStartingLife == null) {
             savedStateHandle.set(KEY_SHOWING_SETUP, true);
             updateUiState();
-            return;
+            return false;
         }
 
         savedStateHandle.set(KEY_PLAYER_COUNT, parsedPlayerCount);
@@ -215,6 +215,7 @@ public class MtgLifeViewModel extends ViewModel {
         savedStateHandle.set(KEY_SHOWING_SETUP, false);
 
         updateUiState();
+        return true;
     }
 
     public void incrementLife(int seatIndex) {

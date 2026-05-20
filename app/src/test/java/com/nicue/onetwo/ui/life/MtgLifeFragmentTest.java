@@ -769,6 +769,52 @@ public class MtgLifeFragmentTest {
         }
     }
 
+    @Test
+    public void testChooseAndStartButtonNavigatesToChooser() {
+        try (ActivityScenario<MainActivity> scenario =
+                ActivityScenario.launch(MainActivity.class)) {
+            scenario.onActivity(
+                    activity -> {
+                        Fragment fragment =
+                                activity.getSupportFragmentManager()
+                                        .findFragmentById(R.id.nav_host_fragment);
+                        assertNotNull(fragment);
+                        NavController navController =
+                                ((NavHostFragment) fragment).getNavController();
+
+                        // Navigate to setup content first
+                        Fragment currentFragment =
+                                fragment.getChildFragmentManager().getFragments().get(0);
+                        assertTrue(currentFragment instanceof MtgLifeFragment);
+                        MtgLifeFragment mtgLifeFragment = (MtgLifeFragment) currentFragment;
+
+                        org.robolectric.fakes.RoboMenuItem newGameItem =
+                                new org.robolectric.fakes.RoboMenuItem(R.id.action_new_game);
+                        mtgLifeFragment.onMenuItemSelected(newGameItem);
+
+                        View view = mtgLifeFragment.requireView();
+                        View setupContent = view.findViewById(R.id.setup_content);
+                        assertNotNull(setupContent);
+                        assertEquals(View.VISIBLE, setupContent.getVisibility());
+
+                        // Fill details
+                        EditText playersInput = view.findViewById(R.id.players_input);
+                        EditText lifeInput = view.findViewById(R.id.life_input);
+                        playersInput.setText("4");
+                        lifeInput.setText("40");
+
+                        // Press Choose 1st & Start button
+                        Button chooseAndStartButton = view.findViewById(R.id.choose_and_start_button);
+                        assertNotNull(chooseAndStartButton);
+                        chooseAndStartButton.performClick();
+
+                        // Assert we navigated to nav_chooser
+                        assertEquals(
+                                R.id.nav_chooser, navController.getCurrentDestination().getId());
+                    });
+        }
+    }
+
     private static View findViewWithContentDescription(View root, CharSequence contentDescription) {
         if (root == null) {
             return null;
