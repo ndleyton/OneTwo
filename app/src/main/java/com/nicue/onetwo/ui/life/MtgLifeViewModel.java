@@ -91,6 +91,11 @@ public class MtgLifeViewModel extends ViewModel {
 
     public void setStartingPlayer(Integer seatIndex) {
         savedStateHandle.set(KEY_STARTING_PLAYER, seatIndex);
+        if (seatIndex != null) {
+            timerEngine.setRunningIndex(seatIndex);
+            savedStateHandle.set(KEY_TURN_TIMER_ACTIVE_SEAT_INDEX, seatIndex);
+        }
+        updateUiState();
     }
 
     public Integer getStartingPlayer() {
@@ -212,6 +217,8 @@ public class MtgLifeViewModel extends ViewModel {
                 KEY_COMMANDER_DAMAGE_MATRIX, createCommanderDamageMatrix(parsedPlayerCount));
 
         savedStateHandle.set(KEY_TURN_TIMER_ENABLED, turnTimerEnabled);
+        Integer startingPlayer = getStartingPlayer();
+        int initialActiveSeat = startingPlayer == null ? 0 : startingPlayer;
         if (turnTimerEnabled) {
             long duration = getTurnTimerDurationMs();
             ArrayList<Long> initialRemaining = new ArrayList<>();
@@ -219,7 +226,7 @@ public class MtgLifeViewModel extends ViewModel {
                 initialRemaining.add(duration);
             }
             timerEngine.setRemainingTimes(initialRemaining);
-            timerEngine.setRunningIndex(0);
+            timerEngine.setRunningIndex(initialActiveSeat);
             timerEngine.setPaused(true);
             timerEngine.setLastTickTimeMs(0L);
             savedStateHandle.set(KEY_TURN_TIMER_FINISHED, duration <= 0L);
@@ -227,11 +234,11 @@ public class MtgLifeViewModel extends ViewModel {
         } else {
             timerScheduler.stop();
             timerEngine.setRemainingTimes(new ArrayList<>());
-            timerEngine.setRunningIndex(0);
+            timerEngine.setRunningIndex(initialActiveSeat);
             timerEngine.setPaused(true);
             timerEngine.setLastTickTimeMs(0L);
             savedStateHandle.set(KEY_TURN_TIMER_REMAINING_TIMES, null);
-            savedStateHandle.set(KEY_TURN_TIMER_ACTIVE_SEAT_INDEX, 0);
+            savedStateHandle.set(KEY_TURN_TIMER_ACTIVE_SEAT_INDEX, initialActiveSeat);
             savedStateHandle.set(KEY_TURN_TIMER_PAUSED, true);
             savedStateHandle.set(KEY_TURN_TIMER_FINISHED, false);
             savedStateHandle.set(KEY_TURN_TIMER_LAST_TICK_TIME_MS, 0L);
@@ -804,13 +811,13 @@ public class MtgLifeViewModel extends ViewModel {
             Object val = savedStateHandle.get("starting_player");
             Integer parsed = parseInteger(val);
             if (parsed != null) {
-                savedStateHandle.set(KEY_STARTING_PLAYER, parsed);
+                setStartingPlayer(parsed);
             }
         } else if (savedStateHandle.contains(KEY_STARTING_PLAYER)) {
             Object val = savedStateHandle.get(KEY_STARTING_PLAYER);
             Integer parsed = parseInteger(val);
             if (parsed != null) {
-                savedStateHandle.set(KEY_STARTING_PLAYER, parsed);
+                setStartingPlayer(parsed);
             }
         }
     }

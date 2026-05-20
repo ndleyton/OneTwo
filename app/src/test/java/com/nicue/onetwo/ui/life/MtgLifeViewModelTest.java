@@ -628,6 +628,16 @@ public class MtgLifeViewModelTest {
     }
 
     @Test
+    public void testStartingPlayerUpdatesTurnTimerActiveSeat() {
+        viewModel.validateAndStartGame("4", "40", true, true);
+        assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
+
+        viewModel.setStartingPlayer(2);
+        assertEquals(Integer.valueOf(2), viewModel.getStartingPlayer());
+        assertEquals(2, viewModel.getTurnTimerActiveSeatIndex());
+    }
+
+    @Test
     public void testStartingPlayerFromIntentExtraInteger() {
         SavedStateHandle handle = new SavedStateHandle();
         handle.set("starting_player", 1);

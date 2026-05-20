@@ -99,6 +99,31 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                             }
                         });
 
+        androidx.navigation.NavController navController = null;
+        try {
+            navController = androidx.navigation.fragment.NavHostFragment.findNavController(this);
+        } catch (IllegalStateException e) {
+            // Safe to ignore in unit tests where the fragment is launched outside a NavHost
+        }
+        if (navController != null) {
+            androidx.navigation.NavBackStackEntry currentEntry = navController.getCurrentBackStackEntry();
+            if (currentEntry != null) {
+                androidx.lifecycle.LiveData<Integer> chosenSeatLiveData =
+                        currentEntry.getSavedStateHandle().getLiveData("chosen_seat_index");
+                chosenSeatLiveData.observe(
+                        getViewLifecycleOwner(),
+                        new androidx.lifecycle.Observer<Integer>() {
+                            @Override
+                            public void onChanged(Integer seatIndex) {
+                                if (seatIndex != null) {
+                                    viewModel.setStartingPlayer(seatIndex);
+                                    currentEntry.getSavedStateHandle().remove("chosen_seat_index");
+                                }
+                            }
+                        });
+            }
+        }
+
         setupBinding.startGameButton.setOnClickListener(
                 v -> {
                     Editable playersText = setupBinding.playersInput.getText();
