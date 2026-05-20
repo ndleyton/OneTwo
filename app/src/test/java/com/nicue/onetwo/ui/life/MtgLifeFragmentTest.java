@@ -717,6 +717,35 @@ public class MtgLifeFragmentTest {
                         assertNotNull(timerContainer);
                         assertEquals(View.GONE, timerContainer.getVisibility());
                     });
+    @Test
+    public void testChooserMenuItemNavigatesToChooser() {
+        try (androidx.test.core.app.ActivityScenario<com.nicue.onetwo.MainActivity> scenario =
+                androidx.test.core.app.ActivityScenario.launch(com.nicue.onetwo.MainActivity.class)) {
+            scenario.onActivity(
+                    activity -> {
+                        androidx.fragment.app.Fragment fragment =
+                                activity.getSupportFragmentManager()
+                                        .findFragmentById(R.id.nav_host_fragment);
+                        assertNotNull(fragment);
+                        androidx.navigation.NavController navController =
+                                ((androidx.navigation.fragment.NavHostFragment) fragment).getNavController();
+
+                        // Currently at start destination (nav_mtg_life)
+                        assertEquals(R.id.nav_mtg_life, navController.getCurrentDestination().getId());
+
+                        // Find the visible Fragment
+                        androidx.fragment.app.Fragment currentFragment = fragment.getChildFragmentManager().getFragments().get(0);
+                        assertTrue(currentFragment instanceof MtgLifeFragment);
+                        MtgLifeFragment mtgLifeFragment = (MtgLifeFragment) currentFragment;
+
+                        // Click the chooser menu item
+                        org.robolectric.fakes.RoboMenuItem chooserMenuItem =
+                                new org.robolectric.fakes.RoboMenuItem(R.id.action_chooser);
+                        mtgLifeFragment.onMenuItemSelected(chooserMenuItem);
+
+                        // Assert we navigated to nav_chooser
+                        assertEquals(R.id.nav_chooser, navController.getCurrentDestination().getId());
+                    });
         }
     }
 
