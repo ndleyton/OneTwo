@@ -63,6 +63,7 @@
     <string name="mtg_setup_time">Temps</string>
     <string name="mtg_pass_turn">Passer</string>
     <string name="mtg_pass_turn_desc">Passer le tour du joueur %1$d au joueur suivant</string>
+    <string name="mtg_start_timer_desc">Démarrer le minuteur pour le joueur %1$d</string>
     <string name="mtg_player_timer_desc">Temps restant du joueur %1$d : %2$s</string>
 
 </resources>

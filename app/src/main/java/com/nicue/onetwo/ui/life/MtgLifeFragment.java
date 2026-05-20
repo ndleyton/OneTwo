@@ -408,13 +408,20 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                     player.isPassEnabled() ? View.VISIBLE : View.INVISIBLE);
             cellBinding.btnPassTurn.setIconTint(ColorStateList.valueOf(foregroundColor));
 
-            cellBinding.timerContainer.setEnabled(player.isPassEnabled());
+            boolean pillActive = player.isStartTimerVisible() || player.isPassEnabled();
+            cellBinding.timerContainer.setEnabled(pillActive);
             cellBinding.timerContainer.setContentDescription(
-                    getString(R.string.mtg_pass_turn_desc, seatIndex + 1));
+                    player.isStartTimerVisible()
+                            ? getString(R.string.mtg_start_timer_desc, seatIndex + 1)
+                            : getString(R.string.mtg_pass_turn_desc, seatIndex + 1));
             cellBinding.timerContainer.setOnClickListener(
                     v -> {
                         vibrate(30L);
-                        viewModel.passTurn(seatIndex);
+                        if (player.isStartTimerVisible()) {
+                            viewModel.startTimer();
+                        } else {
+                            viewModel.passTurn(seatIndex);
+                        }
                     });
             cellBinding.timerContainer.setOnLongClickListener(
                     v -> {
@@ -423,24 +430,14 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                         return true;
                     });
 
-            if (player.isStartTimerVisible()) {
-                cellBinding.btnStartTimer.setVisibility(View.VISIBLE);
-                cellBinding.btnStartTimer.setIconTint(ColorStateList.valueOf(foregroundColor));
-                cellBinding.btnStartTimer.setOnClickListener(
-                        v -> {
-                            vibrate(30L);
-                            viewModel.startTimer();
-                        });
-            } else {
-                cellBinding.btnStartTimer.setVisibility(View.GONE);
-                cellBinding.btnStartTimer.setOnClickListener(null);
-            }
+            cellBinding.btnStartTimer.setVisibility(
+                    player.isStartTimerVisible() ? View.VISIBLE : View.GONE);
+            cellBinding.btnStartTimer.setIconTint(ColorStateList.valueOf(foregroundColor));
         } else {
             cellBinding.timerContainer.setVisibility(View.GONE);
             cellBinding.timerContainer.setOnClickListener(null);
             cellBinding.timerContainer.setOnLongClickListener(null);
             cellBinding.btnStartTimer.setVisibility(View.GONE);
-            cellBinding.btnStartTimer.setOnClickListener(null);
         }
 
         bindCommanderDamageSummary(cellBinding, player, playerCount);
