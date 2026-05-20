@@ -67,6 +67,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     annotationProcessor "androidx.room:room-compiler:$rootProject.roomVersion"
     implementation "androidx.preference:preference:$rootProject.preferenceVersion"
+    implementation "androidx.core:core-splashscreen:1.2.0"
     implementation "androidx.lifecycle:lifecycle-livedata:$rootProject.lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-viewmodel:$rootProject.lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$rootProject.lifecycleVersion"

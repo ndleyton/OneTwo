@@ -45,7 +45,7 @@
     <color name="timer_idle_foreground">@color/m3_on_tertiary</color>
 
     <color name="diceColor0">#083E64</color>
-    <color name="diceColor1">#F3BB21</color>
+    <color name="diceColor1">#FF9800</color>
     <color name="diceColor2">#BD2430</color>
     <color name="diceColor3">#F65B59</color>
     <color name="diceColor4">#416892</color>

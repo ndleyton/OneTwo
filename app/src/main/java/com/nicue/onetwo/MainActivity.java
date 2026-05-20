@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.WindowManager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.splashscreen.SplashScreen;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -22,6 +23,8 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
     protected void onCreate(Bundle savedInstanceState) {
         settingsRepository = getAppContainer().getSettingsRepository();
         settingsRepository.applyNightMode();
+        SplashScreen.installSplashScreen(this);
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());

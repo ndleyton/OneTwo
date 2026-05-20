@@ -47,6 +47,10 @@
         <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.OneTwo.ExtraLarge</item>
     </style>
 
+    <style name="AppTheme.Launch" parent="AppTheme">
+        <item name="android:windowBackground">@color/colorPrimary</item>
+    </style>
+
     <style name="ShapeAppearance.OneTwo.Small" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">16dp</item>
