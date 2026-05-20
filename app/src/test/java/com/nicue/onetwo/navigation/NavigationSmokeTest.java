@@ -30,7 +30,7 @@ public class NavigationSmokeTest {
                         NavController navController =
                                 ((NavHostFragment) fragment).getNavController();
                         assertEquals(
-                                R.id.nav_counter, navController.getCurrentDestination().getId());
+                                R.id.nav_mtg_life, navController.getCurrentDestination().getId());
 
                         navController.navigate(R.id.nav_dice);
                         assertEquals(R.id.nav_dice, navController.getCurrentDestination().getId());

@@ -168,6 +168,7 @@ public class MtgLifeViewModel extends ViewModel {
                 parsedStartingLife == null ? R.string.mtg_setup_life_error : null);
 
         if (parsedPlayerCount == null || parsedStartingLife == null) {
+            savedStateHandle.set(KEY_SHOWING_SETUP, true);
             updateUiState();
             return;
         }
@@ -332,16 +333,21 @@ public class MtgLifeViewModel extends ViewModel {
     }
 
     private void initializeDefaultState() {
-        savedStateHandle.set(KEY_SHOWING_SETUP, true);
+        savedStateHandle.set(KEY_SHOWING_SETUP, false);
         savedStateHandle.set(KEY_PLAYER_COUNT, DEFAULT_PLAYER_COUNT);
         savedStateHandle.set(KEY_STARTING_LIFE, DEFAULT_STARTING_LIFE);
-        savedStateHandle.set(KEY_CURRENT_LIVES, new ArrayList<Integer>());
-        savedStateHandle.set(KEY_RECENT_LIFE_CHANGES, new ArrayList<Integer>());
-        savedStateHandle.set(KEY_RECENT_LIFE_CHANGE_TIMESTAMPS, new ArrayList<Long>());
+        savedStateHandle.set(
+                KEY_CURRENT_LIVES, createInitialLives(DEFAULT_PLAYER_COUNT, DEFAULT_STARTING_LIFE));
+        savedStateHandle.set(
+                KEY_RECENT_LIFE_CHANGES, createInitialRecentLifeChanges(DEFAULT_PLAYER_COUNT));
+        savedStateHandle.set(
+                KEY_RECENT_LIFE_CHANGE_TIMESTAMPS,
+                createInitialRecentLifeChangeTimestamps(DEFAULT_PLAYER_COUNT));
         savedStateHandle.set(KEY_PLAYERS_ERROR_RES_ID, null);
         savedStateHandle.set(KEY_LIFE_ERROR_RES_ID, null);
         savedStateHandle.set(KEY_COMMANDER_DAMAGE_ENABLED, true);
-        savedStateHandle.set(KEY_COMMANDER_DAMAGE_MATRIX, new ArrayList<ArrayList<Integer>>());
+        savedStateHandle.set(
+                KEY_COMMANDER_DAMAGE_MATRIX, createCommanderDamageMatrix(DEFAULT_PLAYER_COUNT));
 
         savedStateHandle.set(KEY_TURN_TIMER_ENABLED, false);
         savedStateHandle.set(KEY_TURN_TIMER_DURATION_MS, DEFAULT_TURN_TIMER_DURATION_MS);

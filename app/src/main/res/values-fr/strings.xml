@@ -14,11 +14,11 @@
     <string name="counter_subtract_amount_content_description">Soustraire une quantité du score</string>
     <string name="alert_tv_object">Qui joue?</string>
     <string name="alert_tv_number">Vies/Score</string>
-    <string name="menu_counter">Score</string>
+    <string name="menu_counter">Scores</string>
     <string name="menu_dice">Dé</string>
     <string name="menu_chooser">Choisir</string>
     <string name="menu_timer">Minuteur</string>
-    <string name="menu_counter_space">Score</string>
+    <string name="menu_counter_space">Scores</string>
     <string name="menu_dice_space">Dé</string>
     <string name="menu_chooser_space">Choisir</string>
     <string name="menu_timer_space">Minuteur</string>
