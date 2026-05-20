@@ -4,10 +4,10 @@
         android:id="@+id/menu_top"
         android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_counter"
-            android:icon="@drawable/counter"
+            android:id="@+id/nav_mtg_life"
+            android:icon="@drawable/cards_playing_outline"
             android:checked="true"
-            android:title="@string/menu_counter" />
+            android:title="@string/menu_mtg_life" />
         <item
             android:id="@+id/nav_dice"
             android:icon="@drawable/dice_multiple"
@@ -24,9 +24,9 @@
             android:title="@string/menu_timer" />
 
         <item
-            android:id="@+id/nav_mtg_life"
-            android:icon="@drawable/cards_playing_outline"
-            android:title="@string/menu_mtg_life" />
+            android:id="@+id/nav_counter"
+            android:icon="@drawable/counter"
+            android:title="@string/menu_counter" />
 
     </group>
 

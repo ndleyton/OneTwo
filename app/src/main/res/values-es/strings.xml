@@ -14,9 +14,9 @@
     <string name="counter_subtract_amount_content_description">Restar cantidad del contador</string>
     <string name="alert_tv_object">¿Quién está jugando?</string>
     <string name="alert_tv_number">Vidas/Puntos: </string>
-    <string name="menu_counter">Contador</string>
+    <string name="menu_counter">Contadores</string>
     <string name="menu_dice">Dados</string>
-    <string name="menu_counter_space">&#160;Contador</string>
+    <string name="menu_counter_space">&#160;Contadores</string>
     <string name="menu_dice_space">&#160;Dados</string>
     <string name="menu_chooser_space">&#160;Elegir</string>
     <string name="menu_timer_space">&#160;Temporizador</string>
