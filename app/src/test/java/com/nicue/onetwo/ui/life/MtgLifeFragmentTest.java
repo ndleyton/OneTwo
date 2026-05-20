@@ -727,47 +727,6 @@ public class MtgLifeFragmentTest {
         }
     }
 
-    @Test
-    @SuppressWarnings("RestrictedApi")
-    public void testChooserMenuItemNavigatesToChooser() {
-        try (ActivityScenario<MainActivity> scenario =
-                ActivityScenario.launch(MainActivity.class)) {
-            scenario.onActivity(
-                    activity -> {
-                        Fragment fragment =
-                                activity.getSupportFragmentManager()
-                                        .findFragmentById(R.id.nav_host_fragment);
-                        assertNotNull(fragment);
-                        NavController navController =
-                                ((NavHostFragment) fragment).getNavController();
-
-                        // Currently at start destination (nav_mtg_life)
-                        assertEquals(
-                                R.id.nav_mtg_life, navController.getCurrentDestination().getId());
-
-                        Fragment currentFragment =
-                                fragment.getChildFragmentManager().getFragments().get(0);
-                        assertTrue(currentFragment instanceof MtgLifeFragment);
-                        MtgLifeFragment mtgLifeFragment = (MtgLifeFragment) currentFragment;
-
-                        View view = mtgLifeFragment.requireView();
-                        View setupContent = view.findViewById(R.id.setup_content);
-                        assertNotNull(setupContent);
-                        assertEquals(View.GONE, setupContent.getVisibility());
-
-                        MenuBuilder menu = new MenuBuilder(activity);
-                        mtgLifeFragment.onCreateMenu(menu, activity.getMenuInflater());
-                        MenuItem chooserMenuItem = menu.findItem(R.id.action_chooser);
-                        assertNotNull(chooserMenuItem);
-                        assertTrue(chooserMenuItem.isVisible());
-
-                        mtgLifeFragment.onMenuItemSelected(chooserMenuItem);
-
-                        assertEquals(
-                                R.id.nav_chooser, navController.getCurrentDestination().getId());
-                    });
-        }
-    }
 
     @Test
     public void testChooseAndStartButtonNavigatesToChooser() {

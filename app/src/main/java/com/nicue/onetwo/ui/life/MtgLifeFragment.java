@@ -139,15 +139,11 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
         menuInflater.inflate(R.menu.life_actions, menu);
         MenuItem newGameItem = menu.findItem(R.id.action_new_game);
-        MenuItem chooserItem = menu.findItem(R.id.action_chooser);
         MtgLifeUiState currentUiState =
                 viewModel != null ? viewModel.getUiState().getValue() : null;
         if (currentUiState != null) {
             if (newGameItem != null) {
                 newGameItem.setVisible(!currentUiState.isShowingSetup());
-            }
-            if (chooserItem != null) {
-                chooserItem.setVisible(!currentUiState.isShowingSetup());
             }
         }
     }
@@ -156,12 +152,6 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.action_new_game) {
             viewModel.resetToSetup();
-            return true;
-        } else if (menuItem.getItemId() == R.id.action_chooser) {
-            Bundle args = new Bundle();
-            args.putBoolean("return_on_selection", true);
-            androidx.navigation.fragment.NavHostFragment.findNavController(this)
-                    .navigate(R.id.nav_chooser, args);
             return true;
         }
         return false;
