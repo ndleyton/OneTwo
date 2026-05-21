@@ -1,36 +1,83 @@
-# OneTwo
+# OneTwo: Tabletop & Board Game Tools
 
-#### OneTwo is a free Open Source Android app with tools to help you with your TableTop experience. That includes a Counter, Dices, Chess style Timers and an intuitive way to choose who starts!
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Play Store](https://img.shields.io/badge/Get%20it%20on-Google%20Play-green?logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=com.nicue.onetwo)
+[![F-Droid](https://img.shields.io/badge/Get%20it%20on-F--Droid-blue?logo=f-droid&logoColor=white)](https://f-droid.org/repository/browse/?fdfilter=onetwo&fdid=com.nicue.onetwo)
 
-![Alt text](imgs/Header.png?raw=true "Title")
-## How to get it
+OneTwo is a lightweight, fully open-source Android toolkit designed to streamline your tabletop, board game, and trading card game (TCG) sessions. Built using clean architecture, native Java, and Material Design principles, it provides a distraction-free suite of utilities that stay out of the way of your game.
 
-There's three main ways to get OneTwo
-* Get it on the [Play Store](https://play.google.com/store/apps/details?id=com.nicue.onetwo&hl=en)! It's free, no ads and it's stable
-* Get it on [F-droid](https://f-droid.org/repository/browse/?fdfilter=onetwo&fdid=com.nicue.onetwo)
-* Clone this repository and import it in Android Studio with "Import Project"
+![OneTwo Header](imgs/Header.png)
 
+## Features
 
-## How to Contribute
-If you want to contribute to OneTwo, fill an Issue saying what would you like to change and if you want to be a contributor. Once you are a collaborator, you can commit and push, or do a pull request if you would like to!
+*   **MTG Life Counter:** Supports 1 to 6 players, full Commander damage matrix tracking (with automatic 21-damage highlight), and sliding-window recent life total history.
+*   **Turn Timers:** Individual player turn timers with intuitive pass-action handling and optional toggles.
+*   **Intuitive Player Selector (Chooser):** An animated, multi-touch custom view (`TouchDisplayView`) that lets players place a finger on the screen to seamlessly determine who goes first or establish turn order.
+*   **Custom Dice Roller:** Fully configurable dice rolling engine supporting edge-case selections from 2 faces up to 99,999 faces.
+*   **Chess Timer:** Synced chess-style game clocks handling up to 15 players simultaneously.
+*   **Universal Counter:** Persistent trackers utilizing Room DB to record scores, life totals, or match points across multiple sessions.
 
-## Development
+---
 
-Useful Gradle tasks:
+## Download
 
-* `./gradlew format` formats changed Java, Gradle, Markdown, properties, and XML files.
-* `./gradlew formatCheck` checks changed-file formatting without changing files.
-* `./gradlew lintAll` runs Android lint plus Java Checkstyle checks.
-* `./gradlew qualityCheck` runs formatting checks and lint checks together.
-* `./gradlew testDebugUnitTest` runs the local JVM and Robolectric test suite.
+| Platform | Link |
+| :--- | :--- |
+| **Google Play Store** | [Download Official Stable Release](https://play.google.com/store/apps/details?id=com.nicue.onetwo) |
+| **F-Droid Archive** | [Get it on F-Droid](https://f-droid.org/repository/browse/?fdfilter=onetwo&fdid=com.nicue.onetwo) |
+
+*Alternatively, you can clone this repository and compile the project directly via Android Studio using `Import Project`.*
+
+---
+
+## Tech Stack & Architecture
+
+OneTwo is built as a highly testable, single-module (`:app`) native Android application adhering to modern separation of concerns.
+
+*   **Language & Minimum SDK:** Java 21 / Compile & Target SDK 35 / Min SDK 21.
+*   **UI Architecture:** Jetpack AndroidX Navigation framework, `AppCompat`, Material Components, and automated XML `ViewBinding`.
+*   **State Preservation:** ViewModels paired with `SavedStateHandle` ensure that complex layouts (such as heavy MTG Commander tables) gracefully survive background process death and activity recreation.
+*   **Data Layer:** Persistent storage is driven by **Room DB** (for structured table tracking) and a custom data source abstraction over **SharedPreferences** (for rapid serialization of game configs like dice arrays).
+*   **Test Suite:** Decoupled business logic verified via unit tests leveraging `Robolectric`, `JUnit4`, and `LiveData` test utilities.
+
+---
+
+## Development & Workflow
+
+### Common Gradle Tasks
+
+Execute these commands from the repository root to verify build health, code quality, and formatting styles before submitting changes:
+
+*   `./gradlew testDebugUnitTest` — Runs the local JVM and Robolectric test suite (Highly recommended after data or controller changes).
+*   `./gradlew format` — Automatically formats changed Java, Gradle, Markdown, properties, and XML files.
+*   `./gradlew formatCheck` — Evaluates project files for formatting adherence without changing them.
+*   `./gradlew lintAll` — Runs Android lint alongside native Java Checkstyle compliance checks.
+*   `./gradlew qualityCheck` — Combines formatting checks and linter suites into a single pass.
+
+> **Note on JDK Versions:** While the codebase is configured for Java 21, local verification via Robolectric 4.11.1 framework shadow classes may fail to load under Temurin 25. It is highly recommended to strictly target **JDK 21** within your development environment when running your testing suite.
+
+---
 
 ## Screenshots
 
-![](imgs/SS_bare_timer.png) ![](imgs/SS_navview.png)  ![](imgs/SS_counter.png)  ![](imgs/SS_Chooser.png)
+<p align="center">
+  <img src="imgs/GIF_chooser.gif" width="19%" alt="Interactive Touch Chooser Feature" />
+  <img src="imgs/SS_life_counter.png" width="19%" alt="MTG Life Counter View" />
+  <img src="imgs/SS_bare_timer.png" width="19%" alt="Bare Timer View" />   
+  <img src="imgs/SS_counter.png" width="19%" alt="Universal Counter View" />  
+  <img src="imgs/SS_dice.png" width="19%" alt="Custom Dice Engine View" />
+</p>
+
+---
+
+## How to Contribute
+
+Contributions, bug fixes, and localized translations are highly appreciated!
+
+1. Open a new **Issue** detailing the feature you want to build or the bug you intend to squish.
+2. Once discussed, you will be invited as a project collaborator to push changes, or you are welcome to fork the project and open a formal **Pull Request**.
+3. Please run `./gradlew qualityCheck` locally before submitting code to ensure continuous integration pipelines pass smoothly.
 
 ## License
 
-OneTwo is licensed under the MIT License
-
-<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="50">
-<a href="https://play.google.com/store/apps/details?id=com.nicue.onetwo&hl=es_PR&gl=US"><img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="50"></a>
+OneTwo is open-source software licensed under the **MIT License**. See the root code for details.
