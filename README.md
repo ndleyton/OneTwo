@@ -63,8 +63,8 @@ Execute these commands from the repository root to verify build health, code qua
 <p align="center">
   <img src="imgs/GIF_chooser.gif" width="19%" alt="Interactive Touch Chooser Feature" />
   <img src="imgs/SS_life_counter.png" width="19%" alt="MTG Life Counter View" />
-  <img src="imgs/SS_bare_timer.png" width="19%" alt="Bare Timer View" />   
-  <img src="imgs/SS_counter.png" width="19%" alt="Universal Counter View" />  
+  <img src="imgs/SS_bare_timer.png" width="19%" alt="Bare Timer View" />
+  <img src="imgs/SS_counter.png" width="19%" alt="Universal Counter View" />
   <img src="imgs/SS_dice.png" width="19%" alt="Custom Dice Engine View" />
 </p>
 
