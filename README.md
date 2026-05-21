@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Play Store](https://img.shields.io/badge/Get%20it%20on-Google%20Play-green?logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=com.nicue.onetwo)
-[![F-Droid](https://img.shields.io/badge/Get%20it%20on-F--Droid-blue?logo=f-droid&logoColor=white)](https://f-droid.org/repository/browse/?fdfilter=onetwo&fdid=com.nicue.onetwo)
+[![F-Droid](https://img.shields.io/badge/Get%20it%20on-F--Droid-blue?logo=f-droid&logoColor=white)](https://f-droid.org/en/packages/com.nicue.onetwo/)
 
 OneTwo is a lightweight, fully open-source Android toolkit designed to streamline your tabletop, board game, and trading card game (TCG) sessions. Built using clean architecture, native Java, and Material Design principles, it provides a distraction-free suite of utilities that stay out of the way of your game.
 
