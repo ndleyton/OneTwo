@@ -356,7 +356,14 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         cellBinding.tvLifeCount.setText(String.valueOf(player.getLifeTotal()));
         cellBinding.tvLifeCount.setContentDescription(String.valueOf(player.getLifeTotal()));
         cellBinding.tvLifeCount.setTextColor(foregroundColor);
-        cellBinding.playerCellContainer.setBackgroundColor(backgroundColor);
+        if (player.isTimerVisible() && player.isTimerActive()) {
+            GradientDrawable borderDrawable = new GradientDrawable();
+            borderDrawable.setColor(backgroundColor);
+            borderDrawable.setStroke(dpToPx(5), foregroundColor);
+            cellBinding.playerCellContainer.setBackground(borderDrawable);
+        } else {
+            cellBinding.playerCellContainer.setBackgroundColor(backgroundColor);
+        }
         cellBinding.innerPlayerLayout.setRotation(player.getRotationDegrees());
         bindRecentLifeChange(
                 cellBinding,
