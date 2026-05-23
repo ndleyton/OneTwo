@@ -758,13 +758,17 @@ public class MtgLifeFragmentTest {
                         assertNotNull(player1);
                         android.graphics.drawable.Drawable bg1 = player1.getBackground();
                         assertNotNull(bg1);
-                        assertTrue("Active player 1 should have a GradientDrawable background", bg1 instanceof android.graphics.drawable.GradientDrawable);
+                        assertTrue(
+                                "Active player 1 should have a GradientDrawable background",
+                                bg1 instanceof android.graphics.drawable.GradientDrawable);
 
                         View player2 = view.findViewById(R.id.player_2);
                         assertNotNull(player2);
                         android.graphics.drawable.Drawable bg2 = player2.getBackground();
                         assertNotNull(bg2);
-                        assertTrue("Inactive player 2 should not have a GradientDrawable background", !(bg2 instanceof android.graphics.drawable.GradientDrawable));
+                        assertTrue(
+                                "Inactive player 2 should not have a GradientDrawable background",
+                                !(bg2 instanceof android.graphics.drawable.GradientDrawable));
                     });
         }
     }
