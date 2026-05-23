@@ -288,6 +288,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             default ->
                     throw new IllegalArgumentException("Unsupported player count: " + playerCount);
         }
+        disableClipping(binding.boardContainer);
     }
 
     private void bindPreviewBoard() {
@@ -356,14 +357,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         cellBinding.tvLifeCount.setText(String.valueOf(player.getLifeTotal()));
         cellBinding.tvLifeCount.setContentDescription(String.valueOf(player.getLifeTotal()));
         cellBinding.tvLifeCount.setTextColor(foregroundColor);
-        if (player.isTimerVisible() && player.isTimerActive()) {
-            GradientDrawable borderDrawable = new GradientDrawable();
-            borderDrawable.setColor(backgroundColor);
-            borderDrawable.setStroke(dpToPx(5), foregroundColor);
-            cellBinding.playerCellContainer.setBackground(borderDrawable);
-        } else {
-            cellBinding.playerCellContainer.setBackgroundColor(backgroundColor);
-        }
+        cellBinding.playerCellContainer.setBackgroundColor(backgroundColor);
         cellBinding.innerPlayerLayout.setRotation(player.getRotationDegrees());
         bindRecentLifeChange(
                 cellBinding,
@@ -399,7 +393,22 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         if (player.isTimerVisible()) {
             cellBinding.timerContainer.setVisibility(View.VISIBLE);
             cellBinding.tvTurnTimer.setText(player.getTimerDisplay());
-            cellBinding.tvTurnTimer.setTextColor(foregroundColor);
+
+            int pillBgColor;
+            int pillContentColor;
+            float elevationVal;
+
+            if (player.isTimerActive()) {
+                pillBgColor = foregroundColor;
+                pillContentColor = backgroundColor;
+                elevationVal = dpToPx(8);
+            } else {
+                pillBgColor = Color.TRANSPARENT;
+                pillContentColor = foregroundColor;
+                elevationVal = dpToPx(2);
+            }
+
+            cellBinding.tvTurnTimer.setTextColor(pillContentColor);
             cellBinding.tvTurnTimer.setContentDescription(
                     getString(
                             R.string.mtg_player_timer_desc,
@@ -410,10 +419,27 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             cellBinding.tvTurnTimer.setTypeface(
                     null, player.isTimerActive() ? Typeface.BOLD : Typeface.NORMAL);
 
+            if (player.isTimerActive()) {
+                GradientDrawable activeBg = new GradientDrawable();
+                activeBg.setShape(GradientDrawable.RECTANGLE);
+                activeBg.setCornerRadius(dpToPx(12));
+                activeBg.setColor(pillBgColor);
+
+                RippleDrawable rippleDrawable = new RippleDrawable(
+                        ColorStateList.valueOf(adjustAlpha(pillContentColor, 0.18f)),
+                        activeBg,
+                        null
+                );
+                cellBinding.timerContainer.setBackground(rippleDrawable);
+            } else {
+                cellBinding.timerContainer.setBackgroundResource(R.drawable.bg_timer_pill);
+            }
+            cellBinding.timerContainer.setElevation(elevationVal);
+
             cellBinding.btnPassTurn.setEnabled(player.isPassEnabled());
             cellBinding.btnPassTurn.setVisibility(
                     player.isPassEnabled() ? View.VISIBLE : View.INVISIBLE);
-            cellBinding.btnPassTurn.setIconTint(ColorStateList.valueOf(foregroundColor));
+            cellBinding.btnPassTurn.setIconTint(ColorStateList.valueOf(pillContentColor));
 
             boolean pillActive = player.isStartTimerVisible() || player.isPassEnabled();
             cellBinding.timerContainer.setEnabled(pillActive);
@@ -439,7 +465,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
 
             cellBinding.btnStartTimer.setVisibility(
                     player.isStartTimerVisible() ? View.VISIBLE : View.GONE);
-            cellBinding.btnStartTimer.setIconTint(ColorStateList.valueOf(foregroundColor));
+            cellBinding.btnStartTimer.setIconTint(ColorStateList.valueOf(pillContentColor));
         } else {
             cellBinding.timerContainer.setVisibility(View.GONE);
             cellBinding.timerContainer.setOnClickListener(null);
@@ -852,6 +878,17 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         background.setColor(typedValue.data);
         background.setCornerRadius(dpToPx(10));
         return background;
+    }
+
+    private void disableClipping(View view) {
+        if (view instanceof ViewGroup) {
+            ViewGroup vg = (ViewGroup) view;
+            vg.setClipChildren(false);
+            vg.setClipToPadding(false);
+            for (int i = 0; i < vg.getChildCount(); i++) {
+                disableClipping(vg.getChildAt(i));
+            }
+        }
     }
 
     private View createCommanderDamageTapZone(

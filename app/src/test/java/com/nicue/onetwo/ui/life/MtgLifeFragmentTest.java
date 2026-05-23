@@ -756,19 +756,19 @@ public class MtgLifeFragmentTest {
 
                         View player1 = view.findViewById(R.id.player_1);
                         assertNotNull(player1);
-                        android.graphics.drawable.Drawable bg1 = player1.getBackground();
-                        assertNotNull(bg1);
-                        assertTrue(
-                                "Active player 1 should have a GradientDrawable background",
-                                bg1 instanceof android.graphics.drawable.GradientDrawable);
+                        View timerContainer1 = player1.findViewById(R.id.timer_container);
+                        assertNotNull(timerContainer1);
+                        float elevation1 = timerContainer1.getElevation();
 
                         View player2 = view.findViewById(R.id.player_2);
                         assertNotNull(player2);
-                        android.graphics.drawable.Drawable bg2 = player2.getBackground();
-                        assertNotNull(bg2);
+                        View timerContainer2 = player2.findViewById(R.id.timer_container);
+                        assertNotNull(timerContainer2);
+                        float elevation2 = timerContainer2.getElevation();
+
                         assertTrue(
-                                "Inactive player 2 should not have a GradientDrawable background",
-                                !(bg2 instanceof android.graphics.drawable.GradientDrawable));
+                                "Active player's timer container should have higher elevation than inactive",
+                                elevation1 > elevation2);
                     });
         }
     }
