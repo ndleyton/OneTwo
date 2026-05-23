@@ -425,11 +425,11 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                 activeBg.setCornerRadius(dpToPx(12));
                 activeBg.setColor(pillBgColor);
 
-                RippleDrawable rippleDrawable = new RippleDrawable(
-                        ColorStateList.valueOf(adjustAlpha(pillContentColor, 0.18f)),
-                        activeBg,
-                        null
-                );
+                RippleDrawable rippleDrawable =
+                        new RippleDrawable(
+                                ColorStateList.valueOf(adjustAlpha(pillContentColor, 0.18f)),
+                                activeBg,
+                                null);
                 cellBinding.timerContainer.setBackground(rippleDrawable);
             } else {
                 cellBinding.timerContainer.setBackgroundResource(R.drawable.bg_timer_pill);
