@@ -627,7 +627,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
 
         float baseTranslationX = 0f;
         float startOffsetX = baseTranslationX + (isPositive ? dpToPx(8) : -dpToPx(8));
-        float startOffsetY = -dpToPx(8);
+        float startOffsetY = dpToPx(8); // Start below resting position to animate up
+        float exitOffsetY = -dpToPx(8); // Continue floating up on exit
         textView.animate().cancel();
         textView.setAlpha(0f);
         textView.setTranslationX(startOffsetX);
@@ -648,7 +649,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                         textView.animate()
                                 .alpha(0f)
                                 .translationX(startOffsetX)
-                                .translationY(startOffsetY)
+                                .translationY(exitOffsetY)
                                 .setDuration(300)
                                 .withEndAction(() -> clearRecentLifeChange(textView))
                                 .start();
