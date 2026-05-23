@@ -726,6 +726,54 @@ public class MtgLifeFragmentTest {
     }
 
     @Test
+    public void testActivePlayerTimerDistinguisher() {
+        try (FragmentScenario<MtgLifeFragment> scenario =
+                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
+
+            scenario.onFragment(
+                    fragment -> {
+                        org.robolectric.fakes.RoboMenuItem resetMenuItem =
+                                new org.robolectric.fakes.RoboMenuItem(R.id.action_new_game);
+                        fragment.onMenuItemSelected(resetMenuItem);
+
+                        View view = fragment.getView();
+                        assertNotNull(view);
+
+                        android.widget.CompoundButton timerSwitch =
+                                view.findViewById(R.id.turn_timer_switch);
+                        assertNotNull(timerSwitch);
+                        timerSwitch.setChecked(true);
+
+                        Button startButton = view.findViewById(R.id.start_game_button);
+                        assertNotNull(startButton);
+                        startButton.performClick();
+                    });
+
+            scenario.onFragment(
+                    fragment -> {
+                        View view = fragment.getView();
+                        assertNotNull(view);
+
+                        View player1 = view.findViewById(R.id.player_1);
+                        assertNotNull(player1);
+                        View timerContainer1 = player1.findViewById(R.id.timer_container);
+                        assertNotNull(timerContainer1);
+                        float elevation1 = timerContainer1.getElevation();
+
+                        View player2 = view.findViewById(R.id.player_2);
+                        assertNotNull(player2);
+                        View timerContainer2 = player2.findViewById(R.id.timer_container);
+                        assertNotNull(timerContainer2);
+                        float elevation2 = timerContainer2.getElevation();
+
+                        assertTrue(
+                                "Active player's timer container should have higher elevation than inactive",
+                                elevation1 > elevation2);
+                    });
+        }
+    }
+
+    @Test
     public void testChooseAndStartButtonNavigatesToChooser() {
         try (ActivityScenario<MainActivity> scenario =
                 ActivityScenario.launch(MainActivity.class)) {
