@@ -408,7 +408,7 @@ public class MtgLifeViewModelTest {
     public void testDefaultTurnTimerState() throws Exception {
         MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
         assertFalse(viewModel.getTurnTimerEnabled());
-        assertEquals(300000L, viewModel.getTurnTimerDurationMs());
+        assertEquals(1500000L, viewModel.getTurnTimerDurationMs());
         assertFalse(state.isTurnTimerEnabled());
         assertTrue(state.isTurnTimerPaused());
         assertFalse(state.isTurnTimerFinished());

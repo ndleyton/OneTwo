@@ -40,7 +40,7 @@ public class MtgLifeViewModel extends ViewModel {
     private static final int MIN_PLAYER_COUNT = 1;
     private static final int MAX_PLAYER_COUNT = 6;
     private static final int COMMANDER_LETHAL_DAMAGE = 21;
-    private static final long DEFAULT_TURN_TIMER_DURATION_MS = 300000L;
+    private static final long DEFAULT_TURN_TIMER_DURATION_MS = 1500000L;
     public static final long RECENT_LIFE_CHANGE_WINDOW_MS = 2000L;
 
     private final SavedStateHandle savedStateHandle;
