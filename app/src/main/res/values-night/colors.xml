@@ -44,11 +44,16 @@
     <color name="timer_idle_background">@color/m3_tertiary_container</color>
     <color name="timer_idle_foreground">@color/m3_on_tertiary_container</color>
 
-    <color name="diceColor0">#850009</color>
-    <color name="diceColor1">#b9d529</color>
-    <color name="diceColor2">#5DD8F4</color>
-    <color name="diceColor3">#F3BB21</color>
-    <color name="diceColor4">#B92130</color>
+    <color name="diceColor0">#2479A8</color>
+    <color name="diceColor1">#F65B59</color>
+    <color name="diceColor2">#F9A825</color>
+    <color name="diceColor3">#238C7C</color>
+    <color name="diceColor4">#477AA3</color>
+    <color name="diceColor5">#A50F15</color>
+    <color name="diceColor6">#0F4C6E</color>
+    <color name="diceColor7">#D8782A</color>
+    <color name="diceColor8">#6E8FAF</color>
+    <color name="diceColor9">#7B1B22</color>
 
     <!-- MTG Life Counter Colors -->
     <color name="lifeCounterPlayer1">#2479A8</color>
