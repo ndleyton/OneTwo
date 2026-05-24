@@ -15,16 +15,16 @@
             app:title="@string/dark_mode_title" />
 
         <SwitchPreferenceCompat
-            app:key="chooser_order"
-            app:defaultValue="false"
-            app:summary="@string/chooser_order_summary"
-            app:title="@string/chooser_order_title" />
-
-        <SwitchPreferenceCompat
             app:key="life_counter_haptic_feedback"
             app:defaultValue="true"
             app:summary="@string/life_counter_haptic_feedback_summary"
             app:title="@string/life_counter_haptic_feedback_title" />
+
+        <SwitchPreferenceCompat
+            app:key="chooser_order"
+            app:defaultValue="false"
+            app:summary="@string/chooser_order_summary"
+            app:title="@string/chooser_order_title" />
 
     </PreferenceCategory>
 
