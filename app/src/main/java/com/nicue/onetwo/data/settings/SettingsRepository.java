@@ -36,6 +36,14 @@ public class SettingsRepository {
         dataSource.setChooserOrderEnabled(enabled);
     }
 
+    public boolean isLifeCounterHapticFeedbackEnabled() {
+        return dataSource.isLifeCounterHapticFeedbackEnabled();
+    }
+
+    public void setLifeCounterHapticFeedbackEnabled(boolean enabled) {
+        dataSource.setLifeCounterHapticFeedbackEnabled(enabled);
+    }
+
     public void applyNightMode() {
         boolean darkModeEnabled = isDarkModeEnabled();
         AppCompatDelegate.setDefaultNightMode(

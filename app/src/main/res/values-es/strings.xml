@@ -49,6 +49,8 @@
     <string name="always_on_summary">Mantener pantalla encendida</string>
     <string name="chooser_order_title">Orden del selector</string>
     <string name="chooser_order_summary">Elegir dedos por orden de colocación</string>
+    <string name="life_counter_haptic_feedback_title">Vibración del contador de vidas</string>
+    <string name="life_counter_haptic_feedback_summary">Vibrar al cambiar las vidas</string>
     <string name="quick_add">Click para agregar</string>
     <string name="d4">d4</string>
     <string name="d6">d6</string>

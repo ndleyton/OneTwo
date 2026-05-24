@@ -30,6 +30,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         configureAlwaysOnPreference();
         configureDarkModePreference();
         configureChooserOrderPreference();
+        configureLifeCounterHapticFeedbackPreference();
     }
 
     private void configureAlwaysOnPreference() {
@@ -80,6 +81,23 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
                 boolean enabled = (Boolean) newValue;
                 settingsRepository.setChooserOrderEnabled(enabled);
+                return true;
+            }
+        });
+    }
+
+    private void configureLifeCounterHapticFeedbackPreference() {
+        SwitchPreferenceCompat preference = findPreference("life_counter_haptic_feedback");
+        if (preference == null) {
+            return;
+        }
+        preference.setPersistent(false);
+        preference.setChecked(settingsRepository.isLifeCounterHapticFeedbackEnabled());
+        preference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
+                boolean enabled = (Boolean) newValue;
+                settingsRepository.setLifeCounterHapticFeedbackEnabled(enabled);
                 return true;
             }
         });

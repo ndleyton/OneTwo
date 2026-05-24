@@ -57,6 +57,8 @@
     <string name="dark_mode_summary" translatable="false">Use dark mode theme</string>
     <string name="chooser_order_title">Chooser order</string>
     <string name="chooser_order_summary">Choose fingers in placement order</string>
+    <string name="life_counter_haptic_feedback_title">Life counter haptic feedback</string>
+    <string name="life_counter_haptic_feedback_summary">Vibrate when changing life totals</string>
 
     <string name="quick_add">Quick Add</string>
     <string name="d4">d4</string>

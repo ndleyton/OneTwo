@@ -154,6 +154,7 @@
             android:id="@+id/tv_life_count"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:fontFamily="sans-serif-condensed"
             android:gravity="center"
             android:includeFontPadding="false"
             android:maxLines="1"
