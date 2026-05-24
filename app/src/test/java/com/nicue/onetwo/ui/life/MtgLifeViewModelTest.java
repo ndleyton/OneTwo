@@ -40,12 +40,18 @@ public class MtgLifeViewModelTest {
     private FakeSettingsRepository settingsRepository;
 
     private static final class FakeSettingsRepository extends com.nicue.onetwo.data.settings.SettingsRepository {
+        private boolean hapticEnabled = true;
+
         FakeSettingsRepository() {
             super(null);
         }
         @Override
         public boolean isLifeCounterHapticFeedbackEnabled() {
-            return true;
+            return hapticEnabled;
+        }
+
+        public void setHapticEnabled(boolean enabled) {
+            this.hapticEnabled = enabled;
         }
     }
 
@@ -723,5 +729,14 @@ public class MtgLifeViewModelTest {
         viewModel.togglePlayPause();
         state = LiveDataTestUtil.getValue(viewModel.getUiState());
         assertTrue(state.isTurnTimerPaused());
+    }
+
+    @Test
+    public void testHapticFeedbackSettingDelegation() {
+        settingsRepository.setHapticEnabled(true);
+        assertTrue(viewModel.isLifeCounterHapticFeedbackEnabled());
+
+        settingsRepository.setHapticEnabled(false);
+        assertFalse(viewModel.isLifeCounterHapticFeedbackEnabled());
     }
 }
