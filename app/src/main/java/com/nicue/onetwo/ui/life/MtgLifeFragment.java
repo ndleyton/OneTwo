@@ -63,7 +63,6 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
 
     private LifeFragmentBinding binding;
     private MtgLifeViewModel viewModel;
-    private SettingsRepository settingsRepository;
     private boolean inputsInitialized = false;
     private int currentBoardPlayerCount = -1;
     private Integer activeDialogDefenderSeatIndex = null;
@@ -84,11 +83,12 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel = new ViewModelProvider(this).get(MtgLifeViewModel.class);
-        settingsRepository =
+        SettingsRepository repo =
                 ((OneTwoApplication) requireActivity().getApplication())
                         .getAppContainer()
                         .getSettingsRepository();
+        MtgLifeViewModelFactory factory = new MtgLifeViewModelFactory(this, null, repo);
+        viewModel = new ViewModelProvider(this, factory).get(MtgLifeViewModel.class);
         LifeSetupContentBinding setupBinding =
                 LifeSetupContentBinding.bind(binding.setupContent.getRoot());
 
@@ -380,23 +380,31 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         cellBinding.lifeIncrementZone.setContentDescription(
                 getString(R.string.mtg_btn_plus_desc, seatIndex + 1));
         cellBinding.lifeDecrementZone.setOnClickListener(v -> {
-            performLifeHapticFeedback(v);
+            if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
+                v.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP);
+            }
             viewModel.decrementLife(seatIndex);
             animateLifeChange(cellBinding.tvLifeCount, false);
         });
         cellBinding.lifeIncrementZone.setOnClickListener(v -> {
-            performLifeHapticFeedback(v);
+            if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
+                v.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP);
+            }
             viewModel.incrementLife(seatIndex);
             animateLifeChange(cellBinding.tvLifeCount, true);
         });
         cellBinding.lifeDecrementZone.setOnLongClickListener(
                 v -> {
-                    performLifeHapticFeedback(v);
+                    if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
+                        v.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP);
+                    }
                     viewModel.decrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
                     animateLifeChange(cellBinding.tvLifeCount, false);
                     startLifeHoldRepeat(
                             v, () -> {
-                                performLifeHapticFeedback(v);
+                                if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
+                                    v.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP);
+                                }
                                 viewModel.decrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
                                 animateLifeChange(cellBinding.tvLifeCount, false);
                             });
@@ -404,12 +412,16 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                 });
         cellBinding.lifeIncrementZone.setOnLongClickListener(
                 v -> {
-                    performLifeHapticFeedback(v);
+                    if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
+                        v.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP);
+                    }
                     viewModel.incrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
                     animateLifeChange(cellBinding.tvLifeCount, true);
                     startLifeHoldRepeat(
                             v, () -> {
-                                performLifeHapticFeedback(v);
+                                if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
+                                    v.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP);
+                                }
                                 viewModel.incrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
                                 animateLifeChange(cellBinding.tvLifeCount, true);
                             });
@@ -522,7 +534,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     }
 
     private void performLifeHapticFeedback(View view) {
-        if (settingsRepository.isLifeCounterHapticFeedbackEnabled()) {
+        if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
             view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
         }
     }

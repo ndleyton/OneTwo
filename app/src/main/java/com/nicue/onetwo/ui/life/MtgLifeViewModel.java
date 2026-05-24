@@ -10,6 +10,7 @@ import com.nicue.onetwo.core.HandlerTimerScheduler;
 import com.nicue.onetwo.core.TimerScheduler;
 import com.nicue.onetwo.utils.TimerBackend;
 import com.nicue.onetwo.utils.TurnTimerEngine;
+import com.nicue.onetwo.data.settings.SettingsRepository;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,24 +48,27 @@ public class MtgLifeViewModel extends ViewModel {
     private final NowProvider nowProvider;
     private final TimerScheduler timerScheduler;
     private final TurnTimerEngine timerEngine;
+    private final SettingsRepository settingsRepository;
 
     interface NowProvider {
         long now();
     }
 
-    public MtgLifeViewModel(SavedStateHandle savedStateHandle) {
-        this(savedStateHandle, SystemClock::elapsedRealtime, new HandlerTimerScheduler());
+    public MtgLifeViewModel(SavedStateHandle savedStateHandle, SettingsRepository settingsRepository) {
+        this(savedStateHandle, settingsRepository, SystemClock::elapsedRealtime, new HandlerTimerScheduler());
     }
 
-    MtgLifeViewModel(SavedStateHandle savedStateHandle, NowProvider nowProvider) {
-        this(savedStateHandle, nowProvider, new HandlerTimerScheduler());
+    MtgLifeViewModel(SavedStateHandle savedStateHandle, SettingsRepository settingsRepository, NowProvider nowProvider) {
+        this(savedStateHandle, settingsRepository, nowProvider, new HandlerTimerScheduler());
     }
 
     MtgLifeViewModel(
             SavedStateHandle savedStateHandle,
+            SettingsRepository settingsRepository,
             NowProvider nowProvider,
             TimerScheduler timerScheduler) {
         this.savedStateHandle = savedStateHandle;
+        this.settingsRepository = settingsRepository;
         this.nowProvider = nowProvider;
         this.timerScheduler = timerScheduler;
         this.timerEngine = new TurnTimerEngine(DEFAULT_TURN_TIMER_DURATION_MS, 0L);
@@ -833,5 +837,9 @@ public class MtgLifeViewModel extends ViewModel {
             }
         }
         return null;
+    }
+
+    public boolean isLifeCounterHapticFeedbackEnabled() {
+        return settingsRepository.isLifeCounterHapticFeedbackEnabled();
     }
 }
