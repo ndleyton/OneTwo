@@ -8,9 +8,9 @@ import androidx.lifecycle.ViewModel;
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.core.HandlerTimerScheduler;
 import com.nicue.onetwo.core.TimerScheduler;
+import com.nicue.onetwo.data.settings.SettingsRepository;
 import com.nicue.onetwo.utils.TimerBackend;
 import com.nicue.onetwo.utils.TurnTimerEngine;
-import com.nicue.onetwo.data.settings.SettingsRepository;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,11 +54,19 @@ public class MtgLifeViewModel extends ViewModel {
         long now();
     }
 
-    public MtgLifeViewModel(SavedStateHandle savedStateHandle, SettingsRepository settingsRepository) {
-        this(savedStateHandle, settingsRepository, SystemClock::elapsedRealtime, new HandlerTimerScheduler());
+    public MtgLifeViewModel(
+            SavedStateHandle savedStateHandle, SettingsRepository settingsRepository) {
+        this(
+                savedStateHandle,
+                settingsRepository,
+                SystemClock::elapsedRealtime,
+                new HandlerTimerScheduler());
     }
 
-    MtgLifeViewModel(SavedStateHandle savedStateHandle, SettingsRepository settingsRepository, NowProvider nowProvider) {
+    MtgLifeViewModel(
+            SavedStateHandle savedStateHandle,
+            SettingsRepository settingsRepository,
+            NowProvider nowProvider) {
         this(savedStateHandle, settingsRepository, nowProvider, new HandlerTimerScheduler());
     }
 

@@ -18,7 +18,7 @@ public class TimerViewModel extends ViewModel {
     private static final String KEY_IS_PAUSED = "timer_is_paused";
     private static final String KEY_CONFIGURED_DURATION = "timer_configured_duration";
     private static final String KEY_CONFIGURED_INCREMENT = "timer_configured_increment";
-    private static final long DEFAULT_DURATION_MS = 300000L;
+    private static final long DEFAULT_DURATION_MS = 1500000L;
     private static final long DEFAULT_INCREMENT_MS = 0L;
 
     private final SavedStateHandle savedStateHandle;

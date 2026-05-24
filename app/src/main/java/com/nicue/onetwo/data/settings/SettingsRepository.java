@@ -2,7 +2,6 @@ package com.nicue.onetwo.data.settings;
 
 import android.view.Window;
 import android.view.WindowManager;
-
 import androidx.appcompat.app.AppCompatDelegate;
 
 public class SettingsRepository {
@@ -49,8 +48,7 @@ public class SettingsRepository {
         AppCompatDelegate.setDefaultNightMode(
                 darkModeEnabled
                         ? AppCompatDelegate.MODE_NIGHT_YES
-                        : AppCompatDelegate.MODE_NIGHT_NO
-        );
+                        : AppCompatDelegate.MODE_NIGHT_NO);
     }
 
     public void applyKeepScreenOn(Window window) {

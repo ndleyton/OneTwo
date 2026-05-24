@@ -379,20 +379,22 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                 getString(R.string.mtg_btn_minus_desc, seatIndex + 1));
         cellBinding.lifeIncrementZone.setContentDescription(
                 getString(R.string.mtg_btn_plus_desc, seatIndex + 1));
-        cellBinding.lifeDecrementZone.setOnClickListener(v -> {
-            if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
-                v.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP);
-            }
-            viewModel.decrementLife(seatIndex);
-            animateLifeChange(cellBinding.tvLifeCount, false);
-        });
-        cellBinding.lifeIncrementZone.setOnClickListener(v -> {
-            if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
-                v.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP);
-            }
-            viewModel.incrementLife(seatIndex);
-            animateLifeChange(cellBinding.tvLifeCount, true);
-        });
+        cellBinding.lifeDecrementZone.setOnClickListener(
+                v -> {
+                    if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
+                        v.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP);
+                    }
+                    viewModel.decrementLife(seatIndex);
+                    animateLifeChange(cellBinding.tvLifeCount, false);
+                });
+        cellBinding.lifeIncrementZone.setOnClickListener(
+                v -> {
+                    if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
+                        v.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP);
+                    }
+                    viewModel.incrementLife(seatIndex);
+                    animateLifeChange(cellBinding.tvLifeCount, true);
+                });
         cellBinding.lifeDecrementZone.setOnLongClickListener(
                 v -> {
                     if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
@@ -401,9 +403,11 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                     viewModel.decrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
                     animateLifeChange(cellBinding.tvLifeCount, false);
                     startLifeHoldRepeat(
-                            v, () -> {
+                            v,
+                            () -> {
                                 if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
-                                    v.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP);
+                                    v.performHapticFeedback(
+                                            android.view.HapticFeedbackConstants.KEYBOARD_TAP);
                                 }
                                 viewModel.decrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
                                 animateLifeChange(cellBinding.tvLifeCount, false);
@@ -418,9 +422,11 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                     viewModel.incrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
                     animateLifeChange(cellBinding.tvLifeCount, true);
                     startLifeHoldRepeat(
-                            v, () -> {
+                            v,
+                            () -> {
                                 if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
-                                    v.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP);
+                                    v.performHapticFeedback(
+                                            android.view.HapticFeedbackConstants.KEYBOARD_TAP);
                                 }
                                 viewModel.incrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
                                 animateLifeChange(cellBinding.tvLifeCount, true);
@@ -522,14 +528,13 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         view.animate().cancel();
         float scaleTarget = isIncrement ? 1.05f : 0.95f;
         view.animate()
-                .scaleX(scaleTarget).scaleY(scaleTarget)
+                .scaleX(scaleTarget)
+                .scaleY(scaleTarget)
                 .setDuration(50)
-                .withEndAction(() -> {
-                    view.animate()
-                            .scaleX(1f).scaleY(1f)
-                            .setDuration(100)
-                            .start();
-                })
+                .withEndAction(
+                        () -> {
+                            view.animate().scaleX(1f).scaleY(1f).setDuration(100).start();
+                        })
                 .start();
     }
 

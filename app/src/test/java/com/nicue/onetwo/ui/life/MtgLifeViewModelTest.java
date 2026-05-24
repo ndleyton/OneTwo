@@ -39,12 +39,14 @@ public class MtgLifeViewModelTest {
     private FakeNowProvider nowProvider;
     private FakeSettingsRepository settingsRepository;
 
-    private static final class FakeSettingsRepository extends com.nicue.onetwo.data.settings.SettingsRepository {
+    private static final class FakeSettingsRepository
+            extends com.nicue.onetwo.data.settings.SettingsRepository {
         private boolean hapticEnabled = true;
 
         FakeSettingsRepository() {
             super(null);
         }
+
         @Override
         public boolean isLifeCounterHapticFeedbackEnabled() {
             return hapticEnabled;
@@ -464,7 +466,9 @@ public class MtgLifeViewModelTest {
     @Test
     public void testPassTurnStartsTimerAndAdvancesClockwise() throws Exception {
         FakeTimerScheduler fakeScheduler = new FakeTimerScheduler(nowProvider);
-        viewModel = new MtgLifeViewModel(new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
+        viewModel =
+                new MtgLifeViewModel(
+                        new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
 
         viewModel.setTurnTimerDurationMs(300000L);
         viewModel.validateAndStartGame("4", "40", true, true);
@@ -502,7 +506,9 @@ public class MtgLifeViewModelTest {
         FakeTimerScheduler fakeScheduler = new FakeTimerScheduler(nowProvider);
 
         // 2 players: 0 -> 1 -> 0
-        viewModel = new MtgLifeViewModel(new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
+        viewModel =
+                new MtgLifeViewModel(
+                        new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
         viewModel.validateAndStartGame("2", "40", true, true);
         assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
         viewModel.passTurn(0);
@@ -511,7 +517,9 @@ public class MtgLifeViewModelTest {
         assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
 
         // 3 players: 0 -> 1 -> 2 -> 0
-        viewModel = new MtgLifeViewModel(new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
+        viewModel =
+                new MtgLifeViewModel(
+                        new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
         viewModel.validateAndStartGame("3", "40", true, true);
         assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
         viewModel.passTurn(0);
@@ -522,7 +530,9 @@ public class MtgLifeViewModelTest {
         assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
 
         // 5 players: 0 -> 1 -> 3 -> 4 -> 2 -> 0
-        viewModel = new MtgLifeViewModel(new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
+        viewModel =
+                new MtgLifeViewModel(
+                        new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
         viewModel.validateAndStartGame("5", "40", true, true);
         assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
         viewModel.passTurn(0);
@@ -537,7 +547,9 @@ public class MtgLifeViewModelTest {
         assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
 
         // 6 players: 0 -> 1 -> 3 -> 5 -> 4 -> 2 -> 0
-        viewModel = new MtgLifeViewModel(new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
+        viewModel =
+                new MtgLifeViewModel(
+                        new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
         viewModel.validateAndStartGame("6", "40", true, true);
         assertEquals(0, viewModel.getTurnTimerActiveSeatIndex());
         viewModel.passTurn(0);
@@ -557,7 +569,9 @@ public class MtgLifeViewModelTest {
     @Test
     public void testTickingReducesActivePlayerRemainingTime() throws Exception {
         FakeTimerScheduler fakeScheduler = new FakeTimerScheduler(nowProvider);
-        viewModel = new MtgLifeViewModel(new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
+        viewModel =
+                new MtgLifeViewModel(
+                        new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
 
         viewModel.setTurnTimerDurationMs(300000L);
         viewModel.validateAndStartGame("2", "40", true, true);
@@ -576,7 +590,9 @@ public class MtgLifeViewModelTest {
     @Test
     public void testTimerExpirationFlow() throws Exception {
         FakeTimerScheduler fakeScheduler = new FakeTimerScheduler(nowProvider);
-        viewModel = new MtgLifeViewModel(new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
+        viewModel =
+                new MtgLifeViewModel(
+                        new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
 
         viewModel.setTurnTimerDurationMs(10000L);
         viewModel.validateAndStartGame("2", "40", true, true);
@@ -601,7 +617,9 @@ public class MtgLifeViewModelTest {
     @Test
     public void testPassTurnChargesCorrectPlayer() throws Exception {
         FakeTimerScheduler fakeScheduler = new FakeTimerScheduler(nowProvider);
-        viewModel = new MtgLifeViewModel(new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
+        viewModel =
+                new MtgLifeViewModel(
+                        new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
 
         viewModel.setTurnTimerDurationMs(300000L);
         viewModel.validateAndStartGame("2", "40", true, true);
@@ -690,7 +708,9 @@ public class MtgLifeViewModelTest {
     @Test
     public void testStartTimerVisibilityFlow() throws Exception {
         FakeTimerScheduler fakeScheduler = new FakeTimerScheduler(nowProvider);
-        viewModel = new MtgLifeViewModel(new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
+        viewModel =
+                new MtgLifeViewModel(
+                        new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
         viewModel.setTurnTimerDurationMs(180000L);
         viewModel.validateAndStartGame("2", "40", true, true);
 
@@ -713,7 +733,9 @@ public class MtgLifeViewModelTest {
     @Test
     public void testTogglePlayPause() throws Exception {
         FakeTimerScheduler fakeScheduler = new FakeTimerScheduler(nowProvider);
-        viewModel = new MtgLifeViewModel(new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
+        viewModel =
+                new MtgLifeViewModel(
+                        new SavedStateHandle(), settingsRepository, nowProvider, fakeScheduler);
         viewModel.setTurnTimerDurationMs(180000L);
         viewModel.validateAndStartGame("2", "40", true, true);
 

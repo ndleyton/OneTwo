@@ -21,8 +21,7 @@ public class MtgLifeViewModelFactory extends AbstractSavedStateViewModelFactory 
         this.settingsRepository = settingsRepository;
     }
 
-    @NonNull
-    @Override
+    @NonNull @Override
     protected <T extends ViewModel> T create(
             @NonNull String key, @NonNull Class<T> modelClass, @NonNull SavedStateHandle handle) {
         if (modelClass.isAssignableFrom(MtgLifeViewModel.class)) {
