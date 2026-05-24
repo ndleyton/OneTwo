@@ -51,6 +51,13 @@
         <item name="android:windowBackground">@color/colorPrimary</item>
     </style>
 
+    <style name="TextAppearance.OneTwo.ToolbarTitle" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
     <style name="ShapeAppearance.OneTwo.Small" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">16dp</item>
