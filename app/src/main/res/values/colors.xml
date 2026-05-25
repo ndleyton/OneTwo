@@ -56,17 +56,18 @@
     <color name="diceColor9">#7B1B22</color>
 
     <!-- MTG Life Counter Colors -->
-    <color name="lifeCounterPlayer1">#2479A8</color>
+    <color name="mtg_life_anchor_background">#1C2B3A</color>
+    <color name="lifeCounterPlayer1">#226992</color>
     <color name="lifeCounterOnPlayer1">#FFFFFFFF</color>
-    <color name="lifeCounterPlayer2">#F65B59</color>
+    <color name="lifeCounterPlayer2">#CA5153</color>
     <color name="lifeCounterOnPlayer2">#FFFFFFFF</color>
-    <color name="lifeCounterPlayer3">#F9A825</color>
+    <color name="lifeCounterPlayer3">#CD8F29</color>
     <color name="lifeCounterOnPlayer3">#FFFFFFFF</color>
-    <color name="lifeCounterPlayer4">#238C7C</color>
+    <color name="lifeCounterPlayer4">#22796F</color>
     <color name="lifeCounterOnPlayer4">#FFFFFFFF</color>
-    <color name="lifeCounterPlayer5">#477AA3</color>
+    <color name="lifeCounterPlayer5">#3E6A8E</color>
     <color name="lifeCounterOnPlayer5">#FFFFFFFF</color>
-    <color name="lifeCounterPlayer6">#A50F15</color>
+    <color name="lifeCounterPlayer6">#8A151C</color>
     <color name="lifeCounterOnPlayer6">#FFFFFFFF</color>
     <color name="mtg_expired_background">#424242</color>
     <color name="mtg_expired_foreground">#B0BEC5</color>
