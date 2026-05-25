@@ -49,6 +49,8 @@
     <string name="always_on_summary">Garder l\'écran allumé</string>
     <string name="chooser_order_title">Ordre du choix</string>
     <string name="chooser_order_summary">Choisir les doigts dans l\'ordre de pose</string>
+    <string name="life_counter_haptic_feedback_title">Retour haptique du compteur de vie</string>
+    <string name="life_counter_haptic_feedback_summary">Vibrer lors des changements de points de vie</string>
     <string name="quick_add">Ajout rapide</string>
     <string name="d4">d4</string>
     <string name="d6">d6</string>

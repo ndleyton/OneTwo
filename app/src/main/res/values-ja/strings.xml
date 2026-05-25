@@ -49,6 +49,8 @@
     <string name="always_on_summary">画面をスリープさせない</string>
     <string name="chooser_order_title">選択順</string>
     <string name="chooser_order_summary">指を置いた順に選択します</string>
+    <string name="life_counter_haptic_feedback_title">ライフカウンターの触覚フィードバック</string>
+    <string name="life_counter_haptic_feedback_summary">ライフを変更したときに振動します</string>
     <string name="quick_add">クイック追加</string>
     <string name="d4">d4</string>
     <string name="d6">d6</string>

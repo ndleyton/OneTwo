@@ -2,7 +2,6 @@ package com.nicue.onetwo.data.settings;
 
 import android.view.Window;
 import android.view.WindowManager;
-
 import androidx.appcompat.app.AppCompatDelegate;
 
 public class SettingsRepository {
@@ -36,13 +35,20 @@ public class SettingsRepository {
         dataSource.setChooserOrderEnabled(enabled);
     }
 
+    public boolean isLifeCounterHapticFeedbackEnabled() {
+        return dataSource.isLifeCounterHapticFeedbackEnabled();
+    }
+
+    public void setLifeCounterHapticFeedbackEnabled(boolean enabled) {
+        dataSource.setLifeCounterHapticFeedbackEnabled(enabled);
+    }
+
     public void applyNightMode() {
         boolean darkModeEnabled = isDarkModeEnabled();
         AppCompatDelegate.setDefaultNightMode(
                 darkModeEnabled
                         ? AppCompatDelegate.MODE_NIGHT_YES
-                        : AppCompatDelegate.MODE_NIGHT_NO
-        );
+                        : AppCompatDelegate.MODE_NIGHT_NO);
     }
 
     public void applyKeepScreenOn(Window window) {

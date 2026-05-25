@@ -15,6 +15,7 @@ import android.os.SystemClock;
 import android.text.Editable;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,7 +38,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.nicue.onetwo.OneTwoApplication;
 import com.nicue.onetwo.R;
+import com.nicue.onetwo.data.settings.SettingsRepository;
 import com.nicue.onetwo.databinding.LifeBoard1Binding;
 import com.nicue.onetwo.databinding.LifeBoard2Binding;
 import com.nicue.onetwo.databinding.LifeBoard3Binding;
@@ -80,7 +83,12 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel = new ViewModelProvider(this).get(MtgLifeViewModel.class);
+        SettingsRepository repo =
+                ((OneTwoApplication) requireActivity().getApplication())
+                        .getAppContainer()
+                        .getSettingsRepository();
+        MtgLifeViewModelFactory factory = new MtgLifeViewModelFactory(this, null, repo);
+        viewModel = new ViewModelProvider(this, factory).get(MtgLifeViewModel.class);
         LifeSetupContentBinding setupBinding =
                 LifeSetupContentBinding.bind(binding.setupContent.getRoot());
 
@@ -371,20 +379,58 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                 getString(R.string.mtg_btn_minus_desc, seatIndex + 1));
         cellBinding.lifeIncrementZone.setContentDescription(
                 getString(R.string.mtg_btn_plus_desc, seatIndex + 1));
-        cellBinding.lifeDecrementZone.setOnClickListener(v -> viewModel.decrementLife(seatIndex));
-        cellBinding.lifeIncrementZone.setOnClickListener(v -> viewModel.incrementLife(seatIndex));
+        cellBinding.lifeDecrementZone.setOnClickListener(
+                v -> {
+                    if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
+                        v.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP);
+                    }
+                    viewModel.decrementLife(seatIndex);
+                    animateLifeChange(cellBinding.tvLifeCount, false);
+                });
+        cellBinding.lifeIncrementZone.setOnClickListener(
+                v -> {
+                    if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
+                        v.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP);
+                    }
+                    viewModel.incrementLife(seatIndex);
+                    animateLifeChange(cellBinding.tvLifeCount, true);
+                });
         cellBinding.lifeDecrementZone.setOnLongClickListener(
                 v -> {
+                    if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
+                        v.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP);
+                    }
                     viewModel.decrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
+                    animateLifeChange(cellBinding.tvLifeCount, false);
                     startLifeHoldRepeat(
-                            v, () -> viewModel.decrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA));
+                            v,
+                            () -> {
+                                if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
+                                    v.performHapticFeedback(
+                                            android.view.HapticFeedbackConstants.KEYBOARD_TAP);
+                                }
+                                viewModel.decrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
+                                animateLifeChange(cellBinding.tvLifeCount, false);
+                            });
                     return true;
                 });
         cellBinding.lifeIncrementZone.setOnLongClickListener(
                 v -> {
+                    if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
+                        v.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP);
+                    }
                     viewModel.incrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
+                    animateLifeChange(cellBinding.tvLifeCount, true);
                     startLifeHoldRepeat(
-                            v, () -> viewModel.incrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA));
+                            v,
+                            () -> {
+                                if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
+                                    v.performHapticFeedback(
+                                            android.view.HapticFeedbackConstants.KEYBOARD_TAP);
+                                }
+                                viewModel.incrementLifeBy(seatIndex, LIFE_LONG_PRESS_DELTA);
+                                animateLifeChange(cellBinding.tvLifeCount, true);
+                            });
                     return true;
                 });
         cellBinding.lifeDecrementZone.setOnTouchListener(this::handleLifeHoldTouch);
@@ -476,6 +522,26 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         bindCommanderDamageSummary(cellBinding, player, playerCount);
 
         cellBinding.playerCellContainer.setRotation(0f);
+    }
+
+    private void animateLifeChange(View view, boolean isIncrement) {
+        view.animate().cancel();
+        float scaleTarget = isIncrement ? 1.05f : 0.95f;
+        view.animate()
+                .scaleX(scaleTarget)
+                .scaleY(scaleTarget)
+                .setDuration(50)
+                .withEndAction(
+                        () -> {
+                            view.animate().scaleX(1f).scaleY(1f).setDuration(100).start();
+                        })
+                .start();
+    }
+
+    private void performLifeHapticFeedback(View view) {
+        if (viewModel.isLifeCounterHapticFeedbackEnabled()) {
+            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+        }
     }
 
     private void bindCommanderDamageSummary(
@@ -719,8 +785,9 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         dialogContent.setTag("commander_dialog_content");
         dialogContent.setOrientation(LinearLayout.VERTICAL);
         dialogContent.setGravity(Gravity.CENTER);
-        dialogContent.setPadding(dpToPx(4), dpToPx(4), dpToPx(4), dpToPx(4));
+        dialogContent.setPadding(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8));
         dialogContent.setBackground(createDialogBackground());
+        dialogContent.setElevation(dpToPx(16));
         dialogContent.setLayoutParams(
                 new FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,
@@ -873,11 +940,21 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         TypedValue typedValue = new TypedValue();
         requireContext()
                 .getTheme()
-                .resolveAttribute(android.R.attr.colorBackground, typedValue, true);
+                .resolveAttribute(
+                        com.google.android.material.R.attr.colorSurface, typedValue, true);
 
         GradientDrawable background = new GradientDrawable();
         background.setColor(typedValue.data);
-        background.setCornerRadius(dpToPx(10));
+        background.setCornerRadius(dpToPx(24));
+
+        TypedValue onSurfaceValue = new TypedValue();
+        requireContext()
+                .getTheme()
+                .resolveAttribute(
+                        com.google.android.material.R.attr.colorOnSurface, onSurfaceValue, true);
+        int strokeColor = adjustAlpha(onSurfaceValue.data, 0.12f);
+        background.setStroke(dpToPx(1), strokeColor);
+
         return background;
     }
 

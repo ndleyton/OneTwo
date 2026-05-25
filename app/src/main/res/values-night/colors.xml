@@ -10,8 +10,8 @@
     <color name="secondAccentDark">#850009</color>
     <color name="overrideBackground">#FF1A1A1A</color>
 
-    <color name="m3_primary">#9DCAEF</color>
-    <color name="m3_on_primary">#003353</color>
+    <color name="m3_primary">#0E344A</color>
+    <color name="m3_on_primary">#FFFFFFFF</color>
     <color name="m3_primary_container">#184E75</color>
     <color name="m3_on_primary_container">#D0E4FF</color>
     <color name="m3_secondary">#F3BB21</color>
@@ -44,23 +44,28 @@
     <color name="timer_idle_background">@color/m3_tertiary_container</color>
     <color name="timer_idle_foreground">@color/m3_on_tertiary_container</color>
 
-    <color name="diceColor0">#850009</color>
-    <color name="diceColor1">#b9d529</color>
-    <color name="diceColor2">#5DD8F4</color>
-    <color name="diceColor3">#F3BB21</color>
-    <color name="diceColor4">#B92130</color>
+    <color name="diceColor0">#173E57</color>
+    <color name="diceColor1">#7F3A3A</color>
+    <color name="diceColor2">#7A5A1A</color>
+    <color name="diceColor3">#1F5F56</color>
+    <color name="diceColor4">#344F68</color>
+    <color name="diceColor5">#6F151A</color>
+    <color name="diceColor6">#102E42</color>
+    <color name="diceColor7">#5C4320</color>
+    <color name="diceColor8">#4F657C</color>
+    <color name="diceColor9">#4D1116</color>
 
     <!-- MTG Life Counter Colors -->
-    <color name="lifeCounterPlayer1">#1C5F8C</color>
+    <color name="lifeCounterPlayer1">#173E57</color>
     <color name="lifeCounterOnPlayer1">#FFFFFFFF</color>
-    <color name="lifeCounterPlayer2">#F3BB21</color>
+    <color name="lifeCounterPlayer2">#7F3A3A</color>
     <color name="lifeCounterOnPlayer2">#FFFFFFFF</color>
-    <color name="lifeCounterPlayer3">#BD2430</color>
+    <color name="lifeCounterPlayer3">#7A5A1A</color>
     <color name="lifeCounterOnPlayer3">#FFFFFFFF</color>
-    <color name="lifeCounterPlayer4">#F65B59</color>
+    <color name="lifeCounterPlayer4">#1F5F56</color>
     <color name="lifeCounterOnPlayer4">#FFFFFFFF</color>
-    <color name="lifeCounterPlayer5">#416892</color>
+    <color name="lifeCounterPlayer5">#344F68</color>
     <color name="lifeCounterOnPlayer5">#FFFFFFFF</color>
-    <color name="lifeCounterPlayer6">#850009</color>
+    <color name="lifeCounterPlayer6">#6F151A</color>
     <color name="lifeCounterOnPlayer6">#FFFFFFFF</color>
 </resources>
