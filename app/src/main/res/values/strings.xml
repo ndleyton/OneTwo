@@ -45,8 +45,9 @@
     <string name="pause">Pause</string>
     <string name="timer_settings_title">Timer settings</string>
     <string name="timer_base_time_label">Preset</string>
-    <string name="timer_custom_base_time_label">Base time</string>
-    <string name="timer_increment_label">Increment per play</string>
+    <string name="timer_custom_time_label">Custom time</string>
+    <string name="timer_custom_base_label">Base</string>
+    <string name="timer_custom_increment_label">Increment</string>
     <string name="timer_count_label">Timers</string>
     <string name="timer_minutes_unit">min</string>
     <string name="timer_seconds_unit">sec</string>

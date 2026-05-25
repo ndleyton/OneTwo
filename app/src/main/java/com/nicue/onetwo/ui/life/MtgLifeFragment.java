@@ -1140,7 +1140,9 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         dialogBinding.timerCountRow.setVisibility(View.GONE);
         dialogBinding.baseTimeLabel.setText(R.string.mtg_setup_time);
         dialogBinding.clockSettingInputLayout.setVisibility(View.GONE);
-        dialogBinding.baseTimeInputContainer.setVisibility(View.VISIBLE);
+        dialogBinding.customTimeLabel.setVisibility(View.GONE);
+        dialogBinding.customBaseLabel.setVisibility(View.GONE);
+        dialogBinding.baseTimeInputContainer.setPadding(0, 0, 0, 0);
         dialogBinding.incrementRow.setVisibility(View.GONE);
 
         configureDurationInputs(minuteInput, secondInput, configuredDuration);

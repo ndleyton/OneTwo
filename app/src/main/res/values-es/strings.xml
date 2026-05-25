@@ -44,8 +44,9 @@
     <string name="pause">Pausa</string>
     <string name="timer_settings_title">Ajustes del temporizador</string>
     <string name="timer_base_time_label">Configuración</string>
-    <string name="timer_custom_base_time_label">Tiempo base</string>
-    <string name="timer_increment_label">Incremento por jugada</string>
+    <string name="timer_custom_time_label">Tiempo personalizado</string>
+    <string name="timer_custom_base_label">Base</string>
+    <string name="timer_custom_increment_label">Incremento</string>
     <string name="timer_count_label">Número de temporizadores</string>
     <string name="timer_minutes_unit">min</string>
     <string name="timer_seconds_unit">seg</string>

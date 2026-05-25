@@ -339,8 +339,7 @@ public class TimerFragment extends Fragment implements MenuProvider {
     private void updateClockSettingCustomVisibility(
             MinutesAlertDialogBinding dialogBinding, int selectedIndex) {
         int customVisibility = selectedIndex == CLOCK_PRESET_CUSTOM ? View.VISIBLE : View.GONE;
-        dialogBinding.baseTimeInputContainer.setVisibility(customVisibility);
-        dialogBinding.incrementRow.setVisibility(customVisibility);
+        dialogBinding.customTimeContainer.setVisibility(customVisibility);
     }
 
     private long getSelectedBaseDurationMs(MinutesAlertDialogBinding dialogBinding) {
