@@ -1,7 +1,6 @@
 package com.nicue.onetwo.ui.life;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -1137,14 +1136,10 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         android.widget.NumberPicker minutePicker = dialogBinding.minutePicker;
         android.widget.NumberPicker secondPicker = dialogBinding.secondsPicker;
 
-        // Hide increment fields in minutes_alert_dialog
-        android.widget.TextView incrementLabel = dialogBinding.incrementLabel;
-        android.widget.TextView baseTimeLabel = dialogBinding.baseTimeLabel;
-        View incrementPickerContainer = (View) dialogBinding.incrementMinutePicker.getParent();
-
-        incrementLabel.setVisibility(View.GONE);
-        baseTimeLabel.setVisibility(View.GONE);
-        incrementPickerContainer.setVisibility(View.GONE);
+        dialogBinding.dialogTitle.setText(R.string.mtg_setup_turn_timer);
+        dialogBinding.timerCountRow.setVisibility(View.GONE);
+        dialogBinding.baseTimeLabel.setText(R.string.mtg_setup_time);
+        dialogBinding.incrementRow.setVisibility(View.GONE);
 
         // Configure duration pickers
         minutePicker.setMinValue(0);
@@ -1156,24 +1151,31 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         secondPicker.setFormatter(
                 value -> String.format(java.util.Locale.getDefault(), "%02d", value));
 
-        new AlertDialog.Builder(requireContext())
-                .setView(dialogBinding.getRoot())
-                .setTitle(R.string.timer_settings_title)
-                .setPositiveButton(
-                        android.R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                long durationMs =
-                                        (minutePicker.getValue() * 60L + secondPicker.getValue())
-                                                * 1000L;
-                                viewModel.setTurnTimerDurationMs(durationMs);
-                                setupBinding.btnTurnTimerValue.setText(
-                                        TimerBackend.formatRemainingTime(durationMs, 10000L));
-                            }
-                        })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        AlertDialog dialog =
+                new AlertDialog.Builder(requireContext()).setView(dialogBinding.getRoot()).create();
+        dialogBinding.applyButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        long durationMs =
+                                (minutePicker.getValue() * 60L + secondPicker.getValue()) * 1000L;
+                        viewModel.setTurnTimerDurationMs(durationMs);
+                        setupBinding.btnTurnTimerValue.setText(
+                                TimerBackend.formatRemainingTime(durationMs, 10000L));
+                        dialog.dismiss();
+                    }
+                });
+        dialogBinding.cancelButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+        dialog.show();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
     }
 
     @Override

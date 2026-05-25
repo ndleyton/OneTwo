@@ -1,9 +1,10 @@
 package com.nicue.onetwo.ui.timer;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.LayoutInflater;
@@ -142,7 +143,6 @@ public class TimerFragment extends Fragment implements MenuProvider {
             return;
         }
 
-
         List<TimerItemUiModel> timers = state.getTimers();
         if (timerBindings.size() != timers.size()) {
             rebuildTimerViews(timers.size());
@@ -159,10 +159,10 @@ public class TimerFragment extends Fragment implements MenuProvider {
             itemBinding.chrono.setTextColor(textColor);
             itemBinding.cvTimer.setCardBackgroundColor(ColorStateList.valueOf(bgColor));
             itemBinding.cvTimer.setCardElevation(timer.isActive() && !state.isPaused() ? 12f : 0f);
-            
+
             // Dim if active but paused
             itemBinding.cvTimer.setAlpha(timer.isActive() && state.isPaused() ? 0.7f : 1.0f);
-            
+
             itemBinding.getRoot().setRotation(i == 0 && timers.size() == 2 ? 180f : 0f);
         }
     }
@@ -192,7 +192,7 @@ public class TimerFragment extends Fragment implements MenuProvider {
         long configuredDuration = state == null ? 300000L : state.getConfiguredDurationMs();
         long configuredIncrement = state == null ? 0L : state.getConfiguredIncrementMs();
         int currentTimerCount = state == null ? 2 : state.getTimers().size();
-        
+
         MinutesAlertDialogBinding dialogBinding =
                 MinutesAlertDialogBinding.inflate(getLayoutInflater());
         NumberPicker timerCountPicker = dialogBinding.timerCountPicker;
@@ -200,35 +200,43 @@ public class TimerFragment extends Fragment implements MenuProvider {
         NumberPicker secondPicker = dialogBinding.secondsPicker;
         NumberPicker incrementMinutePicker = dialogBinding.incrementMinutePicker;
         NumberPicker incrementSecondPicker = dialogBinding.incrementSecondsPicker;
-        
+
         timerCountPicker.setMinValue(1);
         timerCountPicker.setMaxValue(maxTimers());
         timerCountPicker.setValue(currentTimerCount);
-        
+        timerCountPicker.setWrapSelectorWheel(false);
+
         configureDurationPicker(minutePicker, secondPicker, configuredDuration);
         configureDurationPicker(incrementMinutePicker, incrementSecondPicker, configuredIncrement);
 
-        new AlertDialog.Builder(requireContext())
-                .setView(dialogBinding.getRoot())
-                .setTitle(R.string.timer_settings_title)
-                .setPositiveButton(
-                        android.R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                long durationMs =
-                                        (minutePicker.getValue() * 60L + secondPicker.getValue())
-                                                * 1000L;
-                                long incrementMs =
-                                        (incrementMinutePicker.getValue() * 60L
-                                                        + incrementSecondPicker.getValue())
-                                                * 1000L;
-                                viewModel.setTimerCount(timerCountPicker.getValue(), maxTimers());
-                                viewModel.editDuration(durationMs, incrementMs);
-                            }
-                        })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        AlertDialog dialog =
+                new AlertDialog.Builder(requireContext()).setView(dialogBinding.getRoot()).create();
+        dialogBinding.applyButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        long durationMs =
+                                (minutePicker.getValue() * 60L + secondPicker.getValue()) * 1000L;
+                        long incrementMs =
+                                (incrementMinutePicker.getValue() * 60L
+                                                + incrementSecondPicker.getValue())
+                                        * 1000L;
+                        viewModel.setTimerCount(timerCountPicker.getValue(), maxTimers());
+                        viewModel.editDuration(durationMs, incrementMs);
+                        dialog.dismiss();
+                    }
+                });
+        dialogBinding.cancelButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+        dialog.show();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
     }
 
     private void configureDurationPicker(

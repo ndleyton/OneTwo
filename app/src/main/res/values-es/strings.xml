@@ -41,6 +41,11 @@
     <string name="order">Orden</string>
     <string name="play">Comenzar</string>
     <string name="pause">Pausa</string>
+    <string name="timer_settings_title">Ajustes del temporizador</string>
+    <string name="timer_base_time_label">Tiempo base</string>
+    <string name="timer_increment_label">Incremento por jugada</string>
+    <string name="timer_count_label">Número de temporizadores</string>
+    <string name="timer_settings_apply">Aplicar</string>
     <string name="counter_instruction">Presiona el botón para agregar un contador o desliza hacia la derecha para más opciones</string>
     <string name="menu_settings">Ajustes</string>
     <string name="ui_header">UI</string>
