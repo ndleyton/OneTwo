@@ -1,5 +1,8 @@
 package com.nicue.onetwo.ui.chooser;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -7,11 +10,14 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.nicue.onetwo.OneTwoApplication;
+import com.nicue.onetwo.R;
 import com.nicue.onetwo.data.settings.SettingsRepository;
 import com.nicue.onetwo.databinding.ChooserLayoutBinding;
 
@@ -22,12 +28,30 @@ public class ChooserFragment extends Fragment {
     private ChooserViewModel viewModel;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Runnable navigateBackRunnable;
+    private ValueAnimator breathingAnimator;
     private final Runnable hideInstructionRunnable =
             new Runnable() {
                 @Override
                 public void run() {
-                    if (binding != null) {
-                        binding.chooserInstruction.setVisibility(View.GONE);
+                    if (binding != null
+                            && binding.chooserInstructionContainer.getVisibility()
+                                    == View.VISIBLE) {
+                        binding.chooserInstructionContainer
+                                .animate()
+                                .alpha(0f)
+                                .setDuration(300L)
+                                .withEndAction(
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                if (binding != null) {
+                                                    binding.chooserInstructionContainer
+                                                            .setVisibility(View.GONE);
+                                                    stopInstructionAnimation();
+                                                }
+                                            }
+                                        })
+                                .start();
                     }
                 }
             };
@@ -45,6 +69,9 @@ public class ChooserFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        startInstructionAnimation();
+
         SettingsRepository settingsRepository =
                 ((OneTwoApplication) requireActivity().getApplication())
                         .getAppContainer()
@@ -151,6 +178,7 @@ public class ChooserFragment extends Fragment {
     @Override
     public void onDestroyView() {
         handler.removeCallbacks(hideInstructionRunnable);
+        stopInstructionAnimation();
         if (navigateBackRunnable != null) {
             handler.removeCallbacks(navigateBackRunnable);
             navigateBackRunnable = null;
@@ -163,11 +191,49 @@ public class ChooserFragment extends Fragment {
     }
 
     private void scheduleInstructionHide() {
-        if (binding.chooserInstruction.getVisibility() != View.VISIBLE) {
+        if (binding.chooserInstructionContainer.getVisibility() != View.VISIBLE) {
             return;
         }
         handler.removeCallbacks(hideInstructionRunnable);
         handler.postDelayed(hideInstructionRunnable, INSTRUCTION_HIDE_DELAY_MS);
+    }
+
+    private void startInstructionAnimation() {
+        stopInstructionAnimation();
+
+        final int colorStart = ContextCompat.getColor(requireContext(), R.color.colorPrimaryLight);
+        final int colorEnd = ContextCompat.getColor(requireContext(), R.color.colorAccent);
+        final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+
+        breathingAnimator = ValueAnimator.ofFloat(0f, 1f);
+        breathingAnimator.setDuration(2400L);
+        breathingAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        breathingAnimator.setRepeatMode(ValueAnimator.REVERSE);
+        breathingAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        breathingAnimator.addUpdateListener(
+                new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        if (binding != null && binding.chooserInstructionIcon != null) {
+                            float val = (float) animation.getAnimatedValue();
+                            float scale = 0.95f + (val * 0.1f);
+                            int color = (int) argbEvaluator.evaluate(val, colorStart, colorEnd);
+
+                            binding.chooserInstructionIcon.setScaleX(scale);
+                            binding.chooserInstructionIcon.setScaleY(scale);
+                            binding.chooserInstructionIcon.setImageTintList(
+                                    ColorStateList.valueOf(color));
+                        }
+                    }
+                });
+        breathingAnimator.start();
+    }
+
+    private void stopInstructionAnimation() {
+        if (breathingAnimator != null) {
+            breathingAnimator.cancel();
+            breathingAnimator = null;
+        }
     }
 
     static float[] getSeatCenter(int seatIndex, int playerCount, float width, float height) {

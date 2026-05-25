@@ -16,11 +16,11 @@
     <string name="alert_tv_number">Vies/Score</string>
     <string name="menu_counter">Scores</string>
     <string name="menu_dice">Dé</string>
-    <string name="menu_chooser">Choisir</string>
+    <string name="menu_chooser">Sélecteur</string>
     <string name="menu_timer">Minuteur</string>
     <string name="menu_counter_space">Scores</string>
     <string name="menu_dice_space">Dé</string>
-    <string name="menu_chooser_space">Choisir</string>
+    <string name="menu_chooser_space">Sélecteur</string>
     <string name="menu_timer_space">Minuteur</string>
     <string name="drawer_open">Ouvrir la fenêtre de navigation</string>
     <string name="drawer_close">Fermer la fenêtre de navigation</string>

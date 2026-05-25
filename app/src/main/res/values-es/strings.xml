@@ -19,14 +19,14 @@
     <string name="menu_dice">Dados</string>
     <string name="menu_counter_space">&#160;Contadores</string>
     <string name="menu_dice_space">&#160;Dados</string>
-    <string name="menu_chooser_space">&#160;Elegir</string>
+    <string name="menu_chooser_space">&#160;Selector</string>
     <string name="menu_timer_space">&#160;Temporizador</string>
     <string name="drawer_open">Abrir cajón de navegación</string>
     <string name="drawer_close">Cerrar cajón de navegación</string>
     <string name="nav_header">OneTwo</string>
     <string name="dice_title">Caras de los dados</string>
     <string name="dice_hint">Número de caras</string>
-    <string name="menu_chooser">Elegir</string>
+    <string name="menu_chooser">Selector</string>
     <string name="touch_me">Coloquen un dedo para elegir entre ustedes</string>
     <string name="menu_timer">Temporizador</string>
     <string name="edit">Editar</string>
