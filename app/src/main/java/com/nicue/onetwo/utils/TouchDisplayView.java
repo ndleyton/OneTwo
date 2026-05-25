@@ -42,6 +42,10 @@ public class TouchDisplayView extends View {
     private float pulseValue = 0f;
     private ValueAnimator pulseAnimator;
 
+    private ValueAnimator countdownAnimator;
+    private float countdownProgress = 0f;
+    private final Paint mGlowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
     private int backgroundColorOverride = getResources().getColor(R.color.overrideBackground);
 
     private final int[] COLORS = {
@@ -246,6 +250,23 @@ public class TouchDisplayView extends View {
                     mTouches.put(id, data);
                     handler.postDelayed(runnable, 1500);
 
+                    if (countdownAnimator != null) {
+                        countdownAnimator.cancel();
+                    }
+                    countdownProgress = 0f;
+                    countdownAnimator = ValueAnimator.ofFloat(0f, 1f);
+                    countdownAnimator.setDuration(1500L);
+                    countdownAnimator.setInterpolator(new android.view.animation.LinearInterpolator());
+                    countdownAnimator.addUpdateListener(
+                            new ValueAnimator.AnimatorUpdateListener() {
+                                @Override
+                                public void onAnimationUpdate(ValueAnimator animation) {
+                                    countdownProgress = (float) animation.getAnimatedValue();
+                                    invalidate();
+                                }
+                            });
+                    countdownAnimator.start();
+
                     break;
                 }
 
@@ -340,6 +361,10 @@ public class TouchDisplayView extends View {
             // draw the data and its history to the canvas
             drawCircle(canvas, id, data);
         }
+
+        if (mHasTouch) {
+            postInvalidateOnAnimation();
+        }
     }
 
     /*
@@ -385,6 +410,8 @@ public class TouchDisplayView extends View {
         mTransStrokePaint.setColor(Color.WHITE);
         mTransStrokePaint.setStyle(Paint.Style.STROKE);
         mTransStrokePaint.setStrokeWidth(3f * density);
+
+        mGlowPaint.setStyle(Paint.Style.FILL);
     }
 
     protected void drawCircle(Canvas canvas, int id, TouchHistory data) {
@@ -416,9 +443,52 @@ public class TouchDisplayView extends View {
 
         canvas.drawCircle(data.x, (data.y) - half_r, radius, mCirclePaint);
 
+        // Continuous wave/ripple effect radiating outwards from each active finger
+        if (!alreadyChosen) {
+            long time = System.currentTimeMillis();
+            float ripplePhase = (time % 1600L) / 1600f;
+            float rippleRadius = radius + (ripplePhase * radius * 1.2f);
+            int rippleAlpha = (int) (130 * (1f - ripplePhase));
+
+            mTransStrokePaint.setColor(color);
+            mTransStrokePaint.setAlpha(rippleAlpha);
+            float density = getResources().getDisplayMetrics().density;
+            mTransStrokePaint.setStrokeWidth(3f * density);
+            canvas.drawCircle(data.x, data.y - half_r, rippleRadius, mTransStrokePaint);
+        }
+
+        // Draw concentric progress/charging arc around each finger while held
+        if (fingersDown && !alreadyChosen) {
+            float density = getResources().getDisplayMetrics().density;
+            float arcRadius = radius + (12f * density);
+            android.graphics.RectF arcBounds = new android.graphics.RectF(
+                data.x - arcRadius,
+                (data.y - half_r) - arcRadius,
+                data.x + arcRadius,
+                (data.y - half_r) + arcRadius
+            );
+
+            mStrokePaint.setColor(color);
+            mStrokePaint.setAlpha(255);
+            mStrokePaint.setStrokeWidth(4f * density);
+
+            float sweepAngle = 360f * countdownProgress;
+            canvas.drawArc(arcBounds, -90f, sweepAngle, false, mStrokePaint);
+        }
+
         if (drawBig) {
-            mCirclePaint.setAlpha(haloAlpha);
-            canvas.drawCircle(data.x, (data.y) - half_r, radius * 2f, mCirclePaint);
+            int red = Color.red(color);
+            int green = Color.green(color);
+            int blue = Color.blue(color);
+            int colorStart = Color.argb(haloAlpha, red, green, blue);
+            int colorEnd = Color.argb(0, red, green, blue);
+
+            android.graphics.RadialGradient gradient = new android.graphics.RadialGradient(
+                    data.x, data.y - half_r, radius * 2.2f,
+                    colorStart, colorEnd,
+                    android.graphics.Shader.TileMode.CLAMP);
+            mGlowPaint.setShader(gradient);
+            canvas.drawCircle(data.x, data.y - half_r, radius * 2.2f, mGlowPaint);
         }
     }
 
@@ -600,6 +670,11 @@ public class TouchDisplayView extends View {
             pulseAnimator = null;
         }
         pulseValue = 0f;
+        if (countdownAnimator != null) {
+            countdownAnimator.cancel();
+            countdownAnimator = null;
+        }
+        countdownProgress = 0f;
     }
 
     public int indexInArray(int[] arr, int n) {
