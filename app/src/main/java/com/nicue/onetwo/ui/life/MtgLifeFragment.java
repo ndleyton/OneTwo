@@ -353,7 +353,18 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                 player.isTimerExpired()
                         ? ContextCompat.getColor(requireContext(), R.color.mtg_expired_foreground)
                         : ContextCompat.getColor(requireContext(), player.getForegroundColorRes());
+        int accentBgColor =
+                player.isTimerExpired()
+                        ? ContextCompat.getColor(requireContext(), R.color.mtg_expired_foreground)
+                        : ContextCompat.getColor(
+                                requireContext(), player.getAccentBackgroundColorRes());
         int seatIndex = player.getSeatIndex();
+
+        ColorStateList accentTint = ColorStateList.valueOf(accentBgColor);
+        cellBinding.playerColorIndicatorStart.setImageTintList(accentTint);
+        cellBinding.playerColorIndicatorEnd.setImageTintList(accentTint);
+        cellBinding.playerColorIndicatorBottomStart.setImageTintList(accentTint);
+        cellBinding.playerColorIndicatorBottomEnd.setImageTintList(accentTint);
 
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
                 cellBinding.tvLifeCount,
