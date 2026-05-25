@@ -434,8 +434,7 @@ public class TouchDisplayView extends View {
             } else { // With this line we are giving it a random order
                 if (choosingOrder) {
                     int place = indexInArray(randomArray, id) + 1;
-                    mTextPaint.setColor(Color.WHITE);
-                    drawOrderLabels(canvas, String.valueOf(place), data.x, data.y - half_r, radius);
+                    drawSingleRefinedOrderBadge(canvas, String.valueOf(place), data, radius, half_r, color);
                     drawBig = false;
                 }
             }
@@ -492,58 +491,105 @@ public class TouchDisplayView extends View {
         }
     }
 
-    private void drawOrderLabels(
-            Canvas canvas, String label, float centerX, float centerY, float radius) {
-        float textSize = mTextPaint.getTextSize();
-        float halfTextWidth = mTextPaint.measureText(label) / 2f;
+    private void drawSingleRefinedOrderBadge(
+            Canvas canvas, String label, TouchHistory data, float radius, float half_r, int circleColor) {
+        float density = getResources().getDisplayMetrics().density;
         float labelDistance = radius + mOrderLabelOffset;
-        float baselineCenterOffset = textSize / 3f;
 
-        float minX = halfTextWidth;
-        float maxX = getWidth() - halfTextWidth;
-        float minBaselineY = textSize;
-        float maxBaselineY = getHeight() - baselineCenterOffset;
+        float centerX = data.x;
+        float centerY = data.y - half_r;
 
-        drawRotatedOrderLabel(
-                canvas,
-                label,
-                clamp(centerX, minX, maxX),
-                clamp(centerY - labelDistance + baselineCenterOffset, minBaselineY, maxBaselineY),
-                0f,
-                baselineCenterOffset);
-        drawRotatedOrderLabel(
-                canvas,
-                label,
-                clamp(centerX + labelDistance, minX, maxX),
-                clamp(centerY + baselineCenterOffset, minBaselineY, maxBaselineY),
-                90f,
-                baselineCenterOffset);
-        drawRotatedOrderLabel(
-                canvas,
-                label,
-                clamp(centerX, minX, maxX),
-                clamp(centerY + labelDistance + baselineCenterOffset, minBaselineY, maxBaselineY),
-                180f,
-                baselineCenterOffset);
-        drawRotatedOrderLabel(
-                canvas,
-                label,
-                clamp(centerX - labelDistance, minX, maxX),
-                clamp(centerY + baselineCenterOffset, minBaselineY, maxBaselineY),
-                -90f,
-                baselineCenterOffset);
+        float topDist = data.y;
+        float bottomDist = getHeight() - data.y;
+        float leftDist = data.x;
+        float rightDist = getWidth() - data.x;
+
+        float minDist = topDist;
+        int closestEdge = 0; // 0 = top, 1 = right, 2 = bottom, 3 = left
+
+        if (rightDist < minDist) {
+            minDist = rightDist;
+            closestEdge = 1;
+        }
+        if (bottomDist < minDist) {
+            minDist = bottomDist;
+            closestEdge = 2;
+        }
+        if (leftDist < minDist) {
+            minDist = leftDist;
+            closestEdge = 3;
+        }
+
+        float badgeX = centerX;
+        float badgeY = centerY;
+        float rotation = 0f;
+
+        switch (closestEdge) {
+            case 2: // bottom
+                badgeY = centerY - labelDistance;
+                rotation = 0f;
+                break;
+            case 0: // top
+                badgeY = centerY + labelDistance;
+                rotation = 180f;
+                break;
+            case 3: // left
+                badgeX = centerX + labelDistance;
+                rotation = 90f;
+                break;
+            case 1: // right
+                badgeX = centerX - labelDistance;
+                rotation = -90f;
+                break;
+        }
+
+        // Clamp the badge coordinates so they don't clip off the screen boundaries
+        float badgeRadius = 18f * density;
+        float minX = badgeRadius + 4f * density;
+        float maxX = getWidth() - badgeRadius - 4f * density;
+        float minY = badgeRadius + 4f * density;
+        float maxY = getHeight() - badgeRadius - 4f * density;
+
+        badgeX = clamp(badgeX, minX, maxX);
+        badgeY = clamp(badgeY, minY, maxY);
+
+        drawBadgeLabel(canvas, label, badgeX, badgeY, rotation, circleColor);
     }
 
-    private void drawRotatedOrderLabel(
-            Canvas canvas,
-            String label,
-            float x,
-            float baselineY,
-            float degrees,
-            float baselineCenterOffset) {
+    private void drawBadgeLabel(
+            Canvas canvas, String label, float badgeX, float badgeY, float rotation, int circleColor) {
+        float density = getResources().getDisplayMetrics().density;
+        float badgeRadius = 18f * density;
+
         canvas.save();
-        canvas.rotate(degrees, x, baselineY - baselineCenterOffset);
-        canvas.drawText(label, x, baselineY, mTextPaint);
+        canvas.rotate(rotation, badgeX, badgeY);
+
+        // 1. Draw badge background (white circle with subtle drop shadow)
+        Paint badgeBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        badgeBgPaint.setColor(Color.WHITE);
+        badgeBgPaint.setStyle(Paint.Style.FILL);
+        badgeBgPaint.setShadowLayer(4f * density, 0, 2f * density, 0x3F000000);
+        canvas.drawCircle(badgeX, badgeY, badgeRadius, badgeBgPaint);
+
+        // 2. Draw badge border (colored outline matching the finger's color)
+        Paint badgeStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        badgeStrokePaint.setColor(circleColor);
+        badgeStrokePaint.setStyle(Paint.Style.STROKE);
+        badgeStrokePaint.setStrokeWidth(2f * density);
+        canvas.drawCircle(badgeX, badgeY, badgeRadius, badgeStrokePaint);
+
+        // 3. Draw the number in the center of the badge
+        Paint badgeTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        badgeTextPaint.setTextSize(14f * density);
+        badgeTextPaint.setColor(circleColor);
+        badgeTextPaint.setTypeface(Typeface.create("sans-serif-bold", Typeface.BOLD));
+        badgeTextPaint.setTextAlign(Paint.Align.CENTER);
+
+        // Center text vertically
+        float textHeight = badgeTextPaint.descent() - badgeTextPaint.ascent();
+        float textOffset = (textHeight / 2) - badgeTextPaint.descent();
+        canvas.drawText(label, badgeX, badgeY + textOffset, badgeTextPaint);
+
         canvas.restore();
     }
 
@@ -625,7 +671,7 @@ public class TouchDisplayView extends View {
         pulseAnimator.setDuration(1200L);
         pulseAnimator.setRepeatCount(ValueAnimator.INFINITE);
         pulseAnimator.setRepeatMode(ValueAnimator.REVERSE);
-        pulseAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        pulseAnimator.setInterpolator(new android.view.animation.DecelerateInterpolator(1.5f));
         pulseAnimator.addUpdateListener(
                 new ValueAnimator.AnimatorUpdateListener() {
                     @Override
@@ -639,16 +685,30 @@ public class TouchDisplayView extends View {
 
     private void drawPulsingConcentricCircles(
             Canvas canvas, float x, float y, float radius, float half_r) {
+        float density = getResources().getDisplayMetrics().density;
+        float baseStrokeWidth = 3.5f * density;
+        mTransStrokePaint.setColor(Color.WHITE);
+
         for (int i = 0; i < 3; i++) {
             float baseOffset = (i + 1) * mPulseBaseOffset;
             float pulseOffset = pulseValue * mPulseOffset;
             float circleRadius = radius + baseOffset + pulseOffset;
 
-            // Fade out as they get larger
-            int alpha = (int) (160 * (1.0f - (circleRadius - radius) / (radius + mPulseFadeRange)));
+            // Calculate expansion progress fraction from 0.0 to 1.0
+            float maxRange = radius + mPulseFadeRange;
+            float progress = (circleRadius - radius) / maxRange;
+            if (progress > 1f) progress = 1f;
+            if (progress < 0f) progress = 0f;
+
+            // Fade out as they expand
+            int alpha = (int) (160 * (1f - progress));
             if (alpha < 0) alpha = 0;
 
+            // Taper stroke width as they expand (from base stroke width down to 30%)
+            float strokeWidth = baseStrokeWidth * (1f - progress * 0.7f);
+
             mTransStrokePaint.setAlpha(alpha);
+            mTransStrokePaint.setStrokeWidth(strokeWidth);
             canvas.drawCircle(x, y - half_r, circleRadius, mTransStrokePaint);
         }
     }
