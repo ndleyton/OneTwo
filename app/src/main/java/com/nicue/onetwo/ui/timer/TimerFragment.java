@@ -79,22 +79,7 @@ public class TimerFragment extends Fragment implements MenuProvider {
                     }
                 });
 
-        binding.playButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        vibrate(30L);
-                        viewModel.togglePlayPause();
-                    }
-                });
-        binding.editButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        vibrate(30L);
-                        showEditDialog();
-                    }
-                });
+        // Buttons moved to toolbar
 
         viewModel.getUiState().observe(getViewLifecycleOwner(), this::renderState);
         viewModel
@@ -139,12 +124,14 @@ public class TimerFragment extends Fragment implements MenuProvider {
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         int itemId = menuItem.getItemId();
-        if (itemId == R.id.action_add_timer) {
-            viewModel.addTimer(maxTimers());
+        if (itemId == R.id.action_play_pause) {
+            vibrate(30L);
+            viewModel.togglePlayPause();
             return true;
         }
-        if (itemId == R.id.action_remove_timer) {
-            viewModel.removeTimer();
+        if (itemId == R.id.action_settings) {
+            vibrate(30L);
+            showEditDialog();
             return true;
         }
         return false;
@@ -154,7 +141,7 @@ public class TimerFragment extends Fragment implements MenuProvider {
         if (binding == null || state == null) {
             return;
         }
-        binding.playButton.setContentDescription(getString(state.isPaused() ? R.string.play : R.string.pause));
+
 
         List<TimerItemUiModel> timers = state.getTimers();
         if (timerBindings.size() != timers.size()) {
@@ -204,12 +191,20 @@ public class TimerFragment extends Fragment implements MenuProvider {
         TimerUiState state = viewModel.getUiState().getValue();
         long configuredDuration = state == null ? 300000L : state.getConfiguredDurationMs();
         long configuredIncrement = state == null ? 0L : state.getConfiguredIncrementMs();
+        int currentTimerCount = state == null ? 2 : state.getTimers().size();
+        
         MinutesAlertDialogBinding dialogBinding =
                 MinutesAlertDialogBinding.inflate(getLayoutInflater());
+        NumberPicker timerCountPicker = dialogBinding.timerCountPicker;
         NumberPicker minutePicker = dialogBinding.minutePicker;
         NumberPicker secondPicker = dialogBinding.secondsPicker;
         NumberPicker incrementMinutePicker = dialogBinding.incrementMinutePicker;
         NumberPicker incrementSecondPicker = dialogBinding.incrementSecondsPicker;
+        
+        timerCountPicker.setMinValue(1);
+        timerCountPicker.setMaxValue(maxTimers());
+        timerCountPicker.setValue(currentTimerCount);
+        
         configureDurationPicker(minutePicker, secondPicker, configuredDuration);
         configureDurationPicker(incrementMinutePicker, incrementSecondPicker, configuredIncrement);
 
@@ -228,6 +223,7 @@ public class TimerFragment extends Fragment implements MenuProvider {
                                         (incrementMinutePicker.getValue() * 60L
                                                         + incrementSecondPicker.getValue())
                                                 * 1000L;
+                                viewModel.setTimerCount(timerCountPicker.getValue(), maxTimers());
                                 viewModel.editDuration(durationMs, incrementMs);
                             }
                         })
@@ -262,9 +258,8 @@ public class TimerFragment extends Fragment implements MenuProvider {
         }
         return timer.isActive() && timer.isEnabled()
                 ? MaterialColors.getColor(
-                        context, com.google.android.material.R.attr.colorPrimary, "TimerFragment")
-                : MaterialColors.getColor(
-                        context, com.google.android.material.R.attr.colorSurfaceVariant, "TimerFragment");
+                        context, com.google.android.material.R.attr.colorTertiary, "TimerFragment")
+                : ContextCompat.getColor(context, R.color.timer_idle_background);
     }
 
     private int resolveTextColor(TimerItemUiModel timer, boolean isPaused) {
@@ -278,10 +273,9 @@ public class TimerFragment extends Fragment implements MenuProvider {
         return timer.isActive() && timer.isEnabled()
                 ? MaterialColors.getColor(
                         context,
-                        com.google.android.material.R.attr.colorOnPrimary,
+                        com.google.android.material.R.attr.colorOnTertiary,
                         "TimerFragment")
-                : MaterialColors.getColor(
-                        context, com.google.android.material.R.attr.colorOnSurfaceVariant, "TimerFragment");
+                : ContextCompat.getColor(context, R.color.timer_idle_foreground);
     }
 
     private void vibrate(long milliseconds) {
