@@ -99,7 +99,7 @@ public class TimerViewModel extends ViewModel {
         int currentSize = timerEngine.getRemainingTimes().size();
         if (count < 1) count = 1;
         if (count > maxTimers) count = maxTimers;
-        
+
         while (currentSize < count) {
             timerEngine.addTimer();
             currentSize++;

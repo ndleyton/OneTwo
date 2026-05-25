@@ -3,8 +3,6 @@ package com.nicue.onetwo.ui.timer;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.LayoutInflater;
@@ -13,7 +11,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.NumberPicker;
+import android.widget.EditText;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -24,6 +23,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.color.MaterialColors;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nicue.onetwo.OneTwoApplication;
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.core.HandlerTimerScheduler;
@@ -35,6 +35,9 @@ import java.util.List;
 
 public class TimerFragment extends Fragment implements MenuProvider {
     private static final int MIN_TIMER_ITEM_HEIGHT_DP = 78;
+    private static final long PRESET_5_MIN_MS = 5L * 60L * 1000L;
+    private static final long PRESET_10_MIN_MS = 10L * 60L * 1000L;
+    private static final long PRESET_25_MIN_MS = 25L * 60L * 1000L;
 
     private TimerLayoutBinding binding;
     private final List<ListItemTimerBinding> timerBindings = new ArrayList<>();
@@ -191,37 +194,63 @@ public class TimerFragment extends Fragment implements MenuProvider {
         TimerUiState state = viewModel.getUiState().getValue();
         long configuredDuration = state == null ? 300000L : state.getConfiguredDurationMs();
         long configuredIncrement = state == null ? 0L : state.getConfiguredIncrementMs();
-        int currentTimerCount = state == null ? 2 : state.getTimers().size();
+        final int maxTimerCount = maxTimers();
+        final int[] currentTimerCount = {state == null ? 2 : state.getTimers().size()};
 
         MinutesAlertDialogBinding dialogBinding =
                 MinutesAlertDialogBinding.inflate(getLayoutInflater());
-        NumberPicker timerCountPicker = dialogBinding.timerCountPicker;
-        NumberPicker minutePicker = dialogBinding.minutePicker;
-        NumberPicker secondPicker = dialogBinding.secondsPicker;
-        NumberPicker incrementMinutePicker = dialogBinding.incrementMinutePicker;
-        NumberPicker incrementSecondPicker = dialogBinding.incrementSecondsPicker;
+        EditText minuteInput = dialogBinding.minuteInput;
+        EditText secondInput = dialogBinding.secondsInput;
+        EditText incrementMinuteInput = dialogBinding.incrementMinuteInput;
+        EditText incrementSecondInput = dialogBinding.incrementSecondsInput;
 
-        timerCountPicker.setMinValue(1);
-        timerCountPicker.setMaxValue(maxTimers());
-        timerCountPicker.setValue(currentTimerCount);
-        timerCountPicker.setWrapSelectorWheel(false);
+        updateTimerCountControls(
+                dialogBinding.timerCountValue, currentTimerCount[0], maxTimerCount);
+        dialogBinding.decreaseTimerCountButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (currentTimerCount[0] > 1) {
+                            currentTimerCount[0]--;
+                            updateTimerCountControls(
+                                    dialogBinding.timerCountValue,
+                                    currentTimerCount[0],
+                                    maxTimerCount);
+                        }
+                    }
+                });
+        dialogBinding.increaseTimerCountButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (currentTimerCount[0] < maxTimerCount) {
+                            currentTimerCount[0]++;
+                            updateTimerCountControls(
+                                    dialogBinding.timerCountValue,
+                                    currentTimerCount[0],
+                                    maxTimerCount);
+                        }
+                    }
+                });
 
-        configureDurationPicker(minutePicker, secondPicker, configuredDuration);
-        configureDurationPicker(incrementMinutePicker, incrementSecondPicker, configuredIncrement);
+        configureDurationInputs(minuteInput, secondInput, configuredDuration);
+        configureDurationInputs(incrementMinuteInput, incrementSecondInput, configuredIncrement);
+        configureBaseTimePresets(dialogBinding, configuredDuration);
 
         AlertDialog dialog =
-                new AlertDialog.Builder(requireContext()).setView(dialogBinding.getRoot()).create();
+                new MaterialAlertDialogBuilder(requireContext())
+                        .setView(dialogBinding.getRoot())
+                        .create();
         dialogBinding.applyButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        long durationMs =
-                                (minutePicker.getValue() * 60L + secondPicker.getValue()) * 1000L;
+                        long durationMs = getSelectedBaseDurationMs(dialogBinding);
                         long incrementMs =
-                                (incrementMinutePicker.getValue() * 60L
-                                                + incrementSecondPicker.getValue())
+                                (parseBoundedInt(incrementMinuteInput, 0, 999) * 60L
+                                                + parseBoundedInt(incrementSecondInput, 0, 59))
                                         * 1000L;
-                        viewModel.setTimerCount(timerCountPicker.getValue(), maxTimers());
+                        viewModel.setTimerCount(currentTimerCount[0], maxTimerCount);
                         viewModel.editDuration(durationMs, incrementMs);
                         dialog.dismiss();
                     }
@@ -234,26 +263,81 @@ public class TimerFragment extends Fragment implements MenuProvider {
                     }
                 });
         dialog.show();
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        }
     }
 
-    private void configureDurationPicker(
-            NumberPicker minutePicker, NumberPicker secondPicker, long durationMs) {
-        minutePicker.setMinValue(0);
-        minutePicker.setMaxValue(999);
-        minutePicker.setValue((int) ((durationMs / 1000L) / 60L));
-        secondPicker.setMinValue(0);
-        secondPicker.setMaxValue(59);
-        secondPicker.setValue((int) ((durationMs / 1000L) % 60L));
-        secondPicker.setFormatter(
-                new NumberPicker.Formatter() {
-                    @Override
-                    public String format(int value) {
-                        return String.format(java.util.Locale.getDefault(), "%02d", value);
+    private void updateTimerCountControls(TextView countValue, int count, int maxTimerCount) {
+        countValue.setText(
+                getResources().getQuantityString(R.plurals.timer_count_value, count, count));
+    }
+
+    private void configureBaseTimePresets(
+            MinutesAlertDialogBinding dialogBinding, long configuredDurationMs) {
+        int checkedChipId = baseTimePresetId(configuredDurationMs);
+        dialogBinding.baseTimePresetGroup.check(checkedChipId);
+        updateBaseTimeCustomVisibility(dialogBinding, checkedChipId);
+        dialogBinding.baseTimePresetGroup.setOnCheckedStateChangeListener(
+                (group, checkedIds) -> {
+                    if (!checkedIds.isEmpty()) {
+                        updateBaseTimeCustomVisibility(dialogBinding, checkedIds.get(0));
                     }
                 });
+    }
+
+    private int baseTimePresetId(long durationMs) {
+        if (durationMs == PRESET_5_MIN_MS) {
+            return R.id.base_time_preset_5;
+        }
+        if (durationMs == PRESET_10_MIN_MS) {
+            return R.id.base_time_preset_10;
+        }
+        if (durationMs == PRESET_25_MIN_MS) {
+            return R.id.base_time_preset_25;
+        }
+        return R.id.base_time_preset_custom;
+    }
+
+    private void updateBaseTimeCustomVisibility(
+            MinutesAlertDialogBinding dialogBinding, int checkedChipId) {
+        dialogBinding.baseTimeInputContainer.setVisibility(
+                checkedChipId == R.id.base_time_preset_custom ? View.VISIBLE : View.GONE);
+    }
+
+    private long getSelectedBaseDurationMs(MinutesAlertDialogBinding dialogBinding) {
+        int checkedChipId = dialogBinding.baseTimePresetGroup.getCheckedChipId();
+        if (checkedChipId == R.id.base_time_preset_5) {
+            return PRESET_5_MIN_MS;
+        }
+        if (checkedChipId == R.id.base_time_preset_10) {
+            return PRESET_10_MIN_MS;
+        }
+        if (checkedChipId == R.id.base_time_preset_25) {
+            return PRESET_25_MIN_MS;
+        }
+        return (parseBoundedInt(dialogBinding.minuteInput, 0, 999) * 60L
+                        + parseBoundedInt(dialogBinding.secondsInput, 0, 59))
+                * 1000L;
+    }
+
+    private void configureDurationInputs(
+            EditText minuteInput, EditText secondInput, long durationMs) {
+        int totalSeconds = (int) (durationMs / 1000L);
+        minuteInput.setText(String.valueOf(totalSeconds / 60));
+        secondInput.setText(
+                String.format(java.util.Locale.getDefault(), "%02d", totalSeconds % 60));
+    }
+
+    private int parseBoundedInt(EditText input, int minValue, int maxValue) {
+        String value = input.getText() == null ? "" : input.getText().toString();
+        int parsed;
+        try {
+            parsed = value.isEmpty() ? minValue : Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            parsed = minValue;
+        }
+        if (parsed < minValue) {
+            return minValue;
+        }
+        return Math.min(parsed, maxValue);
     }
 
     private int resolveButtonColor(TimerItemUiModel timer, boolean isPaused) {

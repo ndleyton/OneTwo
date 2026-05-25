@@ -1,9 +1,9 @@
 package com.nicue.onetwo.ui.timer;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import android.widget.Button;
+import android.view.MenuItem;
 import android.widget.LinearLayout;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.fragment.app.testing.FragmentScenario;
@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.fakes.RoboMenuItem;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 34)
@@ -38,15 +39,11 @@ public class TimerFragmentTest {
                     LinearLayout timerContainer =
                             fragment.getView().findViewById(R.id.linear_timers);
                     assertTrue(timerContainer.getChildCount() > 0);
-
-                    Button playButton = fragment.getView().findViewById(R.id.play_button);
-                    assertEquals(
-                            fragment.getString(R.string.play), playButton.getText().toString());
                 });
     }
 
     @Test
-    public void playPause_togglesPlayButtonText() {
+    public void playPause_menuItemTogglesPlayPause() {
         FragmentScenario<TimerFragment> scenario =
                 FragmentScenario.launchInContainer(TimerFragment.class, null, R.style.AppTheme);
 
@@ -55,16 +52,20 @@ public class TimerFragmentTest {
                     TimerViewModel viewModel =
                             new androidx.lifecycle.ViewModelProvider(fragment)
                                     .get(TimerViewModel.class);
-                    Button playButton = fragment.getView().findViewById(R.id.play_button);
 
-                    // Initially Play
-                    assertEquals(
-                            fragment.getString(R.string.play), playButton.getText().toString());
+                    // Initially paused
+                    assertTrue(viewModel.getUiState().getValue().isPaused());
 
-                    // Toggle
-                    viewModel.togglePlayPause();
-                    assertEquals(
-                            fragment.getString(R.string.pause), playButton.getText().toString());
+                    // Simulate menu item click for action_play_pause
+                    MenuItem playPauseItem = new RoboMenuItem(R.id.action_play_pause);
+                    fragment.onMenuItemSelected(playPauseItem);
+
+                    // Should toggle to active (not paused)
+                    assertFalse(viewModel.getUiState().getValue().isPaused());
+
+                    // Toggle again
+                    fragment.onMenuItemSelected(playPauseItem);
+                    assertTrue(viewModel.getUiState().getValue().isPaused());
                 });
     }
 }
