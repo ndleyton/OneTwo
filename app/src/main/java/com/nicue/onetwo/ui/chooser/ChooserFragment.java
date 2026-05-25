@@ -1,5 +1,8 @@
 package com.nicue.onetwo.ui.chooser;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -7,13 +10,14 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.nicue.onetwo.OneTwoApplication;
-import android.animation.ValueAnimator;
-import android.view.animation.AccelerateDecelerateInterpolator;
+import com.nicue.onetwo.R;
 import com.nicue.onetwo.data.settings.SettingsRepository;
 import com.nicue.onetwo.databinding.ChooserLayoutBinding;
 
@@ -38,10 +42,7 @@ public class ChooserFragment extends Fragment {
                                     public void run() {
                                         if (binding != null) {
                                             binding.chooserInstructionContainer.setVisibility(View.GONE);
-                                            if (breathingAnimator != null) {
-                                                breathingAnimator.cancel();
-                                                breathingAnimator = null;
-                                            }
+                                            stopInstructionAnimation();
                                         }
                                     }
                                 })
@@ -64,38 +65,7 @@ public class ChooserFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Breathing pulse and color morphing animation for the fingerprint outline icon
-        final int colorStart = androidx.core.content.ContextCompat.getColor(
-                requireContext(), com.nicue.onetwo.R.color.colorPrimaryLight);
-        final int colorEnd = androidx.core.content.ContextCompat.getColor(
-                requireContext(), com.nicue.onetwo.R.color.colorAccent);
-        final android.animation.ArgbEvaluator argbEvaluator = new android.animation.ArgbEvaluator();
-
-        breathingAnimator = ValueAnimator.ofFloat(0f, 1f);
-        breathingAnimator.setDuration(2400L); // Gentle duration for breathing and color transition
-        breathingAnimator.setRepeatCount(ValueAnimator.INFINITE);
-        breathingAnimator.setRepeatMode(ValueAnimator.REVERSE);
-        breathingAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
-        breathingAnimator.addUpdateListener(
-                new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        if (binding != null && binding.chooserInstructionIcon != null) {
-                            float val = (float) animation.getAnimatedValue();
-
-                            // Scale animation (0.95 to 1.05)
-                            float scale = 0.95f + (val * 0.1f);
-                            binding.chooserInstructionIcon.setScaleX(scale);
-                            binding.chooserInstructionIcon.setScaleY(scale);
-
-                            // Dynamic color morphing
-                            int color = (int) argbEvaluator.evaluate(val, colorStart, colorEnd);
-                            binding.chooserInstructionIcon.setImageTintList(
-                                    android.content.res.ColorStateList.valueOf(color));
-                        }
-                    }
-                });
-        breathingAnimator.start();
+        startInstructionAnimation();
 
         SettingsRepository settingsRepository =
                 ((OneTwoApplication) requireActivity().getApplication())
@@ -203,10 +173,7 @@ public class ChooserFragment extends Fragment {
     @Override
     public void onDestroyView() {
         handler.removeCallbacks(hideInstructionRunnable);
-        if (breathingAnimator != null) {
-            breathingAnimator.cancel();
-            breathingAnimator = null;
-        }
+        stopInstructionAnimation();
         if (navigateBackRunnable != null) {
             handler.removeCallbacks(navigateBackRunnable);
             navigateBackRunnable = null;
@@ -224,6 +191,44 @@ public class ChooserFragment extends Fragment {
         }
         handler.removeCallbacks(hideInstructionRunnable);
         handler.postDelayed(hideInstructionRunnable, INSTRUCTION_HIDE_DELAY_MS);
+    }
+
+    private void startInstructionAnimation() {
+        stopInstructionAnimation();
+
+        final int colorStart = ContextCompat.getColor(requireContext(), R.color.colorPrimaryLight);
+        final int colorEnd = ContextCompat.getColor(requireContext(), R.color.colorAccent);
+        final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+
+        breathingAnimator = ValueAnimator.ofFloat(0f, 1f);
+        breathingAnimator.setDuration(2400L);
+        breathingAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        breathingAnimator.setRepeatMode(ValueAnimator.REVERSE);
+        breathingAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        breathingAnimator.addUpdateListener(
+                new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        if (binding != null && binding.chooserInstructionIcon != null) {
+                            float val = (float) animation.getAnimatedValue();
+                            float scale = 0.95f + (val * 0.1f);
+                            int color = (int) argbEvaluator.evaluate(val, colorStart, colorEnd);
+
+                            binding.chooserInstructionIcon.setScaleX(scale);
+                            binding.chooserInstructionIcon.setScaleY(scale);
+                            binding.chooserInstructionIcon.setImageTintList(
+                                    ColorStateList.valueOf(color));
+                        }
+                    }
+                });
+        breathingAnimator.start();
+    }
+
+    private void stopInstructionAnimation() {
+        if (breathingAnimator != null) {
+            breathingAnimator.cancel();
+            breathingAnimator = null;
+        }
     }
 
     static float[] getSeatCenter(int seatIndex, int playerCount, float width, float height) {

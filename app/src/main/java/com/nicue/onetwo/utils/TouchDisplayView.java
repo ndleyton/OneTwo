@@ -15,8 +15,8 @@ import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import com.nicue.onetwo.R;
 import com.nicue.onetwo.utils.Pools.SimplePool;
 import java.util.Random;
@@ -220,17 +220,7 @@ public class TouchDisplayView extends View {
                     // first pressed gesture has started
 
                     int id = event.getPointerId(0);
-                    float touchX = event.getX(0);
-                    float touchY = event.getY(0);
-
-                    // Calculate starting angle pointing roughly towards screen center
-                    float dx = getWidth() / 2f - touchX;
-                    float dy = getHeight() / 2f - touchY;
-                    float startAngle = (float) Math.toDegrees(Math.atan2(dy, dx));
-
-                    TouchHistory data =
-                            TouchHistory.obtain(touchX, touchY, event.getPressure(0));
-                    data.progressStartAngle = startAngle;
+                    TouchHistory data = createTouchHistory(event, 0);
 
                     // Store the data under its pointer identifier. The pointer number stays
                     // consistent
@@ -255,18 +245,7 @@ public class TouchDisplayView extends View {
                      */
                     int index = event.getActionIndex();
                     int id = event.getPointerId(index);
-                    float touchX = event.getX(index);
-                    float touchY = event.getY(index);
-
-                    // Calculate starting angle pointing roughly towards screen center
-                    float dx = getWidth() / 2f - touchX;
-                    float dy = getHeight() / 2f - touchY;
-                    float startAngle = (float) Math.toDegrees(Math.atan2(dy, dx));
-
-                    TouchHistory data =
-                            TouchHistory.obtain(
-                                    touchX, touchY, event.getPressure(index));
-                    data.progressStartAngle = startAngle;
+                    TouchHistory data = createTouchHistory(event, index);
                     // data.label = "id: " + id;
 
                     Vibrator v = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
@@ -279,43 +258,7 @@ public class TouchDisplayView extends View {
                      * active gesture.
                      */
                     mTouches.put(id, data);
-                    handler.removeCallbacks(runnable);
-                    handler.postDelayed(runnable, COUNTDOWN_DURATION_MS);
-
-                    if (countdownAnimator != null) {
-                        countdownAnimator.cancel();
-                    }
-                    countdownProgress = 0f;
-                    tick1Fired = false;
-                    tick2Fired = false;
-                    tick3Fired = false;
-                    countdownAnimator = ValueAnimator.ofFloat(0f, 1f);
-                    countdownAnimator.setDuration(COUNTDOWN_DURATION_MS);
-                    countdownAnimator.setInterpolator(new android.view.animation.LinearInterpolator());
-                    countdownAnimator.addUpdateListener(
-                            new ValueAnimator.AnimatorUpdateListener() {
-                                @Override
-                                public void onAnimationUpdate(ValueAnimator animation) {
-                                    countdownProgress = (float) animation.getAnimatedValue();
-
-                                    // Trigger periodic haptic ticks during countdown
-                                    if (countdownProgress >= 0.25f && !tick1Fired) {
-                                        tick1Fired = true;
-                                        triggerTickVibration();
-                                    }
-                                    if (countdownProgress >= 0.50f && !tick2Fired) {
-                                        tick2Fired = true;
-                                        triggerTickVibration();
-                                    }
-                                    if (countdownProgress >= 0.75f && !tick3Fired) {
-                                        tick3Fired = true;
-                                        triggerTickVibration();
-                                    }
-
-                                    invalidate();
-                                }
-                            });
-                    countdownAnimator.start();
+                    startCountdown();
 
                     break;
                 }
@@ -344,7 +287,6 @@ public class TouchDisplayView extends View {
                     fingersDown = false;
                     resetSelection();
                     // fingers --;
-                    handler.removeCallbacks(runnable);
                     /*
                      * A non-primary pointer has gone up and other pointers are
                      * still active.
@@ -381,6 +323,71 @@ public class TouchDisplayView extends View {
         this.postInvalidate();
 
         return true;
+    }
+
+    private TouchHistory createTouchHistory(MotionEvent event, int index) {
+        float touchX = event.getX(index);
+        float touchY = event.getY(index);
+        TouchHistory data = TouchHistory.obtain(touchX, touchY, event.getPressure(index));
+        data.progressStartAngle = getProgressStartAngle(touchX, touchY);
+        return data;
+    }
+
+    private float getProgressStartAngle(float touchX, float touchY) {
+        // Point roughly toward the screen center so the countdown grows around each finger.
+        float dx = getWidth() / 2f - touchX;
+        float dy = getHeight() / 2f - touchY;
+        return (float) Math.toDegrees(Math.atan2(dy, dx));
+    }
+
+    private void startCountdown() {
+        stopCountdown();
+        resetCountdownTicks();
+        handler.postDelayed(runnable, COUNTDOWN_DURATION_MS);
+
+        countdownAnimator = ValueAnimator.ofFloat(0f, 1f);
+        countdownAnimator.setDuration(COUNTDOWN_DURATION_MS);
+        countdownAnimator.setInterpolator(new LinearInterpolator());
+        countdownAnimator.addUpdateListener(
+                new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        countdownProgress = (float) animation.getAnimatedValue();
+                        maybeTriggerCountdownTicks();
+                        invalidate();
+                    }
+                });
+        countdownAnimator.start();
+    }
+
+    private void stopCountdown() {
+        handler.removeCallbacks(runnable);
+        if (countdownAnimator != null) {
+            countdownAnimator.cancel();
+            countdownAnimator = null;
+        }
+        countdownProgress = 0f;
+    }
+
+    private void resetCountdownTicks() {
+        tick1Fired = false;
+        tick2Fired = false;
+        tick3Fired = false;
+    }
+
+    private void maybeTriggerCountdownTicks() {
+        if (countdownProgress >= 0.25f && !tick1Fired) {
+            tick1Fired = true;
+            triggerTickVibration();
+        }
+        if (countdownProgress >= 0.50f && !tick2Fired) {
+            tick2Fired = true;
+            triggerTickVibration();
+        }
+        if (countdownProgress >= 0.75f && !tick3Fired) {
+            tick3Fired = true;
+            triggerTickVibration();
+        }
     }
 
     // END_INCLUDE(onTouchEvent)
@@ -504,68 +511,80 @@ public class TouchDisplayView extends View {
             } else { // With this line we are giving it a random order
                 if (choosingOrder) {
                     int place = indexInArray(randomArray, id) + 1;
-                    drawSingleRefinedOrderBadge(canvas, String.valueOf(place), data, radius, half_r, color);
+                    drawOrderBadge(canvas, String.valueOf(place), data, radius, half_r, color);
                     drawBig = false;
                 }
             }
         }
 
         canvas.drawCircle(data.x, (data.y) - half_r, radius, mCirclePaint);
-
-        // Continuous wave/ripple effect radiating outwards from each active finger
-        if (!alreadyChosen) {
-            long time = System.currentTimeMillis();
-            float ripplePhase = (time % 1600L) / 1600f;
-            float rippleRadius = radius + (ripplePhase * radius * 1.2f);
-            int rippleAlpha = (int) (130 * (1f - ripplePhase));
-
-            mTransStrokePaint.setColor(color);
-            mTransStrokePaint.setAlpha(rippleAlpha);
-            float density = getResources().getDisplayMetrics().density;
-            mTransStrokePaint.setStrokeWidth(3f * density);
-            canvas.drawCircle(data.x, data.y - half_r, rippleRadius, mTransStrokePaint);
-        }
-
-        // Draw contiguous thick progress/charging collar directly attached to each finger
-        if (fingersDown && !alreadyChosen) {
-            float density = getResources().getDisplayMetrics().density;
-            float strokeWidth = 24f * density; // Thick progress collar
-            float arcRadius = radius + (strokeWidth / 2f);
-            float centerY = data.y - half_r;
-
-            mCountdownArcBounds.set(
-                    data.x - arcRadius,
-                    centerY - arcRadius,
-                    data.x + arcRadius,
-                    centerY + arcRadius);
-
-            // Draw a faint background track for the progress collar so the user sees the target path
-            mStrokePaint.setColor(color);
-            mStrokePaint.setAlpha(45); // ~18% opacity background track
-            mStrokePaint.setStyle(Paint.Style.STROKE);
-            mStrokePaint.setStrokeWidth(strokeWidth);
-            canvas.drawCircle(data.x, centerY, arcRadius, mStrokePaint);
-
-            // Draw the active sweeping progress collar
-            mStrokePaint.setAlpha(200); // Higher, clearly visible opacity
-            float sweepAngle = 360f * countdownProgress;
-            canvas.drawArc(
-                    mCountdownArcBounds, data.progressStartAngle, sweepAngle, false, mStrokePaint);
-        }
+        drawActiveTouchEffects(canvas, data, radius, half_r, color);
 
         if (drawBig) {
-            int red = Color.red(color);
-            int green = Color.green(color);
-            int blue = Color.blue(color);
-            int colorStart = Color.argb(haloAlpha, red, green, blue);
-            int colorEnd = Color.argb(0, red, green, blue);
-            float centerY = data.y - half_r;
-            float haloRadius = radius * 2.2f;
-
-            mGlowPaint.setShader(
-                    getCachedHaloGradient(data, centerY, haloRadius, colorStart, colorEnd));
-            canvas.drawCircle(data.x, centerY, haloRadius, mGlowPaint);
+            drawTouchHalo(canvas, data, radius, half_r, color, haloAlpha);
         }
+    }
+
+    private void drawActiveTouchEffects(
+            Canvas canvas, TouchHistory data, float radius, float half_r, int color) {
+        if (!alreadyChosen) {
+            drawActiveTouchRipple(canvas, data, radius, half_r, color);
+        }
+
+        if (fingersDown && !alreadyChosen) {
+            drawCountdownCollar(canvas, data, radius, half_r, color);
+        }
+    }
+
+    private void drawActiveTouchRipple(
+            Canvas canvas, TouchHistory data, float radius, float half_r, int color) {
+        long time = System.currentTimeMillis();
+        float ripplePhase = (time % 1600L) / 1600f;
+        float rippleRadius = radius + (ripplePhase * radius * 1.2f);
+        int rippleAlpha = (int) (130 * (1f - ripplePhase));
+
+        mTransStrokePaint.setColor(color);
+        mTransStrokePaint.setAlpha(rippleAlpha);
+        float density = getResources().getDisplayMetrics().density;
+        mTransStrokePaint.setStrokeWidth(3f * density);
+        canvas.drawCircle(data.x, data.y - half_r, rippleRadius, mTransStrokePaint);
+    }
+
+    private void drawCountdownCollar(
+            Canvas canvas, TouchHistory data, float radius, float half_r, int color) {
+        float density = getResources().getDisplayMetrics().density;
+        float strokeWidth = 24f * density;
+        float arcRadius = radius + (strokeWidth / 2f);
+        float centerY = data.y - half_r;
+
+        mCountdownArcBounds.set(
+                data.x - arcRadius, centerY - arcRadius, data.x + arcRadius, centerY + arcRadius);
+
+        mStrokePaint.setColor(color);
+        mStrokePaint.setAlpha(45);
+        mStrokePaint.setStyle(Paint.Style.STROKE);
+        mStrokePaint.setStrokeWidth(strokeWidth);
+        canvas.drawCircle(data.x, centerY, arcRadius, mStrokePaint);
+
+        mStrokePaint.setAlpha(200);
+        float sweepAngle = 360f * countdownProgress;
+        canvas.drawArc(
+                mCountdownArcBounds, data.progressStartAngle, sweepAngle, false, mStrokePaint);
+    }
+
+    private void drawTouchHalo(
+            Canvas canvas, TouchHistory data, float radius, float half_r, int color, int haloAlpha) {
+        int red = Color.red(color);
+        int green = Color.green(color);
+        int blue = Color.blue(color);
+        int colorStart = Color.argb(haloAlpha, red, green, blue);
+        int colorEnd = Color.argb(0, red, green, blue);
+        float centerY = data.y - half_r;
+        float haloRadius = radius * 2.2f;
+
+        mGlowPaint.setShader(
+                getCachedHaloGradient(data, centerY, haloRadius, colorStart, colorEnd));
+        canvas.drawCircle(data.x, centerY, haloRadius, mGlowPaint);
     }
 
     private RadialGradient getCachedHaloGradient(
@@ -588,7 +607,7 @@ public class TouchDisplayView extends View {
         return data.haloGradient;
     }
 
-    private void drawSingleRefinedOrderBadge(
+    private void drawOrderBadge(
             Canvas canvas, String label, TouchHistory data, float radius, float half_r, int circleColor) {
         float density = getResources().getDisplayMetrics().density;
         float labelDistance = radius + mOrderLabelOffset;
@@ -821,14 +840,8 @@ public class TouchDisplayView extends View {
             pulseAnimator = null;
         }
         pulseValue = 0f;
-        if (countdownAnimator != null) {
-            countdownAnimator.cancel();
-            countdownAnimator = null;
-        }
-        countdownProgress = 0f;
-        tick1Fired = false;
-        tick2Fired = false;
-        tick3Fired = false;
+        stopCountdown();
+        resetCountdownTicks();
     }
 
     private void triggerTickVibration() {
