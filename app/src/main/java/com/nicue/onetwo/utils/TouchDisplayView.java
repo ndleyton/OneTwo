@@ -142,6 +142,7 @@ public class TouchDisplayView extends View {
         public float x;
         public float y;
         public float pressure = 0f;
+        public float progressStartAngle = -90f;
 
         private static final int MAX_POOL_SIZE = 10;
         private static final SimplePool<TouchHistory> sPool =
@@ -208,9 +209,17 @@ public class TouchDisplayView extends View {
                     // first pressed gesture has started
 
                     int id = event.getPointerId(0);
+                    float touchX = event.getX(0);
+                    float touchY = event.getY(0);
+
+                    // Calculate starting angle pointing roughly towards screen center
+                    float dx = getWidth() / 2f - touchX;
+                    float dy = getHeight() / 2f - touchY;
+                    float startAngle = (float) Math.toDegrees(Math.atan2(dy, dx));
 
                     TouchHistory data =
-                            TouchHistory.obtain(event.getX(0), event.getY(0), event.getPressure(0));
+                            TouchHistory.obtain(touchX, touchY, event.getPressure(0));
+                    data.progressStartAngle = startAngle;
 
                     // Store the data under its pointer identifier. The pointer number stays
                     // consistent
@@ -235,10 +244,18 @@ public class TouchDisplayView extends View {
                      */
                     int index = event.getActionIndex();
                     int id = event.getPointerId(index);
+                    float touchX = event.getX(index);
+                    float touchY = event.getY(index);
+
+                    // Calculate starting angle pointing roughly towards screen center
+                    float dx = getWidth() / 2f - touchX;
+                    float dy = getHeight() / 2f - touchY;
+                    float startAngle = (float) Math.toDegrees(Math.atan2(dy, dx));
 
                     TouchHistory data =
                             TouchHistory.obtain(
-                                    event.getX(index), event.getY(index), event.getPressure(index));
+                                    touchX, touchY, event.getPressure(index));
+                    data.progressStartAngle = startAngle;
                     // data.label = "id: " + id;
 
                     Vibrator v = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
@@ -499,7 +516,7 @@ public class TouchDisplayView extends View {
             // Draw the active sweeping progress collar
             mStrokePaint.setAlpha(200); // Higher, clearly visible opacity
             float sweepAngle = 360f * countdownProgress;
-            canvas.drawArc(arcBounds, -90f, sweepAngle, false, mStrokePaint);
+            canvas.drawArc(arcBounds, data.progressStartAngle, sweepAngle, false, mStrokePaint);
         }
 
         if (drawBig) {
