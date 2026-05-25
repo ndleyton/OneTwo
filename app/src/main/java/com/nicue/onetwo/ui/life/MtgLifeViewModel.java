@@ -619,6 +619,30 @@ public class MtgLifeViewModel extends ViewModel {
         };
     }
 
+    private int getAccentBackgroundColorResForSeat(int seatIndex) {
+        return switch (seatIndex) {
+            case 0 -> R.color.mtg_life_accent_1;
+            case 1 -> R.color.mtg_life_accent_2;
+            case 2 -> R.color.mtg_life_accent_3;
+            case 3 -> R.color.mtg_life_accent_4;
+            case 4 -> R.color.mtg_life_accent_5;
+            case 5 -> R.color.mtg_life_accent_6;
+            default -> R.color.mtg_life_accent_1;
+        };
+    }
+
+    private int getAccentForegroundColorResForSeat(int seatIndex) {
+        return switch (seatIndex) {
+            case 0 -> R.color.mtg_life_on_accent_1;
+            case 1 -> R.color.mtg_life_on_accent_2;
+            case 2 -> R.color.mtg_life_on_accent_3;
+            case 3 -> R.color.mtg_life_on_accent_4;
+            case 4 -> R.color.mtg_life_on_accent_5;
+            case 5 -> R.color.mtg_life_on_accent_6;
+            default -> R.color.mtg_life_on_accent_1;
+        };
+    }
+
     private List<CommanderDamageUiModel> buildCommanderDamages(
             int defenderSeatIndex, ArrayList<ArrayList<Integer>> matrix, int totalPlayers) {
         List<CommanderDamageUiModel> damages = new ArrayList<>();
@@ -640,13 +664,13 @@ public class MtgLifeViewModel extends ViewModel {
                             ? android.R.color.transparent
                             : lethal
                                     ? R.color.secondAccent
-                                    : getBackgroundColorResForSeat(sourceSeatIndex);
+                                    : getAccentBackgroundColorResForSeat(sourceSeatIndex);
             int foregroundColorRes =
                     self
                             ? R.color.m3_outline
                             : lethal
                                     ? android.R.color.white
-                                    : getForegroundColorResForSeat(sourceSeatIndex);
+                                    : getAccentForegroundColorResForSeat(sourceSeatIndex);
 
             damages.add(
                     new CommanderDamageUiModel(

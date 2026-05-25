@@ -56,16 +56,33 @@
     <color name="diceColor9">#4D1116</color>
 
     <!-- MTG Life Counter Colors -->
-    <color name="lifeCounterPlayer1">#173E57</color>
-    <color name="lifeCounterOnPlayer1">#FFFFFFFF</color>
-    <color name="lifeCounterPlayer2">#7F3A3A</color>
-    <color name="lifeCounterOnPlayer2">#FFFFFFFF</color>
-    <color name="lifeCounterPlayer3">#7A5A1A</color>
-    <color name="lifeCounterOnPlayer3">#FFFFFFFF</color>
-    <color name="lifeCounterPlayer4">#1F5F56</color>
-    <color name="lifeCounterOnPlayer4">#FFFFFFFF</color>
-    <color name="lifeCounterPlayer5">#344F68</color>
-    <color name="lifeCounterOnPlayer5">#FFFFFFFF</color>
-    <color name="lifeCounterPlayer6">#6F151A</color>
-    <color name="lifeCounterOnPlayer6">#FFFFFFFF</color>
+    <color name="mtg_life_anchor_background">#1C2B3A</color>
+    <color name="lifeCounterPlayer1">#1C2B3A</color>
+    <color name="lifeCounterOnPlayer1">#2479A8</color>
+    <color name="lifeCounterPlayer2">#1C2B3A</color>
+    <color name="lifeCounterOnPlayer2">#F65B59</color>
+    <color name="lifeCounterPlayer3">#1C2B3A</color>
+    <color name="lifeCounterOnPlayer3">#F9A825</color>
+    <color name="lifeCounterPlayer4">#1C2B3A</color>
+    <color name="lifeCounterOnPlayer4">#238C7C</color>
+    <color name="lifeCounterPlayer5">#1C2B3A</color>
+    <color name="lifeCounterOnPlayer5">#477AA3</color>
+    <color name="lifeCounterPlayer6">#1C2B3A</color>
+    <color name="lifeCounterOnPlayer6">#A50F15</color>
+
+    <color name="mtg_life_accent_1">#2479A8</color>
+    <color name="mtg_life_on_accent_1">#FFFFFFFF</color>
+    <color name="mtg_life_accent_2">#F65B59</color>
+    <color name="mtg_life_on_accent_2">#FFFFFFFF</color>
+    <color name="mtg_life_accent_3">#F9A825</color>
+    <color name="mtg_life_on_accent_3">#FFFFFFFF</color>
+    <color name="mtg_life_accent_4">#238C7C</color>
+    <color name="mtg_life_on_accent_4">#FFFFFFFF</color>
+    <color name="mtg_life_accent_5">#477AA3</color>
+    <color name="mtg_life_on_accent_5">#FFFFFFFF</color>
+    <color name="mtg_life_accent_6">#A50F15</color>
+    <color name="mtg_life_on_accent_6">#FFFFFFFF</color>
+
+    <color name="mtg_expired_background">#1C2B3A</color>
+    <color name="mtg_expired_foreground">#B0BEC5</color>
 </resources>
