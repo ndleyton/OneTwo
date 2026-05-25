@@ -59,9 +59,6 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     private static final int PREVIEW_PLAYER_COUNT = 4;
     private static final int LIFE_LONG_PRESS_DELTA = 10;
     private static final long LIFE_HOLD_REPEAT_INTERVAL_MS = 800L;
-    private static final long PRESET_5_MIN_MS = 5L * 60L * 1000L;
-    private static final long PRESET_10_MIN_MS = 10L * 60L * 1000L;
-    private static final long PRESET_25_MIN_MS = 25L * 60L * 1000L;
 
     private LifeFragmentBinding binding;
     private MtgLifeViewModel viewModel;
@@ -1142,10 +1139,11 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         dialogBinding.dialogTitle.setText(R.string.mtg_setup_turn_timer);
         dialogBinding.timerCountRow.setVisibility(View.GONE);
         dialogBinding.baseTimeLabel.setText(R.string.mtg_setup_time);
+        dialogBinding.clockSettingInputLayout.setVisibility(View.GONE);
+        dialogBinding.baseTimeInputContainer.setVisibility(View.VISIBLE);
         dialogBinding.incrementRow.setVisibility(View.GONE);
 
         configureDurationInputs(minuteInput, secondInput, configuredDuration);
-        configureBaseTimePresets(dialogBinding, configuredDuration);
 
         Dialog dialog =
                 new MaterialAlertDialogBuilder(requireContext())
@@ -1155,7 +1153,10 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        long durationMs = getSelectedBaseDurationMs(dialogBinding);
+                        long durationMs =
+                                (parseBoundedInt(minuteInput, 0, 999) * 60L
+                                                + parseBoundedInt(secondInput, 0, 59))
+                                        * 1000L;
                         viewModel.setTurnTimerDurationMs(durationMs);
                         setupBinding.btnTurnTimerValue.setText(
                                 TimerBackend.formatRemainingTime(durationMs, 10000L));
@@ -1178,54 +1179,6 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         minuteInput.setText(String.valueOf(totalSeconds / 60));
         secondInput.setText(
                 String.format(java.util.Locale.getDefault(), "%02d", totalSeconds % 60));
-    }
-
-    private void configureBaseTimePresets(
-            MinutesAlertDialogBinding dialogBinding, long configuredDurationMs) {
-        int checkedChipId = baseTimePresetId(configuredDurationMs);
-        dialogBinding.baseTimePresetGroup.check(checkedChipId);
-        updateBaseTimeCustomVisibility(dialogBinding, checkedChipId);
-        dialogBinding.baseTimePresetGroup.setOnCheckedStateChangeListener(
-                (group, checkedIds) -> {
-                    if (!checkedIds.isEmpty()) {
-                        updateBaseTimeCustomVisibility(dialogBinding, checkedIds.get(0));
-                    }
-                });
-    }
-
-    private int baseTimePresetId(long durationMs) {
-        if (durationMs == PRESET_5_MIN_MS) {
-            return R.id.base_time_preset_5;
-        }
-        if (durationMs == PRESET_10_MIN_MS) {
-            return R.id.base_time_preset_10;
-        }
-        if (durationMs == PRESET_25_MIN_MS) {
-            return R.id.base_time_preset_25;
-        }
-        return R.id.base_time_preset_custom;
-    }
-
-    private void updateBaseTimeCustomVisibility(
-            MinutesAlertDialogBinding dialogBinding, int checkedChipId) {
-        dialogBinding.baseTimeInputContainer.setVisibility(
-                checkedChipId == R.id.base_time_preset_custom ? View.VISIBLE : View.GONE);
-    }
-
-    private long getSelectedBaseDurationMs(MinutesAlertDialogBinding dialogBinding) {
-        int checkedChipId = dialogBinding.baseTimePresetGroup.getCheckedChipId();
-        if (checkedChipId == R.id.base_time_preset_5) {
-            return PRESET_5_MIN_MS;
-        }
-        if (checkedChipId == R.id.base_time_preset_10) {
-            return PRESET_10_MIN_MS;
-        }
-        if (checkedChipId == R.id.base_time_preset_25) {
-            return PRESET_25_MIN_MS;
-        }
-        return (parseBoundedInt(dialogBinding.minuteInput, 0, 999) * 60L
-                        + parseBoundedInt(dialogBinding.secondsInput, 0, 59))
-                * 1000L;
     }
 
     private int parseBoundedInt(EditText input, int minValue, int maxValue) {
