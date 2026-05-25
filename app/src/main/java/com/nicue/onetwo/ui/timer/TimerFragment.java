@@ -43,7 +43,8 @@ public class TimerFragment extends Fragment implements MenuProvider {
     private static final int CLOCK_PRESET_3_2 = 1;
     private static final int CLOCK_PRESET_5_0 = 2;
     private static final int CLOCK_PRESET_15_10 = 3;
-    private static final int CLOCK_PRESET_CUSTOM = 4;
+    private static final int CLOCK_PRESET_25_0 = 4;
+    private static final int CLOCK_PRESET_CUSTOM = 5;
 
     private TimerLayoutBinding binding;
     private final List<ListItemTimerBinding> timerBindings = new ArrayList<>();
@@ -278,24 +279,40 @@ public class TimerFragment extends Fragment implements MenuProvider {
             long configuredDurationMs,
             long configuredIncrementMs) {
         AutoCompleteTextView dropdown = dialogBinding.clockSettingDropdown;
-        String[] labels = clockSettingLabels();
+        String[] labels = clockSettingMenuLabels();
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, labels);
         dropdown.setAdapter(adapter);
         int selectedIndex = clockSettingPresetIndex(configuredDurationMs, configuredIncrementMs);
-        dropdown.setText(labels[selectedIndex], false);
+        dropdown.setText(clockSettingClosedLabels()[selectedIndex], false);
+        dropdown.setTag(Integer.valueOf(selectedIndex));
         updateClockSettingCustomVisibility(dialogBinding, selectedIndex);
         dropdown.setOnItemClickListener(
-                (parent, view, position, id) ->
-                        updateClockSettingCustomVisibility(dialogBinding, position));
+                (parent, view, position, id) -> {
+                    dropdown.setText(clockSettingClosedLabels()[position], false);
+                    dropdown.setTag(Integer.valueOf(position));
+                    updateClockSettingCustomVisibility(dialogBinding, position);
+                });
     }
 
-    private String[] clockSettingLabels() {
+    private String[] clockSettingMenuLabels() {
         return new String[] {
             getString(R.string.timer_preset_1_0),
             getString(R.string.timer_preset_3_2),
             getString(R.string.timer_preset_5_0),
             getString(R.string.timer_preset_15_10),
+            getString(R.string.timer_preset_25_0),
+            getString(R.string.custom)
+        };
+    }
+
+    private String[] clockSettingClosedLabels() {
+        return new String[] {
+            getString(R.string.timer_preset_short_1_0),
+            getString(R.string.timer_preset_short_3_2),
+            getString(R.string.timer_preset_short_5_0),
+            getString(R.string.timer_preset_short_15_10),
+            getString(R.string.timer_preset_short_25_0),
             getString(R.string.custom)
         };
     }
@@ -313,7 +330,10 @@ public class TimerFragment extends Fragment implements MenuProvider {
         if (durationMs == 15L * ONE_MINUTE_MS && incrementMs == 10L * ONE_SECOND_MS) {
             return CLOCK_PRESET_15_10;
         }
-        return CLOCK_PRESET_CUSTOM;
+        if (durationMs == 25L * ONE_MINUTE_MS && incrementMs == 0L) {
+            return CLOCK_PRESET_25_0;
+        }
+        return CLOCK_PRESET_25_0;
     }
 
     private void updateClockSettingCustomVisibility(
@@ -337,6 +357,9 @@ public class TimerFragment extends Fragment implements MenuProvider {
         if (selectedIndex == CLOCK_PRESET_15_10) {
             return 15L * ONE_MINUTE_MS;
         }
+        if (selectedIndex == CLOCK_PRESET_25_0) {
+            return 25L * ONE_MINUTE_MS;
+        }
         return (parseBoundedInt(dialogBinding.minuteInput, 0, 999) * 60L
                         + parseBoundedInt(dialogBinding.secondsInput, 0, 59))
                 * 1000L;
@@ -350,7 +373,9 @@ public class TimerFragment extends Fragment implements MenuProvider {
         if (selectedIndex == CLOCK_PRESET_15_10) {
             return 10L * ONE_SECOND_MS;
         }
-        if (selectedIndex == CLOCK_PRESET_1_0 || selectedIndex == CLOCK_PRESET_5_0) {
+        if (selectedIndex == CLOCK_PRESET_1_0
+                || selectedIndex == CLOCK_PRESET_5_0
+                || selectedIndex == CLOCK_PRESET_25_0) {
             return 0L;
         }
         return (parseBoundedInt(dialogBinding.incrementMinuteInput, 0, 999) * 60L
@@ -359,12 +384,9 @@ public class TimerFragment extends Fragment implements MenuProvider {
     }
 
     private int selectedClockSettingIndex(MinutesAlertDialogBinding dialogBinding) {
-        String selected = dialogBinding.clockSettingDropdown.getText().toString();
-        String[] labels = clockSettingLabels();
-        for (int i = 0; i < labels.length; i++) {
-            if (labels[i].equals(selected)) {
-                return i;
-            }
+        Object selected = dialogBinding.clockSettingDropdown.getTag();
+        if (selected instanceof Integer) {
+            return (Integer) selected;
         }
         return CLOCK_PRESET_CUSTOM;
     }
