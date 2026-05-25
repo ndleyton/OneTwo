@@ -685,31 +685,31 @@ public class TouchDisplayView extends View {
 
     private void drawPulsingConcentricCircles(
             Canvas canvas, float x, float y, float radius, float half_r) {
-        float density = getResources().getDisplayMetrics().density;
-        float baseStrokeWidth = 3.5f * density;
-        mTransStrokePaint.setColor(Color.WHITE);
+        // Option 3: Filled Translucent Ripples (Layered Soundwaves) - More Pronounced
+        mGlowPaint.setShader(null); // Clear any gradient shader to use solid color
+        mGlowPaint.setColor(Color.WHITE);
 
-        for (int i = 0; i < 3; i++) {
-            float baseOffset = (i + 1) * mPulseBaseOffset;
-            float pulseOffset = pulseValue * mPulseOffset;
+        // Increase offsets so ripples expand significantly beyond a large finger
+        float scaledBaseOffset = mPulseBaseOffset * 1.35f;
+        float scaledPulseOffset = mPulseOffset * 1.6f;
+
+        for (int i = 2; i >= 0; i--) { // Draw largest first so smaller ones layer on top
+            float baseOffset = (i + 1) * scaledBaseOffset;
+            float pulseOffset = pulseValue * scaledPulseOffset;
             float circleRadius = radius + baseOffset + pulseOffset;
 
             // Calculate expansion progress fraction from 0.0 to 1.0
-            float maxRange = radius + mPulseFadeRange;
+            float maxRange = radius + mPulseFadeRange * 1.35f;
             float progress = (circleRadius - radius) / maxRange;
             if (progress > 1f) progress = 1f;
             if (progress < 0f) progress = 0f;
 
-            // Fade out as they expand
-            int alpha = (int) (160 * (1f - progress));
+            // More pronounced opacity (max alpha 40, ~16% opacity per layer, accumulating in center)
+            int alpha = (int) (40 * (1f - progress));
             if (alpha < 0) alpha = 0;
 
-            // Taper stroke width as they expand (from base stroke width down to 30%)
-            float strokeWidth = baseStrokeWidth * (1f - progress * 0.7f);
-
-            mTransStrokePaint.setAlpha(alpha);
-            mTransStrokePaint.setStrokeWidth(strokeWidth);
-            canvas.drawCircle(x, y - half_r, circleRadius, mTransStrokePaint);
+            mGlowPaint.setAlpha(alpha);
+            canvas.drawCircle(x, y - half_r, circleRadius, mGlowPaint);
         }
     }
 
