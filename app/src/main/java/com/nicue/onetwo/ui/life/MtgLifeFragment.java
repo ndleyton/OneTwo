@@ -440,17 +440,21 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             cellBinding.timerContainer.setVisibility(View.VISIBLE);
             cellBinding.tvTurnTimer.setText(player.getTimerDisplay());
 
+            boolean isDarkMode = (requireContext().getResources().getConfiguration().uiMode
+                    & android.content.res.Configuration.UI_MODE_NIGHT_MASK)
+                    == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+
             int pillBgColor;
             int pillContentColor;
             float elevationVal;
 
             if (player.isTimerActive()) {
                 pillBgColor = foregroundColor;
-                pillContentColor = backgroundColor;
+                pillContentColor = isDarkMode ? Color.WHITE : backgroundColor;
                 elevationVal = dpToPx(8);
             } else {
                 pillBgColor = Color.TRANSPARENT;
-                pillContentColor = foregroundColor;
+                pillContentColor = isDarkMode ? Color.WHITE : foregroundColor;
                 elevationVal = dpToPx(2);
             }
 

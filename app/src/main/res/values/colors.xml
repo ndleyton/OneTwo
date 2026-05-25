@@ -69,6 +69,20 @@
     <color name="lifeCounterOnPlayer5">#FFFFFFFF</color>
     <color name="lifeCounterPlayer6">#8A151C</color>
     <color name="lifeCounterOnPlayer6">#FFFFFFFF</color>
+
+    <color name="mtg_life_accent_1">#226992</color>
+    <color name="mtg_life_on_accent_1">#FFFFFFFF</color>
+    <color name="mtg_life_accent_2">#CA5153</color>
+    <color name="mtg_life_on_accent_2">#FFFFFFFF</color>
+    <color name="mtg_life_accent_3">#CD8F29</color>
+    <color name="mtg_life_on_accent_3">#FFFFFFFF</color>
+    <color name="mtg_life_accent_4">#22796F</color>
+    <color name="mtg_life_on_accent_4">#FFFFFFFF</color>
+    <color name="mtg_life_accent_5">#3E6A8E</color>
+    <color name="mtg_life_on_accent_5">#FFFFFFFF</color>
+    <color name="mtg_life_accent_6">#8A151C</color>
+    <color name="mtg_life_on_accent_6">#FFFFFFFF</color>
+
     <color name="mtg_expired_background">#424242</color>
     <color name="mtg_expired_foreground">#B0BEC5</color>
 </resources>
