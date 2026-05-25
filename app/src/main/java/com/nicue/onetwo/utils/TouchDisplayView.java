@@ -418,10 +418,6 @@ public class TouchDisplayView extends View {
             // draw the data and its history to the canvas
             drawCircle(canvas, id, data);
         }
-
-        if (mHasTouch) {
-            postInvalidateOnAnimation();
-        }
     }
 
     /*
@@ -441,7 +437,6 @@ public class TouchDisplayView extends View {
     private Paint mCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint mTransStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mRevealPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mBadgeBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mBadgeStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -470,10 +465,6 @@ public class TouchDisplayView extends View {
         mStrokePaint.setColor(Color.WHITE);
         mStrokePaint.setStyle(Paint.Style.STROKE);
         mStrokePaint.setStrokeWidth(3f * density);
-
-        mTransStrokePaint.setColor(Color.WHITE);
-        mTransStrokePaint.setStyle(Paint.Style.STROKE);
-        mTransStrokePaint.setStrokeWidth(3f * density);
 
         mGlowPaint.setStyle(Paint.Style.FILL);
 
@@ -527,27 +518,9 @@ public class TouchDisplayView extends View {
 
     private void drawActiveTouchEffects(
             Canvas canvas, TouchHistory data, float radius, float half_r, int color) {
-        if (!alreadyChosen) {
-            drawActiveTouchRipple(canvas, data, radius, half_r, color);
-        }
-
         if (fingersDown && !alreadyChosen) {
             drawCountdownCollar(canvas, data, radius, half_r, color);
         }
-    }
-
-    private void drawActiveTouchRipple(
-            Canvas canvas, TouchHistory data, float radius, float half_r, int color) {
-        long time = System.currentTimeMillis();
-        float ripplePhase = (time % 1600L) / 1600f;
-        float rippleRadius = radius + (ripplePhase * radius * 1.2f);
-        int rippleAlpha = (int) (130 * (1f - ripplePhase));
-
-        mTransStrokePaint.setColor(color);
-        mTransStrokePaint.setAlpha(rippleAlpha);
-        float density = getResources().getDisplayMetrics().density;
-        mTransStrokePaint.setStrokeWidth(3f * density);
-        canvas.drawCircle(data.x, data.y - half_r, rippleRadius, mTransStrokePaint);
     }
 
     private void drawCountdownCollar(
@@ -573,7 +546,12 @@ public class TouchDisplayView extends View {
     }
 
     private void drawTouchHalo(
-            Canvas canvas, TouchHistory data, float radius, float half_r, int color, int haloAlpha) {
+            Canvas canvas,
+            TouchHistory data,
+            float radius,
+            float half_r,
+            int color,
+            int haloAlpha) {
         int red = Color.red(color);
         int green = Color.green(color);
         int blue = Color.blue(color);
@@ -608,7 +586,12 @@ public class TouchDisplayView extends View {
     }
 
     private void drawOrderBadge(
-            Canvas canvas, String label, TouchHistory data, float radius, float half_r, int circleColor) {
+            Canvas canvas,
+            String label,
+            TouchHistory data,
+            float radius,
+            float half_r,
+            int circleColor) {
         float density = getResources().getDisplayMetrics().density;
         float labelDistance = radius + mOrderLabelOffset;
 
@@ -672,7 +655,12 @@ public class TouchDisplayView extends View {
     }
 
     private void drawBadgeLabel(
-            Canvas canvas, String label, float badgeX, float badgeY, float rotation, int circleColor) {
+            Canvas canvas,
+            String label,
+            float badgeX,
+            float badgeY,
+            float rotation,
+            int circleColor) {
         canvas.save();
         canvas.rotate(rotation, badgeX, badgeY);
 
@@ -799,7 +787,8 @@ public class TouchDisplayView extends View {
         mGlowPaint.setShader(null); // Clear any gradient shader to use solid color
         mGlowPaint.setColor(Color.WHITE);
 
-        // Dynamic scale factor: starts smaller (40% of base) and expands to the pronounced size (135% of base)
+        // Dynamic scale factor: starts smaller (40% of base) and expands to the pronounced size
+        // (135% of base)
         float scaleFactor = 0.4f + (pulseValue * 0.95f);
         float scaledPulseOffset = mPulseOffset * 1.6f;
 
@@ -814,7 +803,8 @@ public class TouchDisplayView extends View {
             if (progress > 1f) progress = 1f;
             if (progress < 0f) progress = 0f;
 
-            // More pronounced opacity (max alpha 40, ~16% opacity per layer, accumulating in center)
+            // More pronounced opacity (max alpha 40, ~16% opacity per layer, accumulating in
+            // center)
             int alpha = (int) (40 * (1f - progress));
             if (alpha < 0) alpha = 0;
 

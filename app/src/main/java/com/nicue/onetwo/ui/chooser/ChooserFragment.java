@@ -33,19 +33,24 @@ public class ChooserFragment extends Fragment {
             new Runnable() {
                 @Override
                 public void run() {
-                    if (binding != null && binding.chooserInstructionContainer.getVisibility() == View.VISIBLE) {
-                        binding.chooserInstructionContainer.animate()
+                    if (binding != null
+                            && binding.chooserInstructionContainer.getVisibility()
+                                    == View.VISIBLE) {
+                        binding.chooserInstructionContainer
+                                .animate()
                                 .alpha(0f)
                                 .setDuration(300L)
-                                .withEndAction(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (binding != null) {
-                                            binding.chooserInstructionContainer.setVisibility(View.GONE);
-                                            stopInstructionAnimation();
-                                        }
-                                    }
-                                })
+                                .withEndAction(
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                if (binding != null) {
+                                                    binding.chooserInstructionContainer
+                                                            .setVisibility(View.GONE);
+                                                    stopInstructionAnimation();
+                                                }
+                                            }
+                                        })
                                 .start();
                     }
                 }
