@@ -5,6 +5,7 @@
     <string name="add">Add</string>
     <string name="subtract">Subtract</string>
     <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
     <string name="plus_sign" translatable="false">+</string>
     <string name="minus_sign" translatable="false">-</string>
     <string name="counter_add_amount_title">Add to counter</string>
@@ -45,8 +46,17 @@
     <string name="timer_settings_title">Timer settings</string>
     <string name="timer_base_time_label">Base time</string>
     <string name="timer_increment_label">Increment per play</string>
+    <string name="timer_increment_helper">Added after each play</string>
     <string name="timer_count_label">Number of timers</string>
-    <string name="timer_settings_apply">Apply</string>
+    <string name="timer_minutes_unit">min</string>
+    <string name="timer_seconds_unit">sec</string>
+    <string name="timer_preset_5_min">5 min</string>
+    <string name="timer_preset_10_min">10 min</string>
+    <string name="timer_preset_25_min">25 min</string>
+    <plurals name="timer_count_value">
+        <item quantity="one">%1$d timer</item>
+        <item quantity="other">%1$d timers</item>
+    </plurals>
     <string name="counter_instruction">Press the button to add a counter or swipe right for more options</string>
     <!-- Preference Titles -->
     <string name="ui_header">UI</string>

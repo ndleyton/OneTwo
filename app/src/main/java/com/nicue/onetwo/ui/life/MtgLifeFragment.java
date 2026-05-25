@@ -22,12 +22,12 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.view.MenuHost;
@@ -59,6 +59,9 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     private static final int PREVIEW_PLAYER_COUNT = 4;
     private static final int LIFE_LONG_PRESS_DELTA = 10;
     private static final long LIFE_HOLD_REPEAT_INTERVAL_MS = 800L;
+    private static final long PRESET_5_MIN_MS = 5L * 60L * 1000L;
+    private static final long PRESET_10_MIN_MS = 10L * 60L * 1000L;
+    private static final long PRESET_25_MIN_MS = 25L * 60L * 1000L;
 
     private LifeFragmentBinding binding;
     private MtgLifeViewModel viewModel;
@@ -1133,32 +1136,26 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         long configuredDuration = viewModel.getTurnTimerDurationMs();
         MinutesAlertDialogBinding dialogBinding =
                 MinutesAlertDialogBinding.inflate(getLayoutInflater());
-        android.widget.NumberPicker minutePicker = dialogBinding.minutePicker;
-        android.widget.NumberPicker secondPicker = dialogBinding.secondsPicker;
+        EditText minuteInput = dialogBinding.minuteInput;
+        EditText secondInput = dialogBinding.secondsInput;
 
         dialogBinding.dialogTitle.setText(R.string.mtg_setup_turn_timer);
         dialogBinding.timerCountRow.setVisibility(View.GONE);
         dialogBinding.baseTimeLabel.setText(R.string.mtg_setup_time);
         dialogBinding.incrementRow.setVisibility(View.GONE);
 
-        // Configure duration pickers
-        minutePicker.setMinValue(0);
-        minutePicker.setMaxValue(999);
-        minutePicker.setValue((int) ((configuredDuration / 1000L) / 60L));
-        secondPicker.setMinValue(0);
-        secondPicker.setMaxValue(59);
-        secondPicker.setValue((int) ((configuredDuration / 1000L) % 60L));
-        secondPicker.setFormatter(
-                value -> String.format(java.util.Locale.getDefault(), "%02d", value));
+        configureDurationInputs(minuteInput, secondInput, configuredDuration);
+        configureBaseTimePresets(dialogBinding, configuredDuration);
 
-        AlertDialog dialog =
-                new AlertDialog.Builder(requireContext()).setView(dialogBinding.getRoot()).create();
+        Dialog dialog =
+                new MaterialAlertDialogBuilder(requireContext())
+                        .setView(dialogBinding.getRoot())
+                        .create();
         dialogBinding.applyButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        long durationMs =
-                                (minutePicker.getValue() * 60L + secondPicker.getValue()) * 1000L;
+                        long durationMs = getSelectedBaseDurationMs(dialogBinding);
                         viewModel.setTurnTimerDurationMs(durationMs);
                         setupBinding.btnTurnTimerValue.setText(
                                 TimerBackend.formatRemainingTime(durationMs, 10000L));
@@ -1173,9 +1170,76 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                     }
                 });
         dialog.show();
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+    }
+
+    private void configureDurationInputs(
+            EditText minuteInput, EditText secondInput, long durationMs) {
+        int totalSeconds = (int) (durationMs / 1000L);
+        minuteInput.setText(String.valueOf(totalSeconds / 60));
+        secondInput.setText(
+                String.format(java.util.Locale.getDefault(), "%02d", totalSeconds % 60));
+    }
+
+    private void configureBaseTimePresets(
+            MinutesAlertDialogBinding dialogBinding, long configuredDurationMs) {
+        int checkedChipId = baseTimePresetId(configuredDurationMs);
+        dialogBinding.baseTimePresetGroup.check(checkedChipId);
+        updateBaseTimeCustomVisibility(dialogBinding, checkedChipId);
+        dialogBinding.baseTimePresetGroup.setOnCheckedStateChangeListener(
+                (group, checkedIds) -> {
+                    if (!checkedIds.isEmpty()) {
+                        updateBaseTimeCustomVisibility(dialogBinding, checkedIds.get(0));
+                    }
+                });
+    }
+
+    private int baseTimePresetId(long durationMs) {
+        if (durationMs == PRESET_5_MIN_MS) {
+            return R.id.base_time_preset_5;
         }
+        if (durationMs == PRESET_10_MIN_MS) {
+            return R.id.base_time_preset_10;
+        }
+        if (durationMs == PRESET_25_MIN_MS) {
+            return R.id.base_time_preset_25;
+        }
+        return R.id.base_time_preset_custom;
+    }
+
+    private void updateBaseTimeCustomVisibility(
+            MinutesAlertDialogBinding dialogBinding, int checkedChipId) {
+        dialogBinding.baseTimeInputContainer.setVisibility(
+                checkedChipId == R.id.base_time_preset_custom ? View.VISIBLE : View.GONE);
+    }
+
+    private long getSelectedBaseDurationMs(MinutesAlertDialogBinding dialogBinding) {
+        int checkedChipId = dialogBinding.baseTimePresetGroup.getCheckedChipId();
+        if (checkedChipId == R.id.base_time_preset_5) {
+            return PRESET_5_MIN_MS;
+        }
+        if (checkedChipId == R.id.base_time_preset_10) {
+            return PRESET_10_MIN_MS;
+        }
+        if (checkedChipId == R.id.base_time_preset_25) {
+            return PRESET_25_MIN_MS;
+        }
+        return (parseBoundedInt(dialogBinding.minuteInput, 0, 999) * 60L
+                        + parseBoundedInt(dialogBinding.secondsInput, 0, 59))
+                * 1000L;
+    }
+
+    private int parseBoundedInt(EditText input, int minValue, int maxValue) {
+        String value = input.getText() == null ? "" : input.getText().toString();
+        int parsed;
+        try {
+            parsed = value.isEmpty() ? minValue : Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            parsed = minValue;
+        }
+        if (parsed < minValue) {
+            return minValue;
+        }
+        return Math.min(parsed, maxValue);
     }
 
     @Override
