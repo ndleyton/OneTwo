@@ -785,8 +785,9 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         dialogContent.setTag("commander_dialog_content");
         dialogContent.setOrientation(LinearLayout.VERTICAL);
         dialogContent.setGravity(Gravity.CENTER);
-        dialogContent.setPadding(dpToPx(4), dpToPx(4), dpToPx(4), dpToPx(4));
+        dialogContent.setPadding(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8));
         dialogContent.setBackground(createDialogBackground());
+        dialogContent.setElevation(dpToPx(16));
         dialogContent.setLayoutParams(
                 new FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,
@@ -939,11 +940,19 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         TypedValue typedValue = new TypedValue();
         requireContext()
                 .getTheme()
-                .resolveAttribute(android.R.attr.colorBackground, typedValue, true);
+                .resolveAttribute(com.google.android.material.R.attr.colorSurface, typedValue, true);
 
         GradientDrawable background = new GradientDrawable();
         background.setColor(typedValue.data);
-        background.setCornerRadius(dpToPx(10));
+        background.setCornerRadius(dpToPx(24));
+
+        TypedValue onSurfaceValue = new TypedValue();
+        requireContext()
+                .getTheme()
+                .resolveAttribute(com.google.android.material.R.attr.colorOnSurface, onSurfaceValue, true);
+        int strokeColor = adjustAlpha(onSurfaceValue.data, 0.12f);
+        background.setStroke(dpToPx(1), strokeColor);
+
         return background;
     }
 
