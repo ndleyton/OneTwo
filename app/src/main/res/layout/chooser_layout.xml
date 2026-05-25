@@ -17,18 +17,39 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <TextView
-            android:id="@+id/chooser_instruction"
+        <LinearLayout
+            android:id="@+id/chooser_instruction_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:clickable="false"
-            android:focusable="false"
             android:gravity="center"
+            android:orientation="vertical"
             android:padding="@dimen/space_m"
-            android:text="@string/touch_me"
-            android:textAppearance="?attr/textAppearanceBodyLarge"
-            android:textColor="?attr/colorOnSurfaceVariant" />
+            android:clickable="false"
+            android:focusable="false">
+
+            <ImageView
+                android:id="@+id/chooser_instruction_icon"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginBottom="16dp"
+                android:src="@drawable/fingerprint"
+                app:tint="?attr/colorOnSurfaceVariant"
+                android:clickable="false"
+                android:focusable="false"
+                android:importantForAccessibility="no" />
+
+            <TextView
+                android:id="@+id/chooser_instruction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
+                android:gravity="center"
+                android:text="@string/touch_me"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+        </LinearLayout>
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

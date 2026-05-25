@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.nicue.onetwo.OneTwoApplication;
+import android.animation.ValueAnimator;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import com.nicue.onetwo.data.settings.SettingsRepository;
 import com.nicue.onetwo.databinding.ChooserLayoutBinding;
 
@@ -22,12 +24,28 @@ public class ChooserFragment extends Fragment {
     private ChooserViewModel viewModel;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Runnable navigateBackRunnable;
+    private ValueAnimator breathingAnimator;
     private final Runnable hideInstructionRunnable =
             new Runnable() {
                 @Override
                 public void run() {
-                    if (binding != null) {
-                        binding.chooserInstruction.setVisibility(View.GONE);
+                    if (binding != null && binding.chooserInstructionContainer.getVisibility() == View.VISIBLE) {
+                        binding.chooserInstructionContainer.animate()
+                                .alpha(0f)
+                                .setDuration(300L)
+                                .withEndAction(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (binding != null) {
+                                            binding.chooserInstructionContainer.setVisibility(View.GONE);
+                                            if (breathingAnimator != null) {
+                                                breathingAnimator.cancel();
+                                                breathingAnimator = null;
+                                            }
+                                        }
+                                    }
+                                })
+                                .start();
                     }
                 }
             };
@@ -45,6 +63,40 @@ public class ChooserFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Breathing pulse and color morphing animation for the fingerprint outline icon
+        final int colorStart = androidx.core.content.ContextCompat.getColor(
+                requireContext(), com.nicue.onetwo.R.color.colorPrimaryLight);
+        final int colorEnd = androidx.core.content.ContextCompat.getColor(
+                requireContext(), com.nicue.onetwo.R.color.colorAccent);
+        final android.animation.ArgbEvaluator argbEvaluator = new android.animation.ArgbEvaluator();
+
+        breathingAnimator = ValueAnimator.ofFloat(0f, 1f);
+        breathingAnimator.setDuration(2400L); // Gentle duration for breathing and color transition
+        breathingAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        breathingAnimator.setRepeatMode(ValueAnimator.REVERSE);
+        breathingAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        breathingAnimator.addUpdateListener(
+                new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        if (binding != null && binding.chooserInstructionIcon != null) {
+                            float val = (float) animation.getAnimatedValue();
+
+                            // Scale animation (0.95 to 1.05)
+                            float scale = 0.95f + (val * 0.1f);
+                            binding.chooserInstructionIcon.setScaleX(scale);
+                            binding.chooserInstructionIcon.setScaleY(scale);
+
+                            // Dynamic color morphing
+                            int color = (int) argbEvaluator.evaluate(val, colorStart, colorEnd);
+                            binding.chooserInstructionIcon.setImageTintList(
+                                    android.content.res.ColorStateList.valueOf(color));
+                        }
+                    }
+                });
+        breathingAnimator.start();
+
         SettingsRepository settingsRepository =
                 ((OneTwoApplication) requireActivity().getApplication())
                         .getAppContainer()
@@ -151,6 +203,10 @@ public class ChooserFragment extends Fragment {
     @Override
     public void onDestroyView() {
         handler.removeCallbacks(hideInstructionRunnable);
+        if (breathingAnimator != null) {
+            breathingAnimator.cancel();
+            breathingAnimator = null;
+        }
         if (navigateBackRunnable != null) {
             handler.removeCallbacks(navigateBackRunnable);
             navigateBackRunnable = null;
@@ -163,7 +219,7 @@ public class ChooserFragment extends Fragment {
     }
 
     private void scheduleInstructionHide() {
-        if (binding.chooserInstruction.getVisibility() != View.VISIBLE) {
+        if (binding.chooserInstructionContainer.getVisibility() != View.VISIBLE) {
             return;
         }
         handler.removeCallbacks(hideInstructionRunnable);
