@@ -90,7 +90,6 @@ public class TouchDisplayView extends View {
                 chosenColor = COLORS[chosenId % COLORS.length];
                 updateSelectionRevealBounds();
                 startSelectionRevealAnimation();
-                startPulseAnimation();
                 Vibrator v = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
                 long[] pattern = {0, 20, 10, 50};
                 v.vibrate(pattern, -1);
@@ -429,7 +428,9 @@ public class TouchDisplayView extends View {
 
         if (alreadyChosen) {
             if (chosenId == id) {
-                drawPulsingConcentricCircles(canvas, data.x, data.y, radius, half_r);
+                if (pulseAnimator != null) {
+                    drawPulsingConcentricCircles(canvas, data.x, data.y, radius, half_r);
+                }
                 drawBig = false;
             } else { // With this line we are giving it a random order
                 if (choosingOrder) {
@@ -616,6 +617,15 @@ public class TouchDisplayView extends View {
                         invalidate();
                     }
                 });
+        selectionRevealAnimator.addListener(
+                new android.animation.AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(android.animation.Animator animation) {
+                        if (alreadyChosen) {
+                            startPulseAnimation();
+                        }
+                    }
+                });
         selectionRevealAnimator.start();
     }
 
@@ -685,16 +695,16 @@ public class TouchDisplayView extends View {
 
     private void drawPulsingConcentricCircles(
             Canvas canvas, float x, float y, float radius, float half_r) {
-        // Option 3: Filled Translucent Ripples (Layered Soundwaves) - More Pronounced
+        // Option 3: Filled Translucent Ripples (Layered Soundwaves) - Pronounced, Starts Smaller
         mGlowPaint.setShader(null); // Clear any gradient shader to use solid color
         mGlowPaint.setColor(Color.WHITE);
 
-        // Increase offsets so ripples expand significantly beyond a large finger
-        float scaledBaseOffset = mPulseBaseOffset * 1.35f;
+        // Dynamic scale factor: starts smaller (40% of base) and expands to the pronounced size (135% of base)
+        float scaleFactor = 0.4f + (pulseValue * 0.95f);
         float scaledPulseOffset = mPulseOffset * 1.6f;
 
         for (int i = 2; i >= 0; i--) { // Draw largest first so smaller ones layer on top
-            float baseOffset = (i + 1) * scaledBaseOffset;
+            float baseOffset = (i + 1) * mPulseBaseOffset * scaleFactor;
             float pulseOffset = pulseValue * scaledPulseOffset;
             float circleRadius = radius + baseOffset + pulseOffset;
 
