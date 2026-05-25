@@ -11,6 +11,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -35,9 +37,13 @@ import java.util.List;
 
 public class TimerFragment extends Fragment implements MenuProvider {
     private static final int MIN_TIMER_ITEM_HEIGHT_DP = 78;
-    private static final long PRESET_5_MIN_MS = 5L * 60L * 1000L;
-    private static final long PRESET_10_MIN_MS = 10L * 60L * 1000L;
-    private static final long PRESET_25_MIN_MS = 25L * 60L * 1000L;
+    private static final long ONE_MINUTE_MS = 60L * 1000L;
+    private static final long ONE_SECOND_MS = 1000L;
+    private static final int CLOCK_PRESET_1_0 = 0;
+    private static final int CLOCK_PRESET_3_2 = 1;
+    private static final int CLOCK_PRESET_5_0 = 2;
+    private static final int CLOCK_PRESET_15_10 = 3;
+    private static final int CLOCK_PRESET_CUSTOM = 4;
 
     private TimerLayoutBinding binding;
     private final List<ListItemTimerBinding> timerBindings = new ArrayList<>();
@@ -235,7 +241,7 @@ public class TimerFragment extends Fragment implements MenuProvider {
 
         configureDurationInputs(minuteInput, secondInput, configuredDuration);
         configureDurationInputs(incrementMinuteInput, incrementSecondInput, configuredIncrement);
-        configureBaseTimePresets(dialogBinding, configuredDuration);
+        configureClockSettingPresets(dialogBinding, configuredDuration, configuredIncrement);
 
         AlertDialog dialog =
                 new MaterialAlertDialogBuilder(requireContext())
@@ -246,10 +252,7 @@ public class TimerFragment extends Fragment implements MenuProvider {
                     @Override
                     public void onClick(View v) {
                         long durationMs = getSelectedBaseDurationMs(dialogBinding);
-                        long incrementMs =
-                                (parseBoundedInt(incrementMinuteInput, 0, 999) * 60L
-                                                + parseBoundedInt(incrementSecondInput, 0, 59))
-                                        * 1000L;
+                        long incrementMs = getSelectedIncrementMs(dialogBinding);
                         viewModel.setTimerCount(currentTimerCount[0], maxTimerCount);
                         viewModel.editDuration(durationMs, incrementMs);
                         dialog.dismiss();
@@ -270,52 +273,100 @@ public class TimerFragment extends Fragment implements MenuProvider {
                 getResources().getQuantityString(R.plurals.timer_count_value, count, count));
     }
 
-    private void configureBaseTimePresets(
-            MinutesAlertDialogBinding dialogBinding, long configuredDurationMs) {
-        int checkedChipId = baseTimePresetId(configuredDurationMs);
-        dialogBinding.baseTimePresetGroup.check(checkedChipId);
-        updateBaseTimeCustomVisibility(dialogBinding, checkedChipId);
-        dialogBinding.baseTimePresetGroup.setOnCheckedStateChangeListener(
-                (group, checkedIds) -> {
-                    if (!checkedIds.isEmpty()) {
-                        updateBaseTimeCustomVisibility(dialogBinding, checkedIds.get(0));
-                    }
-                });
+    private void configureClockSettingPresets(
+            MinutesAlertDialogBinding dialogBinding,
+            long configuredDurationMs,
+            long configuredIncrementMs) {
+        AutoCompleteTextView dropdown = dialogBinding.clockSettingDropdown;
+        String[] labels = clockSettingLabels();
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, labels);
+        dropdown.setAdapter(adapter);
+        int selectedIndex = clockSettingPresetIndex(configuredDurationMs, configuredIncrementMs);
+        dropdown.setText(labels[selectedIndex], false);
+        updateClockSettingCustomVisibility(dialogBinding, selectedIndex);
+        dropdown.setOnItemClickListener(
+                (parent, view, position, id) ->
+                        updateClockSettingCustomVisibility(dialogBinding, position));
     }
 
-    private int baseTimePresetId(long durationMs) {
-        if (durationMs == PRESET_5_MIN_MS) {
-            return R.id.base_time_preset_5;
-        }
-        if (durationMs == PRESET_10_MIN_MS) {
-            return R.id.base_time_preset_10;
-        }
-        if (durationMs == PRESET_25_MIN_MS) {
-            return R.id.base_time_preset_25;
-        }
-        return R.id.base_time_preset_custom;
+    private String[] clockSettingLabels() {
+        return new String[] {
+            getString(R.string.timer_preset_1_0),
+            getString(R.string.timer_preset_3_2),
+            getString(R.string.timer_preset_5_0),
+            getString(R.string.timer_preset_15_10),
+            getString(R.string.custom)
+        };
     }
 
-    private void updateBaseTimeCustomVisibility(
-            MinutesAlertDialogBinding dialogBinding, int checkedChipId) {
-        dialogBinding.baseTimeInputContainer.setVisibility(
-                checkedChipId == R.id.base_time_preset_custom ? View.VISIBLE : View.GONE);
+    private int clockSettingPresetIndex(long durationMs, long incrementMs) {
+        if (durationMs == ONE_MINUTE_MS && incrementMs == 0L) {
+            return CLOCK_PRESET_1_0;
+        }
+        if (durationMs == 3L * ONE_MINUTE_MS && incrementMs == 2L * ONE_SECOND_MS) {
+            return CLOCK_PRESET_3_2;
+        }
+        if (durationMs == 5L * ONE_MINUTE_MS && incrementMs == 0L) {
+            return CLOCK_PRESET_5_0;
+        }
+        if (durationMs == 15L * ONE_MINUTE_MS && incrementMs == 10L * ONE_SECOND_MS) {
+            return CLOCK_PRESET_15_10;
+        }
+        return CLOCK_PRESET_CUSTOM;
+    }
+
+    private void updateClockSettingCustomVisibility(
+            MinutesAlertDialogBinding dialogBinding, int selectedIndex) {
+        int customVisibility = selectedIndex == CLOCK_PRESET_CUSTOM ? View.VISIBLE : View.GONE;
+        dialogBinding.baseTimeInputContainer.setVisibility(customVisibility);
+        dialogBinding.incrementRow.setVisibility(customVisibility);
     }
 
     private long getSelectedBaseDurationMs(MinutesAlertDialogBinding dialogBinding) {
-        int checkedChipId = dialogBinding.baseTimePresetGroup.getCheckedChipId();
-        if (checkedChipId == R.id.base_time_preset_5) {
-            return PRESET_5_MIN_MS;
+        int selectedIndex = selectedClockSettingIndex(dialogBinding);
+        if (selectedIndex == CLOCK_PRESET_1_0) {
+            return ONE_MINUTE_MS;
         }
-        if (checkedChipId == R.id.base_time_preset_10) {
-            return PRESET_10_MIN_MS;
+        if (selectedIndex == CLOCK_PRESET_3_2) {
+            return 3L * ONE_MINUTE_MS;
         }
-        if (checkedChipId == R.id.base_time_preset_25) {
-            return PRESET_25_MIN_MS;
+        if (selectedIndex == CLOCK_PRESET_5_0) {
+            return 5L * ONE_MINUTE_MS;
+        }
+        if (selectedIndex == CLOCK_PRESET_15_10) {
+            return 15L * ONE_MINUTE_MS;
         }
         return (parseBoundedInt(dialogBinding.minuteInput, 0, 999) * 60L
                         + parseBoundedInt(dialogBinding.secondsInput, 0, 59))
                 * 1000L;
+    }
+
+    private long getSelectedIncrementMs(MinutesAlertDialogBinding dialogBinding) {
+        int selectedIndex = selectedClockSettingIndex(dialogBinding);
+        if (selectedIndex == CLOCK_PRESET_3_2) {
+            return 2L * ONE_SECOND_MS;
+        }
+        if (selectedIndex == CLOCK_PRESET_15_10) {
+            return 10L * ONE_SECOND_MS;
+        }
+        if (selectedIndex == CLOCK_PRESET_1_0 || selectedIndex == CLOCK_PRESET_5_0) {
+            return 0L;
+        }
+        return (parseBoundedInt(dialogBinding.incrementMinuteInput, 0, 999) * 60L
+                        + parseBoundedInt(dialogBinding.incrementSecondsInput, 0, 59))
+                * 1000L;
+    }
+
+    private int selectedClockSettingIndex(MinutesAlertDialogBinding dialogBinding) {
+        String selected = dialogBinding.clockSettingDropdown.getText().toString();
+        String[] labels = clockSettingLabels();
+        for (int i = 0; i < labels.length; i++) {
+            if (labels[i].equals(selected)) {
+                return i;
+            }
+        }
+        return CLOCK_PRESET_CUSTOM;
     }
 
     private void configureDurationInputs(

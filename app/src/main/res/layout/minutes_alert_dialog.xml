@@ -50,14 +50,20 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/decrease_timer_count_button"
-                    style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="44dp"
                     android:layout_height="44dp"
-                    android:minWidth="44dp"
-                    android:paddingStart="0dp"
-                    android:paddingEnd="0dp"
-                    android:text="@string/minus_sign"
-                    android:textSize="20sp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="0dp"
+                    app:icon="@drawable/ic_remove_24"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconTint="?attr/colorPrimary"
                     app:cornerRadius="12dp" />
 
                 <TextView
@@ -70,14 +76,20 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/increase_timer_count_button"
-                    style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="44dp"
                     android:layout_height="44dp"
-                    android:minWidth="44dp"
-                    android:paddingStart="0dp"
-                    android:paddingEnd="0dp"
-                    android:text="@string/plus_sign"
-                    android:textSize="20sp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="0dp"
+                    app:icon="@drawable/ic_add_24"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconTint="?attr/colorPrimary"
                     app:cornerRadius="12dp" />
             </LinearLayout>
         </LinearLayout>
@@ -97,58 +109,47 @@
                 android:textAppearance="?attr/textAppearanceTitleSmall"
                 android:textColor="?attr/colorOnSurface" />
 
-            <HorizontalScrollView
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/clock_setting_input_layout"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:overScrollMode="never"
-                android:scrollbars="none">
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:hintEnabled="false">
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/base_time_preset_group"
-                    android:layout_width="wrap_content"
+                <AutoCompleteTextView
+                    android:id="@+id/clock_setting_dropdown"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:selectionRequired="true"
-                    app:singleLine="true"
-                    app:singleSelection="true">
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/base_time_preset_5"
-                        style="@style/Widget.Material3.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/timer_preset_5_min" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/base_time_preset_10"
-                        style="@style/Widget.Material3.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/timer_preset_10_min" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/base_time_preset_25"
-                        style="@style/Widget.Material3.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/timer_preset_25_min" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/base_time_preset_custom"
-                        style="@style/Widget.Material3.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/custom" />
-                </com.google.android.material.chip.ChipGroup>
-            </HorizontalScrollView>
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
                 android:id="@+id/base_time_input_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/custom_base_time_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/timer_custom_base_time_label"
+                    android:textAppearance="?attr/textAppearanceTitleSmall"
+                    android:textColor="?attr/colorOnSurface" />
+
+                <LinearLayout
+                    android:id="@+id/base_time_input_fields"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -218,6 +219,7 @@
                     android:text="@string/timer_seconds_unit"
                     android:textAppearance="?attr/textAppearanceBodyMedium"
                     android:textColor="?attr/colorOnSurfaceVariant" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
@@ -235,15 +237,6 @@
                 android:text="@string/timer_increment_label"
                 android:textAppearance="?attr/textAppearanceTitleSmall"
                 android:textColor="?attr/colorOnSurface" />
-
-            <TextView
-                android:id="@+id/increment_helper"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="@string/timer_increment_helper"
-                android:textAppearance="?attr/textAppearanceBodySmall"
-                android:textColor="?attr/colorOnSurfaceVariant" />
 
             <LinearLayout
                 android:id="@+id/increment_input_container"
