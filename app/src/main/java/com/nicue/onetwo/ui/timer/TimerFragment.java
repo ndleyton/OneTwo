@@ -36,7 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TimerFragment extends Fragment implements MenuProvider {
-    private static final int MIN_TIMER_ITEM_HEIGHT_DP = 78;
+    private static final int MIN_TIMER_ITEM_HEIGHT_DP = 100;
+    private static final int TIMER_CONTAINER_VERTICAL_PADDING_DP = 32;
     private static final long ONE_MINUTE_MS = 60L * 1000L;
     private static final long ONE_SECOND_MS = 1000L;
     private static final int CLOCK_PRESET_1_0 = 0;
@@ -450,7 +451,8 @@ public class TimerFragment extends Fragment implements MenuProvider {
     }
 
     public static int calculateMaxTimers(int availableHeightDp) {
-        return Math.max(1, availableHeightDp / MIN_TIMER_ITEM_HEIGHT_DP);
+        int usableHeightDp = availableHeightDp - TIMER_CONTAINER_VERTICAL_PADDING_DP;
+        return Math.max(1, usableHeightDp / MIN_TIMER_ITEM_HEIGHT_DP);
     }
 
     private int maxTimers() {
