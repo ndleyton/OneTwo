@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TimerFragment extends Fragment implements MenuProvider {
+    private static final int MIN_TIMER_ITEM_HEIGHT_DP = 78;
+
     private TimerLayoutBinding binding;
     private final List<ListItemTimerBinding> timerBindings = new ArrayList<>();
     private TimerViewModel viewModel;
@@ -57,7 +59,25 @@ public class TimerFragment extends Fragment implements MenuProvider {
                                 .getTimerStateStore(),
                         new HandlerTimerScheduler());
         viewModel = new ViewModelProvider(this, factory).get(TimerViewModel.class);
-        viewModel.setMaxTimers(maxTimers());
+        updateMaxTimers();
+        binding.linearTimers.addOnLayoutChangeListener(
+                new View.OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(
+                            View v,
+                            int left,
+                            int top,
+                            int right,
+                            int bottom,
+                            int oldLeft,
+                            int oldTop,
+                            int oldRight,
+                            int oldBottom) {
+                        if (bottom - top != oldBottom - oldTop) {
+                            updateMaxTimers();
+                        }
+                    }
+                });
 
         binding.playButton.setOnClickListener(
                 new View.OnClickListener() {
@@ -265,12 +285,21 @@ public class TimerFragment extends Fragment implements MenuProvider {
         }
     }
 
-    public static int calculateMaxTimers(int screenHeightDp) {
-        return Math.max(1, (screenHeightDp - 22) / 78);
+    public static int calculateMaxTimers(int availableHeightDp) {
+        return Math.max(1, availableHeightDp / MIN_TIMER_ITEM_HEIGHT_DP);
     }
 
     private int maxTimers() {
+        if (binding != null && binding.linearTimers.getHeight() > 0) {
+            float density = getResources().getDisplayMetrics().density;
+            int availableHeightDp = (int) (binding.linearTimers.getHeight() / density);
+            return calculateMaxTimers(availableHeightDp);
+        }
         Configuration configuration = requireContext().getResources().getConfiguration();
         return calculateMaxTimers(configuration.screenHeightDp);
+    }
+
+    private void updateMaxTimers() {
+        viewModel.setMaxTimers(maxTimers());
     }
 }
