@@ -457,10 +457,12 @@ public class TouchDisplayView extends View {
             canvas.drawCircle(data.x, data.y - half_r, rippleRadius, mTransStrokePaint);
         }
 
-        // Draw concentric progress/charging arc around each finger while held
+        // Draw contiguous thick progress/charging collar directly attached to each finger
         if (fingersDown && !alreadyChosen) {
             float density = getResources().getDisplayMetrics().density;
-            float arcRadius = radius + (12f * density);
+            float strokeWidth = 24f * density; // Thick progress collar
+            float arcRadius = radius + (strokeWidth / 2f);
+
             android.graphics.RectF arcBounds = new android.graphics.RectF(
                 data.x - arcRadius,
                 (data.y - half_r) - arcRadius,
@@ -468,10 +470,15 @@ public class TouchDisplayView extends View {
                 (data.y - half_r) + arcRadius
             );
 
+            // Draw a faint background track for the progress collar so the user sees the target path
             mStrokePaint.setColor(color);
-            mStrokePaint.setAlpha(255);
-            mStrokePaint.setStrokeWidth(4f * density);
+            mStrokePaint.setAlpha(45); // ~18% opacity background track
+            mStrokePaint.setStyle(Paint.Style.STROKE);
+            mStrokePaint.setStrokeWidth(strokeWidth);
+            canvas.drawCircle(data.x, data.y - half_r, arcRadius, mStrokePaint);
 
+            // Draw the active sweeping progress collar
+            mStrokePaint.setAlpha(200); // Higher, clearly visible opacity
             float sweepAngle = 360f * countdownProgress;
             canvas.drawArc(arcBounds, -90f, sweepAngle, false, mStrokePaint);
         }
