@@ -358,7 +358,7 @@
                 android:text="@string/save"
                 android:textColor="?attr/colorOnPrimary"
                 app:backgroundTint="?attr/colorPrimary"
-                app:cornerRadius="12dp" />
+                app:cornerRadius="@dimen/shape_corner_soft" />
         </LinearLayout>
 
     </LinearLayout>
