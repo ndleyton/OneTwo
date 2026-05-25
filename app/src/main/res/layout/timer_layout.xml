@@ -6,34 +6,7 @@
     android:id="@+id/timer_r_layout"
     android:gravity="center">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="@dimen/space_m"
-        android:layout_marginBottom="@dimen/space_m">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/play_button"
-            style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/space_xl"
-            app:icon="@drawable/play_pause"
-            app:iconSize="32dp"
-            app:iconTint="@color/colorPrimary" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/edit_button"
-            style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:icon="@drawable/settings_gear"
-            app:iconSize="32dp"
-            app:iconTint="@color/colorPrimary" />
-
-    </LinearLayout>
+    <!-- Removed play/edit buttons to toolbar -->
 
     <LinearLayout
         android:id="@+id/linear_timers"

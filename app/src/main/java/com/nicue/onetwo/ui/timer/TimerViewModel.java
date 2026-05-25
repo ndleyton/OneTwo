@@ -95,6 +95,23 @@ public class TimerViewModel extends ViewModel {
         emitState();
     }
 
+    public void setTimerCount(int count, int maxTimers) {
+        int currentSize = timerEngine.getRemainingTimes().size();
+        if (count < 1) count = 1;
+        if (count > maxTimers) count = maxTimers;
+        
+        while (currentSize < count) {
+            timerEngine.addTimer();
+            currentSize++;
+        }
+        while (currentSize > count) {
+            timerEngine.removeTimer();
+            currentSize--;
+        }
+        persistState();
+        emitState();
+    }
+
     public void setMaxTimers(int maxTimers) {
         timerEngine.setMaxTimers(maxTimers);
         persistState();
