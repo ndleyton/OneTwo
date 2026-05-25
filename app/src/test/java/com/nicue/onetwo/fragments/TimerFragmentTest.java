@@ -9,14 +9,14 @@ public class TimerFragmentTest {
 
     @Test
     public void calculateMaxTimersUsesAvailableTimerHeight() {
-        assertEquals(2, TimerFragment.calculateMaxTimers(200));
-        assertEquals(8, TimerFragment.calculateMaxTimers(700));
+        assertEquals(2, TimerFragment.calculateMaxTimers(232));
+        assertEquals(6, TimerFragment.calculateMaxTimers(700));
     }
 
     @Test
     public void calculateMaxTimersRequiresFullTimerRows() {
-        assertEquals(1, TimerFragment.calculateMaxTimers(77));
-        assertEquals(1, TimerFragment.calculateMaxTimers(78));
-        assertEquals(2, TimerFragment.calculateMaxTimers(156));
+        assertEquals(1, TimerFragment.calculateMaxTimers(131));
+        assertEquals(1, TimerFragment.calculateMaxTimers(132));
+        assertEquals(2, TimerFragment.calculateMaxTimers(232));
     }
 }

@@ -2,11 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_add_timer"
-        android:title="@string/add_timer"
-        app:showAsAction="always|withText" />
+        android:id="@+id/action_play_pause"
+        android:icon="@drawable/play_pause"
+        android:title="@string/play"
+        app:showAsAction="always" />
     <item
-        android:id="@+id/action_remove_timer"
-        android:title="@string/remove_timer"
-        app:showAsAction="always|withText" />
+        android:id="@+id/action_settings"
+        android:icon="@drawable/settings_gear"
+        android:title="@string/edit"
+        app:showAsAction="always" />
 </menu>

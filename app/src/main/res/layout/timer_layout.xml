@@ -6,42 +6,7 @@
     android:id="@+id/timer_r_layout"
     android:gravity="center">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/play_button"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/space_l"
-            android:gravity="center"
-            android:textIsSelectable="false"
-            android:text="@string/play"
-            android:textColor="@color/colorPrimaryText"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/edit_button"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/space_l"
-            android:gravity="center"
-            android:textIsSelectable="false"
-            android:text="@string/edit"
-            android:textColor="@color/colorPrimaryText"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Removed play/edit buttons to toolbar -->
 
     <LinearLayout
         android:id="@+id/linear_timers"
@@ -49,6 +14,8 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_weight="9"
+        android:paddingTop="@dimen/space_m"
+        android:paddingBottom="@dimen/space_m"
         android:gravity="center">
 
     </LinearLayout>

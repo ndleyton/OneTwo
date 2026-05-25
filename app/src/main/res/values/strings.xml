@@ -5,6 +5,7 @@
     <string name="add">Add</string>
     <string name="subtract">Subtract</string>
     <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
     <string name="plus_sign" translatable="false">+</string>
     <string name="minus_sign" translatable="false">-</string>
     <string name="counter_add_amount_title">Add to counter</string>
@@ -43,8 +44,27 @@
     <string name="play">Play</string>
     <string name="pause">Pause</string>
     <string name="timer_settings_title">Timer settings</string>
-    <string name="timer_base_time_label">Base time</string>
-    <string name="timer_increment_label">Increment per play</string>
+    <string name="timer_base_time_label">Preset</string>
+    <string name="timer_custom_time_label">Custom time</string>
+    <string name="timer_custom_base_label">Base</string>
+    <string name="timer_custom_increment_label">Increment</string>
+    <string name="timer_count_label">Timers</string>
+    <string name="timer_minutes_unit">min</string>
+    <string name="timer_seconds_unit">sec</string>
+    <string name="timer_preset_1_0">1 min + 0 sec</string>
+    <string name="timer_preset_3_2">3 min + 2 sec</string>
+    <string name="timer_preset_5_0">5 min + 0 sec</string>
+    <string name="timer_preset_15_10">15 min + 10 sec</string>
+    <string name="timer_preset_25_0">25 min + 0 sec</string>
+    <string name="timer_preset_short_1_0">1:00 + 0s</string>
+    <string name="timer_preset_short_3_2">3:00 + 2s</string>
+    <string name="timer_preset_short_5_0">5:00 + 0s</string>
+    <string name="timer_preset_short_15_10">15:00 + 10s</string>
+    <string name="timer_preset_short_25_0">25:00 + 0s</string>
+    <plurals name="timer_count_value">
+        <item quantity="one">%1$d timer</item>
+        <item quantity="other">%1$d timers</item>
+    </plurals>
     <string name="counter_instruction">Press the button to add a counter or swipe right for more options</string>
     <!-- Preference Titles -->
     <string name="ui_header">UI</string>

@@ -1,7 +1,6 @@
 package com.nicue.onetwo.ui.life;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -23,12 +22,12 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.view.MenuHost;
@@ -1134,46 +1133,68 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         long configuredDuration = viewModel.getTurnTimerDurationMs();
         MinutesAlertDialogBinding dialogBinding =
                 MinutesAlertDialogBinding.inflate(getLayoutInflater());
-        android.widget.NumberPicker minutePicker = dialogBinding.minutePicker;
-        android.widget.NumberPicker secondPicker = dialogBinding.secondsPicker;
+        EditText minuteInput = dialogBinding.minuteInput;
+        EditText secondInput = dialogBinding.secondsInput;
 
-        // Hide increment fields in minutes_alert_dialog
-        android.widget.TextView incrementLabel = dialogBinding.incrementLabel;
-        android.widget.TextView baseTimeLabel = dialogBinding.baseTimeLabel;
-        View incrementPickerContainer = (View) dialogBinding.incrementMinutePicker.getParent();
+        dialogBinding.dialogTitle.setText(R.string.mtg_setup_turn_timer);
+        dialogBinding.timerCountRow.setVisibility(View.GONE);
+        dialogBinding.baseTimeLabel.setText(R.string.mtg_setup_time);
+        dialogBinding.clockSettingInputLayout.setVisibility(View.GONE);
+        dialogBinding.customTimeLabel.setVisibility(View.GONE);
+        dialogBinding.customBaseLabel.setVisibility(View.GONE);
+        dialogBinding.baseTimeInputContainer.setPadding(0, 0, 0, 0);
+        dialogBinding.incrementRow.setVisibility(View.GONE);
 
-        incrementLabel.setVisibility(View.GONE);
-        baseTimeLabel.setVisibility(View.GONE);
-        incrementPickerContainer.setVisibility(View.GONE);
+        configureDurationInputs(minuteInput, secondInput, configuredDuration);
 
-        // Configure duration pickers
-        minutePicker.setMinValue(0);
-        minutePicker.setMaxValue(999);
-        minutePicker.setValue((int) ((configuredDuration / 1000L) / 60L));
-        secondPicker.setMinValue(0);
-        secondPicker.setMaxValue(59);
-        secondPicker.setValue((int) ((configuredDuration / 1000L) % 60L));
-        secondPicker.setFormatter(
-                value -> String.format(java.util.Locale.getDefault(), "%02d", value));
+        Dialog dialog =
+                new MaterialAlertDialogBuilder(requireContext())
+                        .setView(dialogBinding.getRoot())
+                        .create();
+        dialogBinding.applyButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        long durationMs =
+                                (parseBoundedInt(minuteInput, 0, 999) * 60L
+                                                + parseBoundedInt(secondInput, 0, 59))
+                                        * 1000L;
+                        viewModel.setTurnTimerDurationMs(durationMs);
+                        setupBinding.btnTurnTimerValue.setText(
+                                TimerBackend.formatRemainingTime(durationMs, 10000L));
+                        dialog.dismiss();
+                    }
+                });
+        dialogBinding.cancelButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+        dialog.show();
+    }
 
-        new AlertDialog.Builder(requireContext())
-                .setView(dialogBinding.getRoot())
-                .setTitle(R.string.timer_settings_title)
-                .setPositiveButton(
-                        android.R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                long durationMs =
-                                        (minutePicker.getValue() * 60L + secondPicker.getValue())
-                                                * 1000L;
-                                viewModel.setTurnTimerDurationMs(durationMs);
-                                setupBinding.btnTurnTimerValue.setText(
-                                        TimerBackend.formatRemainingTime(durationMs, 10000L));
-                            }
-                        })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+    private void configureDurationInputs(
+            EditText minuteInput, EditText secondInput, long durationMs) {
+        int totalSeconds = (int) (durationMs / 1000L);
+        minuteInput.setText(String.valueOf(totalSeconds / 60));
+        secondInput.setText(
+                String.format(java.util.Locale.getDefault(), "%02d", totalSeconds % 60));
+    }
+
+    private int parseBoundedInt(EditText input, int minValue, int maxValue) {
+        String value = input.getText() == null ? "" : input.getText().toString();
+        int parsed;
+        try {
+            parsed = value.isEmpty() ? minValue : Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            parsed = minValue;
+        }
+        if (parsed < minValue) {
+            return minValue;
+        }
+        return Math.min(parsed, maxValue);
     }
 
     @Override
