@@ -940,7 +940,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         TypedValue typedValue = new TypedValue();
         requireContext()
                 .getTheme()
-                .resolveAttribute(com.google.android.material.R.attr.colorSurface, typedValue, true);
+                .resolveAttribute(
+                        com.google.android.material.R.attr.colorSurface, typedValue, true);
 
         GradientDrawable background = new GradientDrawable();
         background.setColor(typedValue.data);
@@ -949,7 +950,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         TypedValue onSurfaceValue = new TypedValue();
         requireContext()
                 .getTheme()
-                .resolveAttribute(com.google.android.material.R.attr.colorOnSurface, onSurfaceValue, true);
+                .resolveAttribute(
+                        com.google.android.material.R.attr.colorOnSurface, onSurfaceValue, true);
         int strokeColor = adjustAlpha(onSurfaceValue.data, 0.12f);
         background.setStroke(dpToPx(1), strokeColor);
 
