@@ -5,6 +5,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RadialGradient;
+import android.graphics.RectF;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -46,6 +49,7 @@ public class TouchDisplayView extends View {
     private ValueAnimator countdownAnimator;
     private float countdownProgress = 0f;
     private final Paint mGlowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final RectF mCountdownArcBounds = new RectF();
     private boolean tick1Fired = false;
     private boolean tick2Fired = false;
     private boolean tick3Fired = false;
@@ -143,6 +147,12 @@ public class TouchDisplayView extends View {
         public float y;
         public float pressure = 0f;
         public float progressStartAngle = -90f;
+        private RadialGradient haloGradient;
+        private float haloGradientX;
+        private float haloGradientY;
+        private float haloGradientRadius;
+        private int haloGradientStartColor;
+        private int haloGradientEndColor;
 
         private static final int MAX_POOL_SIZE = 10;
         private static final SimplePool<TouchHistory> sPool =
@@ -170,6 +180,7 @@ public class TouchDisplayView extends View {
         }
 
         public void recycle() {
+            haloGradient = null;
             sPool.release(this);
         }
     }
@@ -268,12 +279,16 @@ public class TouchDisplayView extends View {
                      * active gesture.
                      */
                     mTouches.put(id, data);
+                    handler.removeCallbacks(runnable);
                     handler.postDelayed(runnable, COUNTDOWN_DURATION_MS);
 
                     if (countdownAnimator != null) {
                         countdownAnimator.cancel();
                     }
                     countdownProgress = 0f;
+                    tick1Fired = false;
+                    tick2Fired = false;
+                    tick3Fired = false;
                     countdownAnimator = ValueAnimator.ofFloat(0f, 1f);
                     countdownAnimator.setDuration(COUNTDOWN_DURATION_MS);
                     countdownAnimator.setInterpolator(new android.view.animation.LinearInterpolator());
@@ -421,6 +436,11 @@ public class TouchDisplayView extends View {
     private Paint mStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mTransStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mRevealPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint mBadgeBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint mBadgeStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint mBadgeTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private float mBadgeRadius;
+    private float mBadgeEdgePadding;
 
     private void initialisePaint() {
 
@@ -431,6 +451,8 @@ public class TouchDisplayView extends View {
         mPulseOffset = 20f * density;
         mPulseFadeRange = 180f * density;
         mOrderLabelOffset = ORDER_LABEL_OFFSET_DP * density;
+        mBadgeRadius = 18f * density;
+        mBadgeEdgePadding = 4f * density;
 
         // Setup text paint for circle label
         mTextPaint.setTextSize(18f * density);
@@ -447,6 +469,17 @@ public class TouchDisplayView extends View {
         mTransStrokePaint.setStrokeWidth(3f * density);
 
         mGlowPaint.setStyle(Paint.Style.FILL);
+
+        mBadgeBgPaint.setColor(Color.WHITE);
+        mBadgeBgPaint.setStyle(Paint.Style.FILL);
+        mBadgeBgPaint.setShadowLayer(4f * density, 0, 2f * density, 0x3F000000);
+
+        mBadgeStrokePaint.setStyle(Paint.Style.STROKE);
+        mBadgeStrokePaint.setStrokeWidth(2f * density);
+
+        mBadgeTextPaint.setTextSize(14f * density);
+        mBadgeTextPaint.setTypeface(Typeface.create("sans-serif-bold", Typeface.BOLD));
+        mBadgeTextPaint.setTextAlign(Paint.Align.CENTER);
     }
 
     protected void drawCircle(Canvas canvas, int id, TouchHistory data) {
@@ -498,25 +531,26 @@ public class TouchDisplayView extends View {
             float density = getResources().getDisplayMetrics().density;
             float strokeWidth = 24f * density; // Thick progress collar
             float arcRadius = radius + (strokeWidth / 2f);
+            float centerY = data.y - half_r;
 
-            android.graphics.RectF arcBounds = new android.graphics.RectF(
-                data.x - arcRadius,
-                (data.y - half_r) - arcRadius,
-                data.x + arcRadius,
-                (data.y - half_r) + arcRadius
-            );
+            mCountdownArcBounds.set(
+                    data.x - arcRadius,
+                    centerY - arcRadius,
+                    data.x + arcRadius,
+                    centerY + arcRadius);
 
             // Draw a faint background track for the progress collar so the user sees the target path
             mStrokePaint.setColor(color);
             mStrokePaint.setAlpha(45); // ~18% opacity background track
             mStrokePaint.setStyle(Paint.Style.STROKE);
             mStrokePaint.setStrokeWidth(strokeWidth);
-            canvas.drawCircle(data.x, data.y - half_r, arcRadius, mStrokePaint);
+            canvas.drawCircle(data.x, centerY, arcRadius, mStrokePaint);
 
             // Draw the active sweeping progress collar
             mStrokePaint.setAlpha(200); // Higher, clearly visible opacity
             float sweepAngle = 360f * countdownProgress;
-            canvas.drawArc(arcBounds, data.progressStartAngle, sweepAngle, false, mStrokePaint);
+            canvas.drawArc(
+                    mCountdownArcBounds, data.progressStartAngle, sweepAngle, false, mStrokePaint);
         }
 
         if (drawBig) {
@@ -525,14 +559,33 @@ public class TouchDisplayView extends View {
             int blue = Color.blue(color);
             int colorStart = Color.argb(haloAlpha, red, green, blue);
             int colorEnd = Color.argb(0, red, green, blue);
+            float centerY = data.y - half_r;
+            float haloRadius = radius * 2.2f;
 
-            android.graphics.RadialGradient gradient = new android.graphics.RadialGradient(
-                    data.x, data.y - half_r, radius * 2.2f,
-                    colorStart, colorEnd,
-                    android.graphics.Shader.TileMode.CLAMP);
-            mGlowPaint.setShader(gradient);
-            canvas.drawCircle(data.x, data.y - half_r, radius * 2.2f, mGlowPaint);
+            mGlowPaint.setShader(
+                    getCachedHaloGradient(data, centerY, haloRadius, colorStart, colorEnd));
+            canvas.drawCircle(data.x, centerY, haloRadius, mGlowPaint);
         }
+    }
+
+    private RadialGradient getCachedHaloGradient(
+            TouchHistory data, float centerY, float radius, int colorStart, int colorEnd) {
+        if (data.haloGradient == null
+                || Float.compare(data.haloGradientX, data.x) != 0
+                || Float.compare(data.haloGradientY, centerY) != 0
+                || Float.compare(data.haloGradientRadius, radius) != 0
+                || data.haloGradientStartColor != colorStart
+                || data.haloGradientEndColor != colorEnd) {
+            data.haloGradient =
+                    new RadialGradient(
+                            data.x, centerY, radius, colorStart, colorEnd, Shader.TileMode.CLAMP);
+            data.haloGradientX = data.x;
+            data.haloGradientY = centerY;
+            data.haloGradientRadius = radius;
+            data.haloGradientStartColor = colorStart;
+            data.haloGradientEndColor = colorEnd;
+        }
+        return data.haloGradient;
     }
 
     private void drawSingleRefinedOrderBadge(
@@ -588,11 +641,10 @@ public class TouchDisplayView extends View {
         }
 
         // Clamp the badge coordinates so they don't clip off the screen boundaries
-        float badgeRadius = 18f * density;
-        float minX = badgeRadius + 4f * density;
-        float maxX = getWidth() - badgeRadius - 4f * density;
-        float minY = badgeRadius + 4f * density;
-        float maxY = getHeight() - badgeRadius - 4f * density;
+        float minX = mBadgeRadius + mBadgeEdgePadding;
+        float maxX = getWidth() - mBadgeRadius - mBadgeEdgePadding;
+        float minY = mBadgeRadius + mBadgeEdgePadding;
+        float maxY = getHeight() - mBadgeRadius - mBadgeEdgePadding;
 
         badgeX = clamp(badgeX, minX, maxX);
         badgeY = clamp(badgeY, minY, maxY);
@@ -602,37 +654,23 @@ public class TouchDisplayView extends View {
 
     private void drawBadgeLabel(
             Canvas canvas, String label, float badgeX, float badgeY, float rotation, int circleColor) {
-        float density = getResources().getDisplayMetrics().density;
-        float badgeRadius = 18f * density;
-
         canvas.save();
         canvas.rotate(rotation, badgeX, badgeY);
 
         // 1. Draw badge background (white circle with subtle drop shadow)
-        Paint badgeBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        badgeBgPaint.setColor(Color.WHITE);
-        badgeBgPaint.setStyle(Paint.Style.FILL);
-        badgeBgPaint.setShadowLayer(4f * density, 0, 2f * density, 0x3F000000);
-        canvas.drawCircle(badgeX, badgeY, badgeRadius, badgeBgPaint);
+        canvas.drawCircle(badgeX, badgeY, mBadgeRadius, mBadgeBgPaint);
 
         // 2. Draw badge border (colored outline matching the finger's color)
-        Paint badgeStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        badgeStrokePaint.setColor(circleColor);
-        badgeStrokePaint.setStyle(Paint.Style.STROKE);
-        badgeStrokePaint.setStrokeWidth(2f * density);
-        canvas.drawCircle(badgeX, badgeY, badgeRadius, badgeStrokePaint);
+        mBadgeStrokePaint.setColor(circleColor);
+        canvas.drawCircle(badgeX, badgeY, mBadgeRadius, mBadgeStrokePaint);
 
         // 3. Draw the number in the center of the badge
-        Paint badgeTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        badgeTextPaint.setTextSize(14f * density);
-        badgeTextPaint.setColor(circleColor);
-        badgeTextPaint.setTypeface(Typeface.create("sans-serif-bold", Typeface.BOLD));
-        badgeTextPaint.setTextAlign(Paint.Align.CENTER);
+        mBadgeTextPaint.setColor(circleColor);
 
         // Center text vertically
-        float textHeight = badgeTextPaint.descent() - badgeTextPaint.ascent();
-        float textOffset = (textHeight / 2) - badgeTextPaint.descent();
-        canvas.drawText(label, badgeX, badgeY + textOffset, badgeTextPaint);
+        float textHeight = mBadgeTextPaint.descent() - mBadgeTextPaint.ascent();
+        float textOffset = (textHeight / 2) - mBadgeTextPaint.descent();
+        canvas.drawText(label, badgeX, badgeY + textOffset, mBadgeTextPaint);
 
         canvas.restore();
     }
