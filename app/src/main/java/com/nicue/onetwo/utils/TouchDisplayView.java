@@ -26,6 +26,7 @@ public class TouchDisplayView extends View {
     private boolean choosingOrder = false;
     // private int fingers = 0;
     public static final long SELECTION_REVEAL_DURATION_MS = 650L;
+    public static final long COUNTDOWN_DURATION_MS = 2000L;
     private static final int SELECTED_TOUCH_ALPHA = 255;
     private static final int DIMMED_TOUCH_ALPHA = 105;
     private static final int TOUCH_HALO_ALPHA = 125;
@@ -45,6 +46,9 @@ public class TouchDisplayView extends View {
     private ValueAnimator countdownAnimator;
     private float countdownProgress = 0f;
     private final Paint mGlowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private boolean tick1Fired = false;
+    private boolean tick2Fired = false;
+    private boolean tick3Fired = false;
 
     private int backgroundColorOverride = getResources().getColor(R.color.overrideBackground);
 
@@ -247,20 +251,35 @@ public class TouchDisplayView extends View {
                      * active gesture.
                      */
                     mTouches.put(id, data);
-                    handler.postDelayed(runnable, 1500);
+                    handler.postDelayed(runnable, COUNTDOWN_DURATION_MS);
 
                     if (countdownAnimator != null) {
                         countdownAnimator.cancel();
                     }
                     countdownProgress = 0f;
                     countdownAnimator = ValueAnimator.ofFloat(0f, 1f);
-                    countdownAnimator.setDuration(1500L);
+                    countdownAnimator.setDuration(COUNTDOWN_DURATION_MS);
                     countdownAnimator.setInterpolator(new android.view.animation.LinearInterpolator());
                     countdownAnimator.addUpdateListener(
                             new ValueAnimator.AnimatorUpdateListener() {
                                 @Override
                                 public void onAnimationUpdate(ValueAnimator animation) {
                                     countdownProgress = (float) animation.getAnimatedValue();
+
+                                    // Trigger periodic haptic ticks during countdown
+                                    if (countdownProgress >= 0.25f && !tick1Fired) {
+                                        tick1Fired = true;
+                                        triggerTickVibration();
+                                    }
+                                    if (countdownProgress >= 0.50f && !tick2Fired) {
+                                        tick2Fired = true;
+                                        triggerTickVibration();
+                                    }
+                                    if (countdownProgress >= 0.75f && !tick3Fired) {
+                                        tick3Fired = true;
+                                        triggerTickVibration();
+                                    }
+
                                     invalidate();
                                 }
                             });
@@ -752,6 +771,16 @@ public class TouchDisplayView extends View {
             countdownAnimator = null;
         }
         countdownProgress = 0f;
+        tick1Fired = false;
+        tick2Fired = false;
+        tick3Fired = false;
+    }
+
+    private void triggerTickVibration() {
+        Vibrator v = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
+        if (v != null) {
+            v.vibrate(10);
+        }
     }
 
     public int indexInArray(int[] arr, int n) {
