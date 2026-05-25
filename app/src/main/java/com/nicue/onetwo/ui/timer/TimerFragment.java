@@ -154,7 +154,7 @@ public class TimerFragment extends Fragment implements MenuProvider {
         if (binding == null || state == null) {
             return;
         }
-        binding.playButton.setText(state.isPaused() ? R.string.play : R.string.pause);
+        binding.playButton.setContentDescription(getString(state.isPaused() ? R.string.play : R.string.pause));
 
         List<TimerItemUiModel> timers = state.getTimers();
         if (timerBindings.size() != timers.size()) {
@@ -166,12 +166,16 @@ public class TimerFragment extends Fragment implements MenuProvider {
             itemBinding.chrono.setText(timer.getDisplayTime());
             itemBinding.chrono.setEnabled(timer.isEnabled());
             itemBinding.chrono.setClickable(timer.isEnabled());
-            int bgColor = resolveButtonColor(timer);
-            int textColor = resolveTextColor(timer);
+            int bgColor = resolveButtonColor(timer, state.isPaused());
+            int textColor = resolveTextColor(timer, state.isPaused());
             itemBinding.chrono.setBackgroundTintList(ColorStateList.valueOf(bgColor));
             itemBinding.chrono.setTextColor(textColor);
             itemBinding.cvTimer.setCardBackgroundColor(ColorStateList.valueOf(bgColor));
-            itemBinding.cvTimer.setCardElevation(timer.isActive() && !state.isPaused() ? 30f : 2f);
+            itemBinding.cvTimer.setCardElevation(timer.isActive() && !state.isPaused() ? 12f : 0f);
+            
+            // Dim if active but paused
+            itemBinding.cvTimer.setAlpha(timer.isActive() && state.isPaused() ? 0.7f : 1.0f);
+            
             itemBinding.getRoot().setRotation(i == 0 && timers.size() == 2 ? 180f : 0f);
         }
     }
@@ -248,34 +252,36 @@ public class TimerFragment extends Fragment implements MenuProvider {
                 });
     }
 
-    private int resolveButtonColor(TimerItemUiModel timer) {
+    private int resolveButtonColor(TimerItemUiModel timer, boolean isPaused) {
         Context context = requireContext();
         if (timer.isFinished()) {
             return MaterialColors.getColor(
                     context,
-                    com.google.android.material.R.attr.colorSurfaceVariant,
+                    com.google.android.material.R.attr.colorErrorContainer,
                     "TimerFragment");
         }
         return timer.isActive() && timer.isEnabled()
                 ? MaterialColors.getColor(
-                        context, com.google.android.material.R.attr.colorTertiary, "TimerFragment")
-                : ContextCompat.getColor(context, R.color.timer_idle_background);
+                        context, com.google.android.material.R.attr.colorPrimary, "TimerFragment")
+                : MaterialColors.getColor(
+                        context, com.google.android.material.R.attr.colorSurfaceVariant, "TimerFragment");
     }
 
-    private int resolveTextColor(TimerItemUiModel timer) {
+    private int resolveTextColor(TimerItemUiModel timer, boolean isPaused) {
         Context context = requireContext();
         if (timer.isFinished()) {
             return MaterialColors.getColor(
                     context,
-                    com.google.android.material.R.attr.colorOnSurfaceVariant,
+                    com.google.android.material.R.attr.colorOnErrorContainer,
                     "TimerFragment");
         }
         return timer.isActive() && timer.isEnabled()
                 ? MaterialColors.getColor(
                         context,
-                        com.google.android.material.R.attr.colorOnTertiary,
+                        com.google.android.material.R.attr.colorOnPrimary,
                         "TimerFragment")
-                : ContextCompat.getColor(context, R.color.timer_idle_foreground);
+                : MaterialColors.getColor(
+                        context, com.google.android.material.R.attr.colorOnSurfaceVariant, "TimerFragment");
     }
 
     private void vibrate(long milliseconds) {
