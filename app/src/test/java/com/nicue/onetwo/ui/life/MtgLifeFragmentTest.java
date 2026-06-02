@@ -871,7 +871,8 @@ public class MtgLifeFragmentTest {
                                     MtgLifeFragment.class.getDeclaredField("coachMarkPopup");
                             coachMarkField.setAccessible(true);
                             android.widget.PopupWindow popup =
-                                    (android.widget.PopupWindow) coachMarkField.get(mtgLifeFragment);
+                                    (android.widget.PopupWindow)
+                                            coachMarkField.get(mtgLifeFragment);
 
                             assertNotNull(popup);
                             assertTrue(popup.isShowing());

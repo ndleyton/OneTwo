@@ -275,14 +275,14 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             return null;
         }
         CharSequence rootDescription = root.getContentDescription();
-        if (rootDescription != null && rootDescription.toString().contentEquals(contentDescription)) {
+        if (rootDescription != null
+                && rootDescription.toString().contentEquals(contentDescription)) {
             return root;
         }
         if (root instanceof ViewGroup rootGroup) {
             for (int i = 0; i < rootGroup.getChildCount(); i++) {
                 View match =
-                        findViewWithContentDescription(
-                                rootGroup.getChildAt(i), contentDescription);
+                        findViewWithContentDescription(rootGroup.getChildAt(i), contentDescription);
                 if (match != null) {
                     return match;
                 }
