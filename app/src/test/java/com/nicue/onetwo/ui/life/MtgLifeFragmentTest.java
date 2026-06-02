@@ -935,6 +935,12 @@ public class MtgLifeFragmentTest {
 
                             org.junit.Assert.assertNull(coachMarkField.get(fragment));
                             org.junit.Assert.assertFalse(popup.isShowing());
+
+                            java.lang.reflect.Field viewModelField =
+                                    MtgLifeFragment.class.getDeclaredField("viewModel");
+                            viewModelField.setAccessible(true);
+                            MtgLifeViewModel viewModel = (MtgLifeViewModel) viewModelField.get(fragment);
+                            org.junit.Assert.assertFalse(viewModel.isSetupCoachMarkDismissed());
                         } catch (ReflectiveOperationException e) {
                             throw new AssertionError(e);
                         }

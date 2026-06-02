@@ -241,6 +241,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
 
     private void showCoachMark(View anchor) {
         if (coachMarkPopup != null) {
+            coachMarkPopup.setOnDismissListener(null);
             coachMarkPopup.dismiss();
         }
         View popupView =
@@ -1365,6 +1366,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     public void onDestroyView() {
         super.onDestroyView();
         if (coachMarkPopup != null) {
+            coachMarkPopup.setOnDismissListener(null);
             coachMarkPopup.dismiss();
             coachMarkPopup = null;
         }
