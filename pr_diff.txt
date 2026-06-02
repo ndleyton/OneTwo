@@ -1,0 +1,416 @@
+diff --git a/app/src/main/java/com/nicue/onetwo/data/settings/SettingsPrefsDataSource.java b/app/src/main/java/com/nicue/onetwo/data/settings/SettingsPrefsDataSource.java
+index 68c3b5c..33e6682 100644
+--- a/app/src/main/java/com/nicue/onetwo/data/settings/SettingsPrefsDataSource.java
++++ b/app/src/main/java/com/nicue/onetwo/data/settings/SettingsPrefsDataSource.java
+@@ -9,6 +9,8 @@ public class SettingsPrefsDataSource {
+     private static final String KEY_DARK_MODE = "dark_mode";
+     private static final String KEY_CHOOSER_ORDER = "chooser_order";
+     private static final String KEY_LIFE_COUNTER_HAPTIC_FEEDBACK = "life_counter_haptic_feedback";
++    private static final String KEY_MTG_SETUP_COACH_MARK_DISMISSED =
++            "mtg_setup_coach_mark_dismissed";
+     private final SharedPreferences sharedPreferences;
+ 
+     public SettingsPrefsDataSource(Context context) {
+@@ -46,4 +48,12 @@ public class SettingsPrefsDataSource {
+     public void setLifeCounterHapticFeedbackEnabled(boolean enabled) {
+         sharedPreferences.edit().putBoolean(KEY_LIFE_COUNTER_HAPTIC_FEEDBACK, enabled).apply();
+     }
++
++    public boolean isMtgSetupCoachMarkDismissed() {
++        return sharedPreferences.getBoolean(KEY_MTG_SETUP_COACH_MARK_DISMISSED, false);
++    }
++
++    public void setMtgSetupCoachMarkDismissed(boolean dismissed) {
++        sharedPreferences.edit().putBoolean(KEY_MTG_SETUP_COACH_MARK_DISMISSED, dismissed).apply();
++    }
+ }
+diff --git a/app/src/main/java/com/nicue/onetwo/data/settings/SettingsRepository.java b/app/src/main/java/com/nicue/onetwo/data/settings/SettingsRepository.java
+index 3cff99f..81c6c1f 100644
+--- a/app/src/main/java/com/nicue/onetwo/data/settings/SettingsRepository.java
++++ b/app/src/main/java/com/nicue/onetwo/data/settings/SettingsRepository.java
+@@ -43,6 +43,14 @@ public class SettingsRepository {
+         dataSource.setLifeCounterHapticFeedbackEnabled(enabled);
+     }
+ 
++    public boolean isMtgSetupCoachMarkDismissed() {
++        return dataSource.isMtgSetupCoachMarkDismissed();
++    }
++
++    public void setMtgSetupCoachMarkDismissed(boolean dismissed) {
++        dataSource.setMtgSetupCoachMarkDismissed(dismissed);
++    }
++
+     public void applyNightMode() {
+         boolean darkModeEnabled = isDarkModeEnabled();
+         AppCompatDelegate.setDefaultNightMode(
+diff --git a/app/src/main/java/com/nicue/onetwo/ui/life/MtgLifeFragment.java b/app/src/main/java/com/nicue/onetwo/ui/life/MtgLifeFragment.java
+index 588f9f4..8fc0eb6 100644
+--- a/app/src/main/java/com/nicue/onetwo/ui/life/MtgLifeFragment.java
++++ b/app/src/main/java/com/nicue/onetwo/ui/life/MtgLifeFragment.java
+@@ -25,6 +25,7 @@ import android.view.ViewGroup;
+ import android.widget.EditText;
+ import android.widget.FrameLayout;
+ import android.widget.LinearLayout;
++import android.widget.PopupWindow;
+ import android.widget.TextView;
+ import androidx.annotation.NonNull;
+ import androidx.annotation.Nullable;
+@@ -68,6 +69,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
+     private final Map<Integer, TextView> activeDialogDamageTextViews = new HashMap<>();
+     private final Handler holdRepeatHandler = new Handler(Looper.getMainLooper());
+     private final Map<View, Runnable> activeLifeHoldRunnables = new HashMap<>();
++    private PopupWindow coachMarkPopup;
+ 
+     private static final class CommanderGridLayout {
+         private final int rows;
+@@ -210,6 +212,67 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
+                 newGameItem.setVisible(!currentUiState.isShowingSetup());
+             }
+         }
++        showCoachMarkIfNecessary();
++    }
++
++    private void showCoachMarkIfNecessary() {
++        if (viewModel == null || viewModel.isSetupCoachMarkDismissed()) {
++            return;
++        }
++        MtgLifeUiState state = viewModel.getUiState().getValue();
++        if (state != null && state.isShowingSetup()) {
++            return;
++        }
++
++        View view = getView();
++        if (view == null) return;
++        view.post(
++                () -> {
++                    if (getActivity() == null) return;
++                    View anchor = requireActivity().findViewById(R.id.action_new_game);
++                    if (anchor != null
++                            && anchor.isAttachedToWindow()
++                            && anchor.getVisibility() == View.VISIBLE) {
++                        if (viewModel.isSetupCoachMarkDismissed()) return;
++                        showCoachMark(anchor);
++                    }
++                });
++    }
++
++    private void showCoachMark(View anchor) {
++        if (coachMarkPopup != null) {
++            coachMarkPopup.setOnDismissListener(null);
++            coachMarkPopup.dismiss();
++        }
++        View popupView =
++                LayoutInflater.from(requireContext()).inflate(R.layout.mtg_coach_mark, null);
++        coachMarkPopup =
++                new PopupWindow(
++                        popupView,
++                        ViewGroup.LayoutParams.WRAP_CONTENT,
++                        ViewGroup.LayoutParams.WRAP_CONTENT,
++                        true);
++        coachMarkPopup.setOutsideTouchable(true);
++        coachMarkPopup.setElevation(dpToPx(8));
++        coachMarkPopup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
++
++        popupView.setOnClickListener(
++                v -> {
++                    if (coachMarkPopup != null) {
++                        coachMarkPopup.dismiss();
++                    }
++                    anchor.performClick();
++                });
++
++        coachMarkPopup.setOnDismissListener(
++                () -> {
++                    viewModel.markSetupCoachMarkDismissed();
++                    coachMarkPopup = null;
++                });
++
++        popupView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
++        int xOffset = anchor.getWidth() - popupView.getMeasuredWidth();
++        coachMarkPopup.showAsDropDown(anchor, xOffset, dpToPx(4));
+     }
+ 
+     @Override
+@@ -1302,6 +1365,11 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
+     @Override
+     public void onDestroyView() {
+         super.onDestroyView();
++        if (coachMarkPopup != null) {
++            coachMarkPopup.setOnDismissListener(null);
++            coachMarkPopup.dismiss();
++            coachMarkPopup = null;
++        }
+         for (Runnable repeatRunnable : activeLifeHoldRunnables.values()) {
+             holdRepeatHandler.removeCallbacks(repeatRunnable);
+         }
+diff --git a/app/src/main/java/com/nicue/onetwo/ui/life/MtgLifeViewModel.java b/app/src/main/java/com/nicue/onetwo/ui/life/MtgLifeViewModel.java
+index bfbf1d5..bca8172 100644
+--- a/app/src/main/java/com/nicue/onetwo/ui/life/MtgLifeViewModel.java
++++ b/app/src/main/java/com/nicue/onetwo/ui/life/MtgLifeViewModel.java
+@@ -358,6 +358,14 @@ public class MtgLifeViewModel extends ViewModel {
+         updateUiState();
+     }
+ 
++    public boolean isSetupCoachMarkDismissed() {
++        return settingsRepository.isMtgSetupCoachMarkDismissed();
++    }
++
++    public void markSetupCoachMarkDismissed() {
++        settingsRepository.setMtgSetupCoachMarkDismissed(true);
++    }
++
+     public void resetToSetup() {
+         pauseTimer();
+         savedStateHandle.set(KEY_SHOWING_SETUP, true);
+diff --git a/app/src/main/res/drawable/ic_add_circle_outline_24.xml b/app/src/main/res/drawable/ic_add_circle_outline_24.xml
+new file mode 100644
+index 0000000..e3bcb33
+--- /dev/null
++++ b/app/src/main/res/drawable/ic_add_circle_outline_24.xml
+@@ -0,0 +1,10 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportWidth="24"
++    android:viewportHeight="24"
++    android:tint="?attr/colorControlNormal">
++  <path
++      android:fillColor="@android:color/white"
++      android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2zM12,20c-4.41,0 -8,-3.59 -8,-8s3.59,-8 8,-8 8,3.59 8,8 -3.59,8 -8,8zM16,11h-3L13,8h-2v3L8,11v2h3v3h2v-3h3v-2z"/>
++</vector>
+diff --git a/app/src/main/res/layout/mtg_coach_mark.xml b/app/src/main/res/layout/mtg_coach_mark.xml
+new file mode 100644
+index 0000000..ecfedee
+--- /dev/null
++++ b/app/src/main/res/layout/mtg_coach_mark.xml
+@@ -0,0 +1,25 @@
++<?xml version="1.0" encoding="utf-8"?>
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    android:layout_width="wrap_content"
++    android:layout_height="wrap_content"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
++    android:orientation="vertical"
++    android:gravity="end"
++    android:padding="8dp">
++
++    <com.google.android.material.card.MaterialCardView
++        android:layout_width="220dp"
++        android:layout_height="wrap_content"
++        app:cardBackgroundColor="?attr/colorPrimary"
++        app:cardCornerRadius="8dp"
++        app:cardElevation="4dp"
++        app:contentPadding="12dp">
++
++        <TextView
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:text="@string/mtg_setup_coach_mark"
++            android:textColor="?attr/colorOnPrimary"
++            android:textSize="14sp" />
++    </com.google.android.material.card.MaterialCardView>
++</LinearLayout>
+diff --git a/app/src/main/res/menu/life_actions.xml b/app/src/main/res/menu/life_actions.xml
+index a67fb16..5c81161 100644
+--- a/app/src/main/res/menu/life_actions.xml
++++ b/app/src/main/res/menu/life_actions.xml
+@@ -4,5 +4,7 @@
+     <item
+         android:id="@+id/action_new_game"
+         android:title="@string/mtg_setup_title"
+-        app:showAsAction="always|withText" />
++        android:icon="@drawable/ic_add_circle_outline_24"
++        android:contentDescription="@string/mtg_setup_title"
++        app:showAsAction="always" />
+ </menu>
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+index a463df0..5212019 100644
+--- a/app/src/main/res/values/strings.xml
++++ b/app/src/main/res/values/strings.xml
+@@ -123,4 +123,5 @@
+     <string name="mtg_start_timer_desc">Start timer for player %1$d</string>
+     <string name="mtg_player_timer_desc">Player %1$d remaining time: %2$s</string>
+     <string name="mtg_setup_choose_and_start">Choose 1st &amp; Start</string>
++    <string name="mtg_setup_coach_mark">Set players, life, commander damage, and choose first</string>
+ </resources>
+diff --git a/app/src/test/java/com/nicue/onetwo/data/settings/SettingsRepositoryTest.java b/app/src/test/java/com/nicue/onetwo/data/settings/SettingsRepositoryTest.java
+index e23d0e7..cbdab0f 100644
+--- a/app/src/test/java/com/nicue/onetwo/data/settings/SettingsRepositoryTest.java
++++ b/app/src/test/java/com/nicue/onetwo/data/settings/SettingsRepositoryTest.java
+@@ -43,4 +43,24 @@ public class SettingsRepositoryTest {
+                 new SettingsRepository(new SettingsPrefsDataSource(context));
+         assertFalse(reloadedRepository.isLifeCounterHapticFeedbackEnabled());
+     }
++
++    @Test
++    public void mtgSetupCoachMarkDefaultsToNotDismissed() {
++        SettingsRepository repository =
++                new SettingsRepository(new SettingsPrefsDataSource(context));
++
++        assertFalse(repository.isMtgSetupCoachMarkDismissed());
++    }
++
++    @Test
++    public void setMtgSetupCoachMarkDismissedPersistsValue() {
++        SettingsRepository repository =
++                new SettingsRepository(new SettingsPrefsDataSource(context));
++
++        repository.setMtgSetupCoachMarkDismissed(true);
++
++        SettingsRepository reloadedRepository =
++                new SettingsRepository(new SettingsPrefsDataSource(context));
++        assertTrue(reloadedRepository.isMtgSetupCoachMarkDismissed());
++    }
+ }
+diff --git a/app/src/test/java/com/nicue/onetwo/ui/life/MtgLifeFragmentTest.java b/app/src/test/java/com/nicue/onetwo/ui/life/MtgLifeFragmentTest.java
+index 168c53e..4097334 100644
+--- a/app/src/test/java/com/nicue/onetwo/ui/life/MtgLifeFragmentTest.java
++++ b/app/src/test/java/com/nicue/onetwo/ui/life/MtgLifeFragmentTest.java
+@@ -909,4 +909,104 @@ public class MtgLifeFragmentTest {
+                                 defenderPlayerNumber));
+         assertNotNull(incrementZone);
+     }
++
++    @Test
++    public void testCoachMarkDismissedOnDestroyView() {
++        try (FragmentScenario<MtgLifeFragment> scenario =
++                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
++            scenario.onFragment(
++                    fragment -> {
++                        View anchor = new View(fragment.requireContext());
++                        try {
++                            java.lang.reflect.Method showCoachMarkMethod =
++                                    MtgLifeFragment.class.getDeclaredMethod(
++                                            "showCoachMark", View.class);
++                            showCoachMarkMethod.setAccessible(true);
++                            showCoachMarkMethod.invoke(fragment, anchor);
++
++                            java.lang.reflect.Field coachMarkField =
++                                    MtgLifeFragment.class.getDeclaredField("coachMarkPopup");
++                            coachMarkField.setAccessible(true);
++                            android.widget.PopupWindow popup =
++                                    (android.widget.PopupWindow) coachMarkField.get(fragment);
++
++                            assertNotNull(popup);
++                            assertTrue(popup.isShowing());
++
++                            fragment.onDestroyView();
++
++                            org.junit.Assert.assertNull(coachMarkField.get(fragment));
++                            org.junit.Assert.assertFalse(popup.isShowing());
++
++                            java.lang.reflect.Field viewModelField =
++                                    MtgLifeFragment.class.getDeclaredField("viewModel");
++                            viewModelField.setAccessible(true);
++                            MtgLifeViewModel viewModel =
++                                    (MtgLifeViewModel) viewModelField.get(fragment);
++                            org.junit.Assert.assertFalse(viewModel.isSetupCoachMarkDismissed());
++                        } catch (ReflectiveOperationException e) {
++                            throw new AssertionError(e);
++                        }
++                    });
++        }
++    }
++
++    @Test
++    public void testCoachMarkAccessibilityAndInteraction() {
++        try (FragmentScenario<MtgLifeFragment> scenario =
++                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
++            scenario.onFragment(
++                    fragment -> {
++                        View anchor = new View(fragment.requireContext());
++                        boolean[] anchorClicked = {false};
++                        anchor.setOnClickListener(v -> anchorClicked[0] = true);
++
++                        try {
++                            java.lang.reflect.Method showCoachMarkMethod =
++                                    MtgLifeFragment.class.getDeclaredMethod(
++                                            "showCoachMark", View.class);
++                            showCoachMarkMethod.setAccessible(true);
++                            showCoachMarkMethod.invoke(fragment, anchor);
++
++                            java.lang.reflect.Field coachMarkField =
++                                    MtgLifeFragment.class.getDeclaredField("coachMarkPopup");
++                            coachMarkField.setAccessible(true);
++                            android.widget.PopupWindow popup =
++                                    (android.widget.PopupWindow) coachMarkField.get(fragment);
++
++                            assertNotNull(popup);
++                            assertTrue(popup.isShowing());
++                            assertTrue(popup.isOutsideTouchable()); // Accessibility: can be
++                            // dismissed by touching outside
++
++                            View popupContentView = popup.getContentView();
++                            assertNotNull(popupContentView);
++
++                            // Simulate click on the coach mark
++                            popupContentView.performClick();
++
++                            // Verify anchor was clicked as a result
++                            assertTrue(anchorClicked[0]);
++
++                            // Verify popup was dismissed
++                            org.junit.Assert.assertFalse(popup.isShowing());
++
++                            // Verify ViewModel received the dismiss signal
++                            java.lang.reflect.Field viewModelField =
++                                    MtgLifeFragment.class.getDeclaredField("viewModel");
++                            viewModelField.setAccessible(true);
++                            MtgLifeViewModel viewModel =
++                                    (MtgLifeViewModel) viewModelField.get(fragment);
++                            assertTrue(viewModel.isSetupCoachMarkDismissed());
++
++                            // Verify reference is cleared via dismiss listener
++                            Shadows.shadowOf(Looper.getMainLooper()).idle();
++                            org.junit.Assert.assertNull(coachMarkField.get(fragment));
++
++                        } catch (ReflectiveOperationException e) {
++                            throw new AssertionError(e);
++                        }
++                    });
++        }
++    }
+ }
+diff --git a/app/src/test/java/com/nicue/onetwo/ui/life/MtgLifeViewModelTest.java b/app/src/test/java/com/nicue/onetwo/ui/life/MtgLifeViewModelTest.java
+index 4857c0a..43d0d62 100644
+--- a/app/src/test/java/com/nicue/onetwo/ui/life/MtgLifeViewModelTest.java
++++ b/app/src/test/java/com/nicue/onetwo/ui/life/MtgLifeViewModelTest.java
+@@ -42,6 +42,7 @@ public class MtgLifeViewModelTest {
+     private static final class FakeSettingsRepository
+             extends com.nicue.onetwo.data.settings.SettingsRepository {
+         private boolean hapticEnabled = true;
++        private boolean setupCoachMarkDismissed = false;
+ 
+         FakeSettingsRepository() {
+             super(null);
+@@ -55,6 +56,16 @@ public class MtgLifeViewModelTest {
+         public void setHapticEnabled(boolean enabled) {
+             this.hapticEnabled = enabled;
+         }
++
++        @Override
++        public boolean isMtgSetupCoachMarkDismissed() {
++            return setupCoachMarkDismissed;
++        }
++
++        @Override
++        public void setMtgSetupCoachMarkDismissed(boolean dismissed) {
++            this.setupCoachMarkDismissed = dismissed;
++        }
+     }
+ 
+     @Before
+@@ -761,4 +772,14 @@ public class MtgLifeViewModelTest {
+         settingsRepository.setHapticEnabled(false);
+         assertFalse(viewModel.isLifeCounterHapticFeedbackEnabled());
+     }
++
++    @Test
++    public void testSetupCoachMarkDismissalDelegation() {
++        settingsRepository.setMtgSetupCoachMarkDismissed(false);
++        assertFalse(viewModel.isSetupCoachMarkDismissed());
++
++        viewModel.markSetupCoachMarkDismissed();
++        assertTrue(settingsRepository.isMtgSetupCoachMarkDismissed());
++        assertTrue(viewModel.isSetupCoachMarkDismissed());
++    }
+ }

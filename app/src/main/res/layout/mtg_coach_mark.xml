@@ -1,15 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:gravity="end"
     android:padding="8dp">
+
+    <View
+        android:id="@+id/coach_mark_pointer"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="18dp"
+        android:background="@drawable/bg_mtg_coach_mark_pointer"
+        android:elevation="4dp"
+        android:rotation="45" />
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="220dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         app:cardBackgroundColor="?attr/colorPrimary"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
@@ -22,4 +32,4 @@
             android:textColor="?attr/colorOnPrimary"
             android:textSize="14sp" />
     </com.google.android.material.card.MaterialCardView>
-</LinearLayout>
+</FrameLayout>

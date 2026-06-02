@@ -271,8 +271,14 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                 });
 
         popupView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        int xOffset = anchor.getWidth() - popupView.getMeasuredWidth();
-        coachMarkPopup.showAsDropDown(anchor, xOffset, dpToPx(4));
+        popupView.layout(0, 0, popupView.getMeasuredWidth(), popupView.getMeasuredHeight());
+        View pointer = popupView.findViewById(R.id.coach_mark_pointer);
+        int pointerCenterX = popupView.getMeasuredWidth() / 2;
+        if (pointer != null) {
+            pointerCenterX = pointer.getLeft() + (pointer.getMeasuredWidth() / 2);
+        }
+        int xOffset = Math.round((anchor.getWidth() / 2f) - pointerCenterX);
+        coachMarkPopup.showAsDropDown(anchor, xOffset, dpToPx(2));
     }
 
     @Override

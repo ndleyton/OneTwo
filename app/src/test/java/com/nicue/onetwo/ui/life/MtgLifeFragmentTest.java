@@ -981,6 +981,7 @@ public class MtgLifeFragmentTest {
 
                             View popupContentView = popup.getContentView();
                             assertNotNull(popupContentView);
+                            assertNotNull(popupContentView.findViewById(R.id.coach_mark_pointer));
 
                             // Simulate click on the coach mark
                             popupContentView.performClick();
