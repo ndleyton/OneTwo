@@ -339,6 +339,67 @@ public class MtgLifeFragmentTest {
     }
 
     @Test
+    public void testTwoPlayerCommanderDamageLayoutForBottomPlayerFollowsVerticalBoardOrder() {
+        try (FragmentScenario<MtgLifeFragment> scenario =
+                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
+
+            scenario.onFragment(
+                    fragment -> {
+                        startLifeGame(fragment, "2", "40");
+                    });
+
+            scenario.onFragment(
+                    fragment -> {
+                        android.widget.LinearLayout dialogContent =
+                                showCommanderDamageDialog(fragment, 1);
+
+                        assertEquals(2, dialogContent.getChildCount());
+
+                        android.widget.LinearLayout row0 =
+                                (android.widget.LinearLayout) dialogContent.getChildAt(0);
+                        android.widget.LinearLayout row1 =
+                                (android.widget.LinearLayout) dialogContent.getChildAt(1);
+
+                        assertEquals(1, row0.getChildCount());
+                        assertEquals(1, row1.getChildCount());
+                        assertCommanderCellContainsSource(fragment, row0.getChildAt(0), 1, 2);
+                        assertEquals(View.INVISIBLE, row1.getChildAt(0).getVisibility());
+                    });
+        }
+    }
+
+    @Test
+    public void testThreePlayerCommanderDamageLayoutForPlayer1FollowsBoardOrder() {
+        try (FragmentScenario<MtgLifeFragment> scenario =
+                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
+
+            scenario.onFragment(
+                    fragment -> {
+                        startLifeGame(fragment, "3", "40");
+                    });
+
+            scenario.onFragment(
+                    fragment -> {
+                        android.widget.LinearLayout dialogContent =
+                                showCommanderDamageDialog(fragment, 0);
+
+                        android.widget.LinearLayout row0 =
+                                (android.widget.LinearLayout) dialogContent.getChildAt(0);
+                        android.widget.LinearLayout row1 =
+                                (android.widget.LinearLayout) dialogContent.getChildAt(1);
+                        View topLeftCell = row0.getChildAt(0);
+                        View topRightCell = row0.getChildAt(1);
+
+                        assertEquals(2, dialogContent.getChildCount());
+                        assertCommanderCellContainsSource(fragment, topLeftCell, 2, 1);
+                        assertCommanderCellContainsSource(fragment, topRightCell, 3, 1);
+                        assertEquals(View.INVISIBLE, row1.getChildAt(0).getVisibility());
+                        assertEquals(View.INVISIBLE, row1.getChildAt(1).getVisibility());
+                    });
+        }
+    }
+
+    @Test
     public void testLongPressLifeZonesAdjustByTen() {
         try (FragmentScenario<MtgLifeFragment> scenario =
                 FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
@@ -442,98 +503,51 @@ public class MtgLifeFragmentTest {
     }
 
     @Test
-    public void testFivePlayerCommanderDamageLayoutForPlayer5MatchesFragment() {
+    public void testFivePlayerCommanderDamageLayoutForPlayer5KeepsBoardSeatSequence() {
         try (FragmentScenario<MtgLifeFragment> scenario =
                 FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
 
             scenario.onFragment(
                     fragment -> {
-                        org.robolectric.fakes.RoboMenuItem resetMenuItem =
-                                new org.robolectric.fakes.RoboMenuItem(R.id.action_new_game);
-                        fragment.onMenuItemSelected(resetMenuItem);
-
-                        View view = fragment.getView();
-                        assertNotNull(view);
-                        EditText playersInput = view.findViewById(R.id.players_input);
-                        EditText lifeInput = view.findViewById(R.id.life_input);
-                        playersInput.setText("5");
-                        lifeInput.setText("40");
-
-                        Button startButton = view.findViewById(R.id.start_game_button);
-                        startButton.performClick();
+                        startLifeGame(fragment, "5", "40");
                     });
 
             scenario.onFragment(
                     fragment -> {
-                        View player5 = fragment.requireView().findViewById(R.id.player_5);
-                        View commanderGrid = player5.findViewById(R.id.commander_damage_grid);
-                        assertNotNull(commanderGrid);
-                        try {
-                            java.lang.reflect.Method showDialogMethod =
-                                    MtgLifeFragment.class.getDeclaredMethod(
-                                            "showCommanderDamageDialog", int.class);
-                            showDialogMethod.setAccessible(true);
-                            showDialogMethod.invoke(fragment, 4);
-                        } catch (ReflectiveOperationException e) {
-                            throw new AssertionError(e);
-                        }
-                        Shadows.shadowOf(Looper.getMainLooper()).idle();
-
-                        Dialog dialog = ShadowDialog.getLatestDialog();
-                        assertNotNull(dialog);
-                        assertTrue(dialog.isShowing());
-                        assertNotNull(dialog.getWindow());
-
-                        View decorView = dialog.getWindow().getDecorView();
                         android.widget.LinearLayout dialogContent =
-                                decorView.findViewWithTag("commander_dialog_content");
-                        assertNotNull(dialogContent);
+                                showCommanderDamageDialog(fragment, 4);
+
+                        assertEquals(3, dialogContent.getChildCount());
 
                         android.widget.LinearLayout row0 =
                                 (android.widget.LinearLayout) dialogContent.getChildAt(0);
                         View cell0 = row0.getChildAt(0);
                         View cell1 = row0.getChildAt(1);
-                        View cell2 = row0.getChildAt(2);
 
                         assertEquals(View.VISIBLE, cell0.getVisibility());
                         assertEquals(View.VISIBLE, cell1.getVisibility());
-                        assertEquals(View.INVISIBLE, cell2.getVisibility());
+                        assertEquals(2, row0.getChildCount());
 
-                        View incZone0 =
-                                findViewWithContentDescription(
-                                        cell0,
-                                        fragment.getString(
-                                                R.string.mtg_commander_damage_increase_desc, 1, 5));
-                        View incZone1 =
-                                findViewWithContentDescription(
-                                        cell1,
-                                        fragment.getString(
-                                                R.string.mtg_commander_damage_increase_desc, 2, 5));
-                        assertNotNull(incZone0);
-                        assertNotNull(incZone1);
+                        assertCommanderCellContainsSource(fragment, cell0, 1, 5);
+                        assertCommanderCellContainsSource(fragment, cell1, 2, 5);
 
                         android.widget.LinearLayout row1 =
                                 (android.widget.LinearLayout) dialogContent.getChildAt(1);
                         View cell3 = row1.getChildAt(0);
                         View cell4 = row1.getChildAt(1);
-                        View cell5 = row1.getChildAt(2);
 
                         assertEquals(View.VISIBLE, cell3.getVisibility());
                         assertEquals(View.VISIBLE, cell4.getVisibility());
-                        assertEquals(View.INVISIBLE, cell5.getVisibility());
+                        assertEquals(2, row1.getChildCount());
 
-                        View incZone3 =
-                                findViewWithContentDescription(
-                                        cell3,
-                                        fragment.getString(
-                                                R.string.mtg_commander_damage_increase_desc, 3, 5));
-                        View incZone4 =
-                                findViewWithContentDescription(
-                                        cell4,
-                                        fragment.getString(
-                                                R.string.mtg_commander_damage_increase_desc, 4, 5));
-                        assertNotNull(incZone3);
-                        assertNotNull(incZone4);
+                        assertCommanderCellContainsSource(fragment, cell3, 3, 5);
+                        assertCommanderCellContainsSource(fragment, cell4, 4, 5);
+
+                        android.widget.LinearLayout row2 =
+                                (android.widget.LinearLayout) dialogContent.getChildAt(2);
+                        assertEquals(2, row2.getChildCount());
+                        assertEquals(View.INVISIBLE, row2.getChildAt(0).getVisibility());
+                        assertEquals(View.INVISIBLE, row2.getChildAt(1).getVisibility());
                     });
         }
     }
@@ -839,5 +853,60 @@ public class MtgLifeFragmentTest {
             }
         }
         return null;
+    }
+
+    private static void startLifeGame(MtgLifeFragment fragment, String players, String life) {
+        org.robolectric.fakes.RoboMenuItem resetMenuItem =
+                new org.robolectric.fakes.RoboMenuItem(R.id.action_new_game);
+        fragment.onMenuItemSelected(resetMenuItem);
+
+        View view = fragment.getView();
+        assertNotNull(view);
+        EditText playersInput = view.findViewById(R.id.players_input);
+        EditText lifeInput = view.findViewById(R.id.life_input);
+        assertNotNull(playersInput);
+        assertNotNull(lifeInput);
+        playersInput.setText(players);
+        lifeInput.setText(life);
+
+        Button startButton = view.findViewById(R.id.start_game_button);
+        assertNotNull(startButton);
+        startButton.performClick();
+    }
+
+    private static android.widget.LinearLayout showCommanderDamageDialog(
+            MtgLifeFragment fragment, int defenderSeatIndex) {
+        try {
+            java.lang.reflect.Method showDialogMethod =
+                    MtgLifeFragment.class.getDeclaredMethod("showCommanderDamageDialog", int.class);
+            showDialogMethod.setAccessible(true);
+            showDialogMethod.invoke(fragment, defenderSeatIndex);
+        } catch (ReflectiveOperationException e) {
+            throw new AssertionError(e);
+        }
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        assertNotNull(dialog);
+        assertTrue(dialog.isShowing());
+        assertNotNull(dialog.getWindow());
+
+        View decorView = dialog.getWindow().getDecorView();
+        android.widget.LinearLayout dialogContent =
+                decorView.findViewWithTag("commander_dialog_content");
+        assertNotNull(dialogContent);
+        return dialogContent;
+    }
+
+    private static void assertCommanderCellContainsSource(
+            MtgLifeFragment fragment, View cell, int sourcePlayerNumber, int defenderPlayerNumber) {
+        View incrementZone =
+                findViewWithContentDescription(
+                        cell,
+                        fragment.getString(
+                                R.string.mtg_commander_damage_increase_desc,
+                                sourcePlayerNumber,
+                                defenderPlayerNumber));
+        assertNotNull(incrementZone);
     }
 }

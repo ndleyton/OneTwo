@@ -15,11 +15,18 @@
         android:orientation="vertical"
         android:overScrollMode="ifContentScrolls">
 
-        <include
-            android:id="@+id/app_toolbar"
-            layout="@layout/toolbar"
+        <FrameLayout
+            android:id="@+id/app_bar_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary">
+
+            <include
+                android:id="@+id/app_toolbar"
+                layout="@layout/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </FrameLayout>
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/nav_host_fragment"
