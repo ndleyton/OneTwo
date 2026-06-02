@@ -33,10 +33,12 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
+import androidx.core.view.ViewCompat;
 import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nicue.onetwo.OneTwoApplication;
 import com.nicue.onetwo.R;
@@ -229,7 +231,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         view.post(
                 () -> {
                     if (getActivity() == null) return;
-                    View anchor = requireActivity().findViewById(R.id.action_new_game);
+                    View anchor = findCoachMarkAnchor();
                     if (anchor != null
                             && anchor.isAttachedToWindow()
                             && anchor.getVisibility() == View.VISIBLE) {
@@ -237,6 +239,56 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                         showCoachMark(anchor);
                     }
                 });
+    }
+
+    private View findCoachMarkAnchor() {
+        MaterialToolbar toolbar = requireActivity().findViewById(R.id.app_toolbar);
+        if (toolbar == null) {
+            toolbar = requireActivity().findViewById(R.id.toolbar);
+        }
+        if (toolbar == null) {
+            return null;
+        }
+
+        View directMatch = toolbar.findViewById(R.id.action_new_game);
+        if (directMatch != null) {
+            return directMatch;
+        }
+
+        MenuItem newGameItem = toolbar.getMenu().findItem(R.id.action_new_game);
+        if (newGameItem == null) {
+            return toolbar;
+        }
+
+        View contentDescriptionMatch =
+                findViewWithContentDescription(toolbar, newGameItem.getContentDescription());
+        if (contentDescriptionMatch != null) {
+            return contentDescriptionMatch;
+        }
+
+        View titleMatch = findViewWithContentDescription(toolbar, newGameItem.getTitle());
+        return titleMatch != null ? titleMatch : toolbar;
+    }
+
+    private View findViewWithContentDescription(View root, CharSequence contentDescription) {
+        if (root == null || contentDescription == null) {
+            return null;
+        }
+        CharSequence rootDescription = root.getContentDescription();
+        if (rootDescription != null && rootDescription.toString().contentEquals(contentDescription)) {
+            return root;
+        }
+        if (root instanceof ViewGroup rootGroup) {
+            for (int i = 0; i < rootGroup.getChildCount(); i++) {
+                View match =
+                        findViewWithContentDescription(
+                                rootGroup.getChildAt(i), contentDescription);
+                if (match != null) {
+                    return match;
+                }
+            }
+        }
+        return null;
     }
 
     private void showCoachMark(View anchor) {
@@ -277,8 +329,22 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         if (pointer != null) {
             pointerCenterX = pointer.getLeft() + (pointer.getMeasuredWidth() / 2);
         }
-        int xOffset = Math.round((anchor.getWidth() / 2f) - pointerCenterX);
+        int anchorCenterX = getCoachMarkAnchorCenterX(anchor);
+        int xOffset = anchorCenterX - pointerCenterX;
         coachMarkPopup.showAsDropDown(anchor, xOffset, dpToPx(2));
+    }
+
+    private int getCoachMarkAnchorCenterX(View anchor) {
+        if (anchor.getId() != R.id.toolbar || !(anchor instanceof MaterialToolbar toolbar)) {
+            return Math.round(anchor.getWidth() / 2f);
+        }
+
+        int actionCenterOffset = dpToPx(24);
+        boolean isRtl = ViewCompat.getLayoutDirection(toolbar) == ViewCompat.LAYOUT_DIRECTION_RTL;
+        if (isRtl) {
+            return toolbar.getContentInsetStart() + actionCenterOffset;
+        }
+        return toolbar.getWidth() - toolbar.getContentInsetEnd() - actionCenterOffset;
     }
 
     @Override

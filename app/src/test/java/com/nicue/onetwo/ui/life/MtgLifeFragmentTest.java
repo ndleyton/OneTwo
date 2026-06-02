@@ -20,6 +20,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.test.core.app.ActivityScenario;
 import com.nicue.onetwo.MainActivity;
 import com.nicue.onetwo.R;
+import com.nicue.onetwo.data.settings.SettingsPrefsDataSource;
+import com.nicue.onetwo.data.settings.SettingsRepository;
 import com.nicue.onetwo.databinding.LifePlayerCellBinding;
 import java.util.concurrent.TimeUnit;
 import org.junit.Rule;
@@ -830,6 +832,52 @@ public class MtgLifeFragmentTest {
                         // Assert we navigated to nav_chooser
                         assertEquals(
                                 R.id.nav_chooser, navController.getCurrentDestination().getId());
+                    });
+        }
+    }
+
+    @Test
+    public void testCoachMarkShowsFromActivityToolbar() {
+        try (ActivityScenario<MainActivity> scenario =
+                ActivityScenario.launch(MainActivity.class)) {
+            scenario.onActivity(
+                    activity -> {
+                        SettingsRepository settingsRepository =
+                                new SettingsRepository(new SettingsPrefsDataSource(activity));
+                        settingsRepository.setMtgSetupCoachMarkDismissed(false);
+                        activity.invalidateOptionsMenu();
+                        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+                        Fragment fragment =
+                                activity.getSupportFragmentManager()
+                                        .findFragmentById(R.id.nav_host_fragment);
+                        assertNotNull(fragment);
+
+                        Fragment currentFragment =
+                                fragment.getChildFragmentManager().getFragments().get(0);
+                        assertTrue(currentFragment instanceof MtgLifeFragment);
+                        MtgLifeFragment mtgLifeFragment = (MtgLifeFragment) currentFragment;
+
+                        try {
+                            java.lang.reflect.Method showCoachMarkIfNecessaryMethod =
+                                    MtgLifeFragment.class.getDeclaredMethod(
+                                            "showCoachMarkIfNecessary");
+                            showCoachMarkIfNecessaryMethod.setAccessible(true);
+                            showCoachMarkIfNecessaryMethod.invoke(mtgLifeFragment);
+
+                            Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+                            java.lang.reflect.Field coachMarkField =
+                                    MtgLifeFragment.class.getDeclaredField("coachMarkPopup");
+                            coachMarkField.setAccessible(true);
+                            android.widget.PopupWindow popup =
+                                    (android.widget.PopupWindow) coachMarkField.get(mtgLifeFragment);
+
+                            assertNotNull(popup);
+                            assertTrue(popup.isShowing());
+                        } catch (ReflectiveOperationException e) {
+                            throw new AssertionError(e);
+                        }
                     });
         }
     }

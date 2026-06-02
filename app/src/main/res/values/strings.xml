@@ -123,5 +123,5 @@
     <string name="mtg_start_timer_desc">Start timer for player %1$d</string>
     <string name="mtg_player_timer_desc">Player %1$d remaining time: %2$s</string>
     <string name="mtg_setup_choose_and_start">Choose 1st &amp; Start</string>
-    <string name="mtg_setup_coach_mark">Set players, life, commander damage, and choose first</string>
+    <string name="mtg_setup_coach_mark">Game settings, timer and finger chooser</string>
 </resources>
