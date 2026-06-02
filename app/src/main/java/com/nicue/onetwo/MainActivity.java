@@ -1,7 +1,6 @@
 package com.nicue.onetwo;
 
 import android.os.Bundle;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -96,16 +95,12 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
 
     private void applyToolbarInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(
-                binding.appToolbar.toolbar,
+                binding.appBarContainer,
                 (view, insets) -> {
                     Insets statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars());
-                    ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-                    if (layoutParams instanceof ViewGroup.MarginLayoutParams marginLayoutParams) {
-                        marginLayoutParams.topMargin = statusBars.top;
-                        view.setLayoutParams(marginLayoutParams);
-                    }
+                    view.setPadding(0, statusBars.top, 0, 0);
                     return insets;
                 });
-        ViewCompat.requestApplyInsets(binding.appToolbar.toolbar);
+        ViewCompat.requestApplyInsets(binding.appBarContainer);
     }
 }
