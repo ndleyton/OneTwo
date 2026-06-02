@@ -69,6 +69,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     private final Map<Integer, TextView> activeDialogDamageTextViews = new HashMap<>();
     private final Handler holdRepeatHandler = new Handler(Looper.getMainLooper());
     private final Map<View, Runnable> activeLifeHoldRunnables = new HashMap<>();
+    private PopupWindow coachMarkPopup;
 
     private static final class CommanderGridLayout {
         private final int rows;
@@ -239,32 +240,38 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     }
 
     private void showCoachMark(View anchor) {
+        if (coachMarkPopup != null) {
+            coachMarkPopup.dismiss();
+        }
         View popupView =
                 LayoutInflater.from(requireContext()).inflate(R.layout.mtg_coach_mark, null);
-        PopupWindow popupWindow =
+        coachMarkPopup =
                 new PopupWindow(
                         popupView,
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         true);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setElevation(dpToPx(8));
-        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        coachMarkPopup.setOutsideTouchable(true);
+        coachMarkPopup.setElevation(dpToPx(8));
+        coachMarkPopup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         popupView.setOnClickListener(
                 v -> {
-                    popupWindow.dismiss();
+                    if (coachMarkPopup != null) {
+                        coachMarkPopup.dismiss();
+                    }
                     anchor.performClick();
                 });
 
-        popupWindow.setOnDismissListener(
+        coachMarkPopup.setOnDismissListener(
                 () -> {
                     viewModel.markSetupCoachMarkDismissed();
+                    coachMarkPopup = null;
                 });
 
         popupView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         int xOffset = anchor.getWidth() - popupView.getMeasuredWidth();
-        popupWindow.showAsDropDown(anchor, xOffset, dpToPx(4));
+        coachMarkPopup.showAsDropDown(anchor, xOffset, dpToPx(4));
     }
 
     @Override
@@ -1357,6 +1364,10 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (coachMarkPopup != null) {
+            coachMarkPopup.dismiss();
+            coachMarkPopup = null;
+        }
         for (Runnable repeatRunnable : activeLifeHoldRunnables.values()) {
             holdRepeatHandler.removeCallbacks(repeatRunnable);
         }

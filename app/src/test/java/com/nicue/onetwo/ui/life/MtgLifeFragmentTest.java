@@ -909,4 +909,36 @@ public class MtgLifeFragmentTest {
                                 defenderPlayerNumber));
         assertNotNull(incrementZone);
     }
+
+    @Test
+    public void testCoachMarkDismissedOnDestroyView() {
+        try (FragmentScenario<MtgLifeFragment> scenario =
+                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
+            scenario.onFragment(
+                    fragment -> {
+                        View anchor = new View(fragment.requireContext());
+                        try {
+                            java.lang.reflect.Method showCoachMarkMethod =
+                                    MtgLifeFragment.class.getDeclaredMethod("showCoachMark", View.class);
+                            showCoachMarkMethod.setAccessible(true);
+                            showCoachMarkMethod.invoke(fragment, anchor);
+
+                            java.lang.reflect.Field coachMarkField =
+                                    MtgLifeFragment.class.getDeclaredField("coachMarkPopup");
+                            coachMarkField.setAccessible(true);
+                            android.widget.PopupWindow popup = (android.widget.PopupWindow) coachMarkField.get(fragment);
+
+                            assertNotNull(popup);
+                            assertTrue(popup.isShowing());
+
+                            fragment.onDestroyView();
+
+                            org.junit.Assert.assertNull(coachMarkField.get(fragment));
+                            org.junit.Assert.assertFalse(popup.isShowing());
+                        } catch (ReflectiveOperationException e) {
+                            throw new AssertionError(e);
+                        }
+                    });
+        }
+    }
 }
