@@ -1101,7 +1101,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                     case 2 -> defenderSeatIndex == 0 ? new int[] {1, 0} : new int[] {0, 1};
                     case 3 ->
                             switch (defenderSeatIndex) {
-                                case 0 -> new int[] {2, 1, 3, 0};
+                                case 0 -> new int[] {1, 2, 3, 0};
                                 case 1 -> new int[] {0, 2, 3, 1};
                                 default -> new int[] {1, 0, 2, 3};
                             };
