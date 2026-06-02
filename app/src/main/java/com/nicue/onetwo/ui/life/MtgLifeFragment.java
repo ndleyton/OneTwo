@@ -69,6 +69,33 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     private final Handler holdRepeatHandler = new Handler(Looper.getMainLooper());
     private final Map<View, Runnable> activeLifeHoldRunnables = new HashMap<>();
 
+    private static final class CommanderGridLayout {
+        private final int rows;
+        private final int cols;
+        private final int[] sourceSeatIndicesBySlot;
+
+        CommanderGridLayout(int rows, int cols, int[] sourceSeatIndicesBySlot) {
+            this.rows = rows;
+            this.cols = cols;
+            this.sourceSeatIndicesBySlot = sourceSeatIndicesBySlot;
+        }
+
+        int getRows() {
+            return rows;
+        }
+
+        int getCols() {
+            return cols;
+        }
+
+        int getSourceSeatIndexForSlot(int slotIndex) {
+            if (slotIndex < 0 || slotIndex >= sourceSeatIndicesBySlot.length) {
+                return -1;
+            }
+            return sourceSeatIndicesBySlot[slotIndex];
+        }
+    }
+
     @Nullable @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater,
@@ -568,10 +595,12 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         cellBinding.commanderDamageGrid.setPadding(
                 pillPadding, pillPadding, pillPadding, pillPadding);
 
-        int rows = getCommanderGridRowCount(totalPlayers);
-        int cols = getCommanderGridColumnCount(totalPlayers);
-        List<CommanderDamageUiModel> damages = player.getCommanderDamages();
         int seatIndex = player.getSeatIndex();
+        CommanderGridLayout gridLayout =
+                getCommanderGridLayout(seatIndex, totalPlayers, player.getRotationDegrees());
+        int rows = gridLayout.getRows();
+        int cols = gridLayout.getCols();
+        List<CommanderDamageUiModel> damages = player.getCommanderDamages();
 
         for (int rowIndex = 0; rowIndex < rows; rowIndex++) {
             LinearLayout rowLayout = new LinearLayout(requireContext());
@@ -583,8 +612,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
 
             for (int columnIndex = 0; columnIndex < cols; columnIndex++) {
                 int slotIndex = rowIndex * cols + columnIndex;
-                int sourceSeatIndex = getSourceSeatForGridSlot(slotIndex, seatIndex, totalPlayers);
-                if (sourceSeatIndex < damages.size()) {
+                int sourceSeatIndex = gridLayout.getSourceSeatIndexForSlot(slotIndex);
+                if (sourceSeatIndex >= 0 && sourceSeatIndex < damages.size()) {
                     rowLayout.addView(
                             createCommanderSummaryCell(damages.get(sourceSeatIndex), seatIndex));
                 } else {
@@ -768,8 +797,11 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         }
 
         int totalPlayers = uiState.getPlayerCount();
-        int rows = getCommanderGridRowCount(totalPlayers);
-        int cols = getCommanderGridColumnCount(totalPlayers);
+        CommanderGridLayout gridLayout =
+                getCommanderGridLayout(
+                        defenderSeatIndex, totalPlayers, defender.getRotationDegrees());
+        int rows = gridLayout.getRows();
+        int cols = gridLayout.getCols();
 
         FrameLayout dialogRoot = new FrameLayout(requireContext());
         dialogRoot.setLayoutParams(
@@ -809,9 +841,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
 
             for (int columnIndex = 0; columnIndex < cols; columnIndex++) {
                 int slotIndex = rowIndex * cols + columnIndex;
-                int sourceSeatIndex =
-                        getSourceSeatForGridSlot(slotIndex, defenderSeatIndex, totalPlayers);
-                if (sourceSeatIndex < damages.size()) {
+                int sourceSeatIndex = gridLayout.getSourceSeatIndexForSlot(slotIndex);
+                if (sourceSeatIndex >= 0 && sourceSeatIndex < damages.size()) {
                     rowLayout.addView(
                             createCommanderDialogCell(
                                     damages.get(sourceSeatIndex), defenderSeatIndex));
@@ -1035,14 +1066,6 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         };
     }
 
-    private int getCommanderGridRowCount(int totalPlayers) {
-        return totalPlayers > 2 ? 2 : 1;
-    }
-
-    private int getCommanderGridColumnCount(int totalPlayers) {
-        return totalPlayers > 4 ? 3 : 2;
-    }
-
     private int getForegroundColor(int backgroundColor) {
         return ColorUtils.calculateLuminance(backgroundColor) < 0.5 ? 0xFFFFFFFF : 0xFF000000;
     }
@@ -1095,38 +1118,96 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         }
     }
 
-    private int getSourceSeatForGridSlot(int slotIndex, int defenderSeatIndex, int totalPlayers) {
-        int[] mapping =
-                switch (totalPlayers) {
-                    case 2 -> defenderSeatIndex == 0 ? new int[] {1, 0} : new int[] {0, 1};
-                    case 3 ->
-                            switch (defenderSeatIndex) {
-                                case 0 -> new int[] {1, 2, 3, 0};
-                                case 1 -> new int[] {0, 2, 3, 1};
-                                default -> new int[] {1, 0, 2, 3};
-                            };
-                    case 4 ->
-                            switch (defenderSeatIndex) {
-                                case 0, 2 -> new int[] {1, 3, 0, 2};
-                                default -> new int[] {2, 0, 3, 1};
-                            };
-                    case 5 ->
-                            defenderSeatIndex == 4
-                                    ? new int[] {0, 1, 4, 2, 3, 5}
-                                    : defenderSeatIndex % 2 == 0
-                                            ? new int[] {1, 3, 5, 0, 2, 4}
-                                            : new int[] {4, 2, 0, 5, 3, 1};
-                    case 6 ->
+    private CommanderGridLayout getCommanderGridLayout(
+            int defenderSeatIndex, int totalPlayers, int rotationDegrees) {
+        return switch (totalPlayers) {
+            case 2 ->
+                    buildRotatedCommanderGridLayout(
+                            2,
+                            1,
+                            new int[][] {
+                                {0, 0},
+                                {1, 0},
+                            },
+                            rotationDegrees);
+            case 3 ->
+                    buildRotatedCommanderGridLayout(
+                            2,
+                            2,
+                            new int[][] {
+                                {1, 0},
+                                {0, 0},
+                                {0, 1},
+                            },
+                            rotationDegrees);
+            case 4 ->
+                    new CommanderGridLayout(
+                            2,
+                            2,
+                            defenderSeatIndex % 2 == 0
+                                    ? new int[] {1, 3, 0, 2}
+                                    : new int[] {2, 0, 3, 1});
+            case 5 ->
+                    buildRotatedCommanderGridLayout(
+                            3,
+                            2,
+                            new int[][] {
+                                {0, 0},
+                                {0, 1},
+                                {1, 0},
+                                {1, 1},
+                                {2, 0},
+                            },
+                            rotationDegrees);
+            case 6 ->
+                    new CommanderGridLayout(
+                            2,
+                            3,
                             defenderSeatIndex % 2 == 0
                                     ? new int[] {1, 3, 5, 0, 2, 4}
-                                    : new int[] {4, 2, 0, 5, 3, 1};
-                    default -> null;
-                };
+                                    : new int[] {4, 2, 0, 5, 3, 1});
+            default -> new CommanderGridLayout(1, 1, new int[] {0});
+        };
+    }
 
-        if (mapping == null || slotIndex < 0 || slotIndex >= mapping.length) {
-            return slotIndex;
+    private CommanderGridLayout buildRotatedCommanderGridLayout(
+            int absoluteRows,
+            int absoluteCols,
+            int[][] absoluteSeatPositions,
+            int rotationDegrees) {
+        int normalizedRotation = ((rotationDegrees % 360) + 360) % 360;
+        int localRows = normalizedRotation == 90 || normalizedRotation == 270 ? absoluteCols : absoluteRows;
+        int localCols = normalizedRotation == 90 || normalizedRotation == 270 ? absoluteRows : absoluteCols;
+        int[] sourceSeatIndicesBySlot = new int[localRows * localCols];
+        java.util.Arrays.fill(sourceSeatIndicesBySlot, -1);
+
+        for (int sourceSeatIndex = 0; sourceSeatIndex < absoluteSeatPositions.length; sourceSeatIndex++) {
+            int absoluteRow = absoluteSeatPositions[sourceSeatIndex][0];
+            int absoluteCol = absoluteSeatPositions[sourceSeatIndex][1];
+            int localRow;
+            int localCol;
+            switch (normalizedRotation) {
+                case 90 -> {
+                    localRow = absoluteCols - 1 - absoluteCol;
+                    localCol = absoluteRow;
+                }
+                case 180 -> {
+                    localRow = absoluteRows - 1 - absoluteRow;
+                    localCol = absoluteCols - 1 - absoluteCol;
+                }
+                case 270 -> {
+                    localRow = absoluteCol;
+                    localCol = absoluteRows - 1 - absoluteRow;
+                }
+                default -> {
+                    localRow = absoluteRow;
+                    localCol = absoluteCol;
+                }
+            }
+            sourceSeatIndicesBySlot[localRow * localCols + localCol] = sourceSeatIndex;
         }
-        return mapping[slotIndex];
+
+        return new CommanderGridLayout(localRows, localCols, sourceSeatIndicesBySlot);
     }
 
     private void showTurnTimerDurationPicker(LifeSetupContentBinding setupBinding) {

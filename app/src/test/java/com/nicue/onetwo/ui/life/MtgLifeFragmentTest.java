@@ -339,6 +339,36 @@ public class MtgLifeFragmentTest {
     }
 
     @Test
+    public void testTwoPlayerCommanderDamageLayoutForBottomPlayerFollowsVerticalBoardOrder() {
+        try (FragmentScenario<MtgLifeFragment> scenario =
+                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
+
+            scenario.onFragment(
+                    fragment -> {
+                        startLifeGame(fragment, "2", "40");
+                    });
+
+            scenario.onFragment(
+                    fragment -> {
+                        android.widget.LinearLayout dialogContent =
+                                showCommanderDamageDialog(fragment, 1);
+
+                        assertEquals(2, dialogContent.getChildCount());
+
+                        android.widget.LinearLayout row0 =
+                                (android.widget.LinearLayout) dialogContent.getChildAt(0);
+                        android.widget.LinearLayout row1 =
+                                (android.widget.LinearLayout) dialogContent.getChildAt(1);
+
+                        assertEquals(1, row0.getChildCount());
+                        assertEquals(1, row1.getChildCount());
+                        assertCommanderCellContainsSource(fragment, row0.getChildAt(0), 1, 2);
+                        assertEquals(View.INVISIBLE, row1.getChildAt(0).getVisibility());
+                    });
+        }
+    }
+
+    @Test
     public void testThreePlayerCommanderDamageLayoutForPlayer1FollowsBoardOrder() {
         try (FragmentScenario<MtgLifeFragment> scenario =
                 FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
@@ -355,11 +385,16 @@ public class MtgLifeFragmentTest {
 
                         android.widget.LinearLayout row0 =
                                 (android.widget.LinearLayout) dialogContent.getChildAt(0);
+                        android.widget.LinearLayout row1 =
+                                (android.widget.LinearLayout) dialogContent.getChildAt(1);
                         View topLeftCell = row0.getChildAt(0);
                         View topRightCell = row0.getChildAt(1);
 
+                        assertEquals(2, dialogContent.getChildCount());
                         assertCommanderCellContainsSource(fragment, topLeftCell, 2, 1);
                         assertCommanderCellContainsSource(fragment, topRightCell, 3, 1);
+                        assertEquals(View.INVISIBLE, row1.getChildAt(0).getVisibility());
+                        assertEquals(View.INVISIBLE, row1.getChildAt(1).getVisibility());
                     });
         }
     }
@@ -482,15 +517,16 @@ public class MtgLifeFragmentTest {
                         android.widget.LinearLayout dialogContent =
                                 showCommanderDamageDialog(fragment, 4);
 
+                        assertEquals(3, dialogContent.getChildCount());
+
                         android.widget.LinearLayout row0 =
                                 (android.widget.LinearLayout) dialogContent.getChildAt(0);
                         View cell0 = row0.getChildAt(0);
                         View cell1 = row0.getChildAt(1);
-                        View cell2 = row0.getChildAt(2);
 
                         assertEquals(View.VISIBLE, cell0.getVisibility());
                         assertEquals(View.VISIBLE, cell1.getVisibility());
-                        assertEquals(View.INVISIBLE, cell2.getVisibility());
+                        assertEquals(2, row0.getChildCount());
 
                         assertCommanderCellContainsSource(fragment, cell0, 1, 5);
                         assertCommanderCellContainsSource(fragment, cell1, 2, 5);
@@ -499,14 +535,19 @@ public class MtgLifeFragmentTest {
                                 (android.widget.LinearLayout) dialogContent.getChildAt(1);
                         View cell3 = row1.getChildAt(0);
                         View cell4 = row1.getChildAt(1);
-                        View cell5 = row1.getChildAt(2);
 
                         assertEquals(View.VISIBLE, cell3.getVisibility());
                         assertEquals(View.VISIBLE, cell4.getVisibility());
-                        assertEquals(View.INVISIBLE, cell5.getVisibility());
+                        assertEquals(2, row1.getChildCount());
 
                         assertCommanderCellContainsSource(fragment, cell3, 3, 5);
                         assertCommanderCellContainsSource(fragment, cell4, 4, 5);
+
+                        android.widget.LinearLayout row2 =
+                                (android.widget.LinearLayout) dialogContent.getChildAt(2);
+                        assertEquals(2, row2.getChildCount());
+                        assertEquals(View.INVISIBLE, row2.getChildAt(0).getVisibility());
+                        assertEquals(View.INVISIBLE, row2.getChildAt(1).getVisibility());
                     });
         }
     }
