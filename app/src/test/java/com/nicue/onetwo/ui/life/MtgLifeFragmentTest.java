@@ -919,14 +919,16 @@ public class MtgLifeFragmentTest {
                         View anchor = new View(fragment.requireContext());
                         try {
                             java.lang.reflect.Method showCoachMarkMethod =
-                                    MtgLifeFragment.class.getDeclaredMethod("showCoachMark", View.class);
+                                    MtgLifeFragment.class.getDeclaredMethod(
+                                            "showCoachMark", View.class);
                             showCoachMarkMethod.setAccessible(true);
                             showCoachMarkMethod.invoke(fragment, anchor);
 
                             java.lang.reflect.Field coachMarkField =
                                     MtgLifeFragment.class.getDeclaredField("coachMarkPopup");
                             coachMarkField.setAccessible(true);
-                            android.widget.PopupWindow popup = (android.widget.PopupWindow) coachMarkField.get(fragment);
+                            android.widget.PopupWindow popup =
+                                    (android.widget.PopupWindow) coachMarkField.get(fragment);
 
                             assertNotNull(popup);
                             assertTrue(popup.isShowing());
@@ -939,7 +941,8 @@ public class MtgLifeFragmentTest {
                             java.lang.reflect.Field viewModelField =
                                     MtgLifeFragment.class.getDeclaredField("viewModel");
                             viewModelField.setAccessible(true);
-                            MtgLifeViewModel viewModel = (MtgLifeViewModel) viewModelField.get(fragment);
+                            MtgLifeViewModel viewModel =
+                                    (MtgLifeViewModel) viewModelField.get(fragment);
                             org.junit.Assert.assertFalse(viewModel.isSetupCoachMarkDismissed());
                         } catch (ReflectiveOperationException e) {
                             throw new AssertionError(e);
@@ -960,18 +963,21 @@ public class MtgLifeFragmentTest {
 
                         try {
                             java.lang.reflect.Method showCoachMarkMethod =
-                                    MtgLifeFragment.class.getDeclaredMethod("showCoachMark", View.class);
+                                    MtgLifeFragment.class.getDeclaredMethod(
+                                            "showCoachMark", View.class);
                             showCoachMarkMethod.setAccessible(true);
                             showCoachMarkMethod.invoke(fragment, anchor);
 
                             java.lang.reflect.Field coachMarkField =
                                     MtgLifeFragment.class.getDeclaredField("coachMarkPopup");
                             coachMarkField.setAccessible(true);
-                            android.widget.PopupWindow popup = (android.widget.PopupWindow) coachMarkField.get(fragment);
+                            android.widget.PopupWindow popup =
+                                    (android.widget.PopupWindow) coachMarkField.get(fragment);
 
                             assertNotNull(popup);
                             assertTrue(popup.isShowing());
-                            assertTrue(popup.isOutsideTouchable()); // Accessibility: can be dismissed by touching outside
+                            assertTrue(popup.isOutsideTouchable()); // Accessibility: can be
+                            // dismissed by touching outside
 
                             View popupContentView = popup.getContentView();
                             assertNotNull(popupContentView);
@@ -989,7 +995,8 @@ public class MtgLifeFragmentTest {
                             java.lang.reflect.Field viewModelField =
                                     MtgLifeFragment.class.getDeclaredField("viewModel");
                             viewModelField.setAccessible(true);
-                            MtgLifeViewModel viewModel = (MtgLifeViewModel) viewModelField.get(fragment);
+                            MtgLifeViewModel viewModel =
+                                    (MtgLifeViewModel) viewModelField.get(fragment);
                             assertTrue(viewModel.isSetupCoachMarkDismissed());
 
                             // Verify reference is cleared via dismiss listener
