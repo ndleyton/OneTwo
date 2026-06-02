@@ -1,10 +1,14 @@
 package com.nicue.onetwo;
 
 import android.os.Bundle;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.graphics.Insets;
 import androidx.core.splashscreen.SplashScreen;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -30,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setSupportActionBar(binding.appToolbar.toolbar);
+        applyToolbarInsets();
 
         settingsRepository.applyKeepScreenOn(getWindow());
 
@@ -87,5 +92,20 @@ public class MainActivity extends AppCompatActivity implements SettingsFragment.
 
     private AppContainer getAppContainer() {
         return ((OneTwoApplication) getApplication()).getAppContainer();
+    }
+
+    private void applyToolbarInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(
+                binding.appToolbar.toolbar,
+                (view, insets) -> {
+                    Insets statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars());
+                    ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+                    if (layoutParams instanceof ViewGroup.MarginLayoutParams marginLayoutParams) {
+                        marginLayoutParams.topMargin = statusBars.top;
+                        view.setLayoutParams(marginLayoutParams);
+                    }
+                    return insets;
+                });
+        ViewCompat.requestApplyInsets(binding.appToolbar.toolbar);
     }
 }
