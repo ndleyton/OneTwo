@@ -43,4 +43,24 @@ public class SettingsRepositoryTest {
                 new SettingsRepository(new SettingsPrefsDataSource(context));
         assertFalse(reloadedRepository.isLifeCounterHapticFeedbackEnabled());
     }
+
+    @Test
+    public void mtgSetupCoachMarkDefaultsToNotDismissed() {
+        SettingsRepository repository =
+                new SettingsRepository(new SettingsPrefsDataSource(context));
+
+        assertFalse(repository.isMtgSetupCoachMarkDismissed());
+    }
+
+    @Test
+    public void setMtgSetupCoachMarkDismissedPersistsValue() {
+        SettingsRepository repository =
+                new SettingsRepository(new SettingsPrefsDataSource(context));
+
+        repository.setMtgSetupCoachMarkDismissed(true);
+
+        SettingsRepository reloadedRepository =
+                new SettingsRepository(new SettingsPrefsDataSource(context));
+        assertTrue(reloadedRepository.isMtgSetupCoachMarkDismissed());
+    }
 }

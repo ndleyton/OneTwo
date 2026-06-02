@@ -4,5 +4,7 @@
     <item
         android:id="@+id/action_new_game"
         android:title="@string/mtg_setup_title"
-        app:showAsAction="always|withText" />
+        android:icon="@drawable/ic_add_circle_outline_24"
+        android:contentDescription="@string/mtg_setup_coach_mark"
+        app:showAsAction="always" />
 </menu>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:gravity="end"
+    android:padding="8dp">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="?attr/colorPrimary"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:contentPadding="12dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/mtg_setup_coach_mark"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="14sp" />
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>

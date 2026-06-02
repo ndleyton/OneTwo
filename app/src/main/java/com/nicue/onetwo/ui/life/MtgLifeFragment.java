@@ -36,6 +36,7 @@ import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
+import android.widget.PopupWindow;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nicue.onetwo.OneTwoApplication;
 import com.nicue.onetwo.R;
@@ -210,6 +211,60 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                 newGameItem.setVisible(!currentUiState.isShowingSetup());
             }
         }
+        showCoachMarkIfNecessary();
+    }
+
+    private void showCoachMarkIfNecessary() {
+        if (viewModel == null || viewModel.isSetupCoachMarkDismissed()) {
+            return;
+        }
+        MtgLifeUiState state = viewModel.getUiState().getValue();
+        if (state != null && state.isShowingSetup()) {
+            return;
+        }
+
+        View view = getView();
+        if (view == null) return;
+        view.post(
+                () -> {
+                    if (getActivity() == null) return;
+                    View anchor = requireActivity().findViewById(R.id.action_new_game);
+                    if (anchor != null
+                            && anchor.isAttachedToWindow()
+                            && anchor.getVisibility() == View.VISIBLE) {
+                        if (viewModel.isSetupCoachMarkDismissed()) return;
+                        showCoachMark(anchor);
+                    }
+                });
+    }
+
+    private void showCoachMark(View anchor) {
+        View popupView =
+                LayoutInflater.from(requireContext()).inflate(R.layout.mtg_coach_mark, null);
+        PopupWindow popupWindow =
+                new PopupWindow(
+                        popupView,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        true);
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setElevation(dpToPx(8));
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        popupView.setOnClickListener(
+                v -> {
+                    popupWindow.dismiss();
+                    anchor.performClick();
+                });
+
+        popupWindow.setOnDismissListener(
+                () -> {
+                    viewModel.markSetupCoachMarkDismissed();
+                });
+
+        popupView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int xOffset = anchor.getWidth() - popupView.getMeasuredWidth();
+        popupWindow.showAsDropDown(anchor, xOffset, dpToPx(4));
     }
 
     @Override
