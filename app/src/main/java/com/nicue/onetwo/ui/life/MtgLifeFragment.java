@@ -1176,12 +1176,16 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
             int[][] absoluteSeatPositions,
             int rotationDegrees) {
         int normalizedRotation = ((rotationDegrees % 360) + 360) % 360;
-        int localRows = normalizedRotation == 90 || normalizedRotation == 270 ? absoluteCols : absoluteRows;
-        int localCols = normalizedRotation == 90 || normalizedRotation == 270 ? absoluteRows : absoluteCols;
+        int localRows =
+                normalizedRotation == 90 || normalizedRotation == 270 ? absoluteCols : absoluteRows;
+        int localCols =
+                normalizedRotation == 90 || normalizedRotation == 270 ? absoluteRows : absoluteCols;
         int[] sourceSeatIndicesBySlot = new int[localRows * localCols];
         java.util.Arrays.fill(sourceSeatIndicesBySlot, -1);
 
-        for (int sourceSeatIndex = 0; sourceSeatIndex < absoluteSeatPositions.length; sourceSeatIndex++) {
+        for (int sourceSeatIndex = 0;
+                sourceSeatIndex < absoluteSeatPositions.length;
+                sourceSeatIndex++) {
             int absoluteRow = absoluteSeatPositions[sourceSeatIndex][0];
             int absoluteCol = absoluteSeatPositions[sourceSeatIndex][1];
             int localRow;
