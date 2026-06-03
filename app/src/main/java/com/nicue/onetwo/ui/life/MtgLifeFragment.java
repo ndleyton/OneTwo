@@ -32,6 +32,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.view.MenuHost;
+import androidx.core.view.MenuItemCompat;
 import androidx.core.view.MenuProvider;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.TextViewCompat;
@@ -261,7 +262,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         }
 
         View contentDescriptionMatch =
-                findViewWithContentDescription(toolbar, newGameItem.getContentDescription());
+                findViewWithContentDescription(toolbar, MenuItemCompat.getContentDescription(newGameItem));
         if (contentDescriptionMatch != null) {
             return contentDescriptionMatch;
         }
