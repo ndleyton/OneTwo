@@ -333,7 +333,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         }
         int anchorCenterX = getCoachMarkAnchorCenterX(anchor);
         int xOffset = anchorCenterX - pointerCenterX;
-        coachMarkPopup.showAsDropDown(anchor, xOffset, dpToPx(2));
+        coachMarkPopup.showAsDropDown(anchor, xOffset + dpToPx(14), dpToPx(10));
     }
 
     private int getCoachMarkAnchorCenterX(View anchor) {
