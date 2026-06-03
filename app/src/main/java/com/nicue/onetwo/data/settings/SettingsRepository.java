@@ -43,6 +43,14 @@ public class SettingsRepository {
         dataSource.setLifeCounterHapticFeedbackEnabled(enabled);
     }
 
+    public boolean isMtgSetupCoachMarkDismissed() {
+        return dataSource.isMtgSetupCoachMarkDismissed();
+    }
+
+    public void setMtgSetupCoachMarkDismissed(boolean dismissed) {
+        dataSource.setMtgSetupCoachMarkDismissed(dismissed);
+    }
+
     public void applyNightMode() {
         boolean darkModeEnabled = isDarkModeEnabled();
         AppCompatDelegate.setDefaultNightMode(

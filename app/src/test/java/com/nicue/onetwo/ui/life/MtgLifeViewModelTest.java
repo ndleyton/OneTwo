@@ -42,6 +42,7 @@ public class MtgLifeViewModelTest {
     private static final class FakeSettingsRepository
             extends com.nicue.onetwo.data.settings.SettingsRepository {
         private boolean hapticEnabled = true;
+        private boolean setupCoachMarkDismissed = false;
 
         FakeSettingsRepository() {
             super(null);
@@ -54,6 +55,16 @@ public class MtgLifeViewModelTest {
 
         public void setHapticEnabled(boolean enabled) {
             this.hapticEnabled = enabled;
+        }
+
+        @Override
+        public boolean isMtgSetupCoachMarkDismissed() {
+            return setupCoachMarkDismissed;
+        }
+
+        @Override
+        public void setMtgSetupCoachMarkDismissed(boolean dismissed) {
+            this.setupCoachMarkDismissed = dismissed;
         }
     }
 
@@ -760,5 +771,15 @@ public class MtgLifeViewModelTest {
 
         settingsRepository.setHapticEnabled(false);
         assertFalse(viewModel.isLifeCounterHapticFeedbackEnabled());
+    }
+
+    @Test
+    public void testSetupCoachMarkDismissalDelegation() {
+        settingsRepository.setMtgSetupCoachMarkDismissed(false);
+        assertFalse(viewModel.isSetupCoachMarkDismissed());
+
+        viewModel.markSetupCoachMarkDismissed();
+        assertTrue(settingsRepository.isMtgSetupCoachMarkDismissed());
+        assertTrue(viewModel.isSetupCoachMarkDismissed());
     }
 }

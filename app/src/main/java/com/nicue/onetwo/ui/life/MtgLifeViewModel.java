@@ -358,6 +358,14 @@ public class MtgLifeViewModel extends ViewModel {
         updateUiState();
     }
 
+    public boolean isSetupCoachMarkDismissed() {
+        return settingsRepository.isMtgSetupCoachMarkDismissed();
+    }
+
+    public void markSetupCoachMarkDismissed() {
+        settingsRepository.setMtgSetupCoachMarkDismissed(true);
+    }
+
     public void resetToSetup() {
         pauseTimer();
         savedStateHandle.set(KEY_SHOWING_SETUP, true);

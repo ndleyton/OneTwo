@@ -25,17 +25,21 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.view.MenuHost;
+import androidx.core.view.MenuItemCompat;
 import androidx.core.view.MenuProvider;
+import androidx.core.view.ViewCompat;
 import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nicue.onetwo.OneTwoApplication;
 import com.nicue.onetwo.R;
@@ -68,6 +72,7 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     private final Map<Integer, TextView> activeDialogDamageTextViews = new HashMap<>();
     private final Handler holdRepeatHandler = new Handler(Looper.getMainLooper());
     private final Map<View, Runnable> activeLifeHoldRunnables = new HashMap<>();
+    private PopupWindow coachMarkPopup;
 
     private static final class CommanderGridLayout {
         private final int rows;
@@ -210,6 +215,138 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
                 newGameItem.setVisible(!currentUiState.isShowingSetup());
             }
         }
+        showCoachMarkIfNecessary();
+    }
+
+    private void showCoachMarkIfNecessary() {
+        if (viewModel == null || viewModel.isSetupCoachMarkDismissed()) {
+            return;
+        }
+        MtgLifeUiState state = viewModel.getUiState().getValue();
+        if (state != null && state.isShowingSetup()) {
+            return;
+        }
+
+        View view = getView();
+        if (view == null) return;
+        view.post(
+                () -> {
+                    if (getActivity() == null) return;
+                    View anchor = findCoachMarkAnchor();
+                    if (anchor != null
+                            && anchor.isAttachedToWindow()
+                            && anchor.getVisibility() == View.VISIBLE) {
+                        if (viewModel.isSetupCoachMarkDismissed()) return;
+                        showCoachMark(anchor);
+                    }
+                });
+    }
+
+    private View findCoachMarkAnchor() {
+        MaterialToolbar toolbar = requireActivity().findViewById(R.id.app_toolbar);
+        if (toolbar == null) {
+            toolbar = requireActivity().findViewById(R.id.toolbar);
+        }
+        if (toolbar == null) {
+            return null;
+        }
+
+        View directMatch = toolbar.findViewById(R.id.action_new_game);
+        if (directMatch != null) {
+            return directMatch;
+        }
+
+        MenuItem newGameItem = toolbar.getMenu().findItem(R.id.action_new_game);
+        if (newGameItem == null) {
+            return toolbar;
+        }
+
+        View contentDescriptionMatch =
+                findViewWithContentDescription(
+                        toolbar, MenuItemCompat.getContentDescription(newGameItem));
+        if (contentDescriptionMatch != null) {
+            return contentDescriptionMatch;
+        }
+
+        View titleMatch = findViewWithContentDescription(toolbar, newGameItem.getTitle());
+        return titleMatch != null ? titleMatch : toolbar;
+    }
+
+    private View findViewWithContentDescription(View root, CharSequence contentDescription) {
+        if (root == null || contentDescription == null) {
+            return null;
+        }
+        CharSequence rootDescription = root.getContentDescription();
+        if (rootDescription != null
+                && rootDescription.toString().contentEquals(contentDescription)) {
+            return root;
+        }
+        if (root instanceof ViewGroup rootGroup) {
+            for (int i = 0; i < rootGroup.getChildCount(); i++) {
+                View match =
+                        findViewWithContentDescription(rootGroup.getChildAt(i), contentDescription);
+                if (match != null) {
+                    return match;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void showCoachMark(View anchor) {
+        if (coachMarkPopup != null) {
+            coachMarkPopup.setOnDismissListener(null);
+            coachMarkPopup.dismiss();
+        }
+        View popupView =
+                LayoutInflater.from(requireContext()).inflate(R.layout.mtg_coach_mark, null);
+        coachMarkPopup =
+                new PopupWindow(
+                        popupView,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        true);
+        coachMarkPopup.setOutsideTouchable(true);
+        coachMarkPopup.setElevation(dpToPx(8));
+        coachMarkPopup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        popupView.setOnClickListener(
+                v -> {
+                    if (coachMarkPopup != null) {
+                        coachMarkPopup.dismiss();
+                    }
+                    anchor.performClick();
+                });
+
+        coachMarkPopup.setOnDismissListener(
+                () -> {
+                    viewModel.markSetupCoachMarkDismissed();
+                    coachMarkPopup = null;
+                });
+
+        popupView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        popupView.layout(0, 0, popupView.getMeasuredWidth(), popupView.getMeasuredHeight());
+        View pointer = popupView.findViewById(R.id.coach_mark_pointer);
+        int pointerCenterX = popupView.getMeasuredWidth() / 2;
+        if (pointer != null) {
+            pointerCenterX = pointer.getLeft() + (pointer.getMeasuredWidth() / 2);
+        }
+        int anchorCenterX = getCoachMarkAnchorCenterX(anchor);
+        int xOffset = anchorCenterX - pointerCenterX;
+        coachMarkPopup.showAsDropDown(anchor, xOffset + dpToPx(14), dpToPx(10));
+    }
+
+    private int getCoachMarkAnchorCenterX(View anchor) {
+        if (anchor.getId() != R.id.toolbar || !(anchor instanceof MaterialToolbar toolbar)) {
+            return Math.round(anchor.getWidth() / 2f);
+        }
+
+        int actionCenterOffset = dpToPx(24);
+        boolean isRtl = ViewCompat.getLayoutDirection(toolbar) == ViewCompat.LAYOUT_DIRECTION_RTL;
+        if (isRtl) {
+            return toolbar.getContentInsetStart() + actionCenterOffset;
+        }
+        return toolbar.getWidth() - toolbar.getContentInsetEnd() - actionCenterOffset;
     }
 
     @Override
@@ -1302,6 +1439,11 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (coachMarkPopup != null) {
+            coachMarkPopup.setOnDismissListener(null);
+            coachMarkPopup.dismiss();
+            coachMarkPopup = null;
+        }
         for (Runnable repeatRunnable : activeLifeHoldRunnables.values()) {
             holdRepeatHandler.removeCallbacks(repeatRunnable);
         }

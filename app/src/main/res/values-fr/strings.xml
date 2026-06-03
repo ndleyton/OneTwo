@@ -67,5 +67,6 @@
     <string name="mtg_pass_turn_desc">Passer le tour du joueur %1$d au joueur suivant</string>
     <string name="mtg_start_timer_desc">Démarrer le minuteur pour le joueur %1$d</string>
     <string name="mtg_player_timer_desc">Temps restant du joueur %1$d : %2$s</string>
+    <string name="mtg_setup_coach_mark">Paramètres de partie, minuteur et sélecteur tactile</string>
 
 </resources>

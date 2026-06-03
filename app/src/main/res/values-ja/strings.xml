@@ -67,5 +67,6 @@
     <string name="mtg_pass_turn_desc">プレイヤー%1$dのターンを次のプレイヤーに渡す</string>
     <string name="mtg_start_timer_desc">プレイヤー%1$dのタイマーを開始する</string>
     <string name="mtg_player_timer_desc">プレイヤー%1$dの残り時間: %2$s</string>
+    <string name="mtg_setup_coach_mark">ゲーム設定、タイマー、指で選ぶ機能</string>
 
 </resources>

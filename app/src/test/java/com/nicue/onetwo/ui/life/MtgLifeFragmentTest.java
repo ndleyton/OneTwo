@@ -20,6 +20,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.test.core.app.ActivityScenario;
 import com.nicue.onetwo.MainActivity;
 import com.nicue.onetwo.R;
+import com.nicue.onetwo.data.settings.SettingsPrefsDataSource;
+import com.nicue.onetwo.data.settings.SettingsRepository;
 import com.nicue.onetwo.databinding.LifePlayerCellBinding;
 import java.util.concurrent.TimeUnit;
 import org.junit.Rule;
@@ -834,6 +836,53 @@ public class MtgLifeFragmentTest {
         }
     }
 
+    @Test
+    public void testCoachMarkShowsFromActivityToolbar() {
+        try (ActivityScenario<MainActivity> scenario =
+                ActivityScenario.launch(MainActivity.class)) {
+            scenario.onActivity(
+                    activity -> {
+                        SettingsRepository settingsRepository =
+                                new SettingsRepository(new SettingsPrefsDataSource(activity));
+                        settingsRepository.setMtgSetupCoachMarkDismissed(false);
+                        activity.invalidateOptionsMenu();
+                        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+                        Fragment fragment =
+                                activity.getSupportFragmentManager()
+                                        .findFragmentById(R.id.nav_host_fragment);
+                        assertNotNull(fragment);
+
+                        Fragment currentFragment =
+                                fragment.getChildFragmentManager().getFragments().get(0);
+                        assertTrue(currentFragment instanceof MtgLifeFragment);
+                        MtgLifeFragment mtgLifeFragment = (MtgLifeFragment) currentFragment;
+
+                        try {
+                            java.lang.reflect.Method showCoachMarkIfNecessaryMethod =
+                                    MtgLifeFragment.class.getDeclaredMethod(
+                                            "showCoachMarkIfNecessary");
+                            showCoachMarkIfNecessaryMethod.setAccessible(true);
+                            showCoachMarkIfNecessaryMethod.invoke(mtgLifeFragment);
+
+                            Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+                            java.lang.reflect.Field coachMarkField =
+                                    MtgLifeFragment.class.getDeclaredField("coachMarkPopup");
+                            coachMarkField.setAccessible(true);
+                            android.widget.PopupWindow popup =
+                                    (android.widget.PopupWindow)
+                                            coachMarkField.get(mtgLifeFragment);
+
+                            assertNotNull(popup);
+                            assertTrue(popup.isShowing());
+                        } catch (ReflectiveOperationException e) {
+                            throw new AssertionError(e);
+                        }
+                    });
+        }
+    }
+
     private static View findViewWithContentDescription(View root, CharSequence contentDescription) {
         if (root == null) {
             return null;
@@ -908,5 +957,106 @@ public class MtgLifeFragmentTest {
                                 sourcePlayerNumber,
                                 defenderPlayerNumber));
         assertNotNull(incrementZone);
+    }
+
+    @Test
+    public void testCoachMarkDismissedOnDestroyView() {
+        try (FragmentScenario<MtgLifeFragment> scenario =
+                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
+            scenario.onFragment(
+                    fragment -> {
+                        View anchor = new View(fragment.requireContext());
+                        try {
+                            java.lang.reflect.Method showCoachMarkMethod =
+                                    MtgLifeFragment.class.getDeclaredMethod(
+                                            "showCoachMark", View.class);
+                            showCoachMarkMethod.setAccessible(true);
+                            showCoachMarkMethod.invoke(fragment, anchor);
+
+                            java.lang.reflect.Field coachMarkField =
+                                    MtgLifeFragment.class.getDeclaredField("coachMarkPopup");
+                            coachMarkField.setAccessible(true);
+                            android.widget.PopupWindow popup =
+                                    (android.widget.PopupWindow) coachMarkField.get(fragment);
+
+                            assertNotNull(popup);
+                            assertTrue(popup.isShowing());
+
+                            fragment.onDestroyView();
+
+                            org.junit.Assert.assertNull(coachMarkField.get(fragment));
+                            org.junit.Assert.assertFalse(popup.isShowing());
+
+                            java.lang.reflect.Field viewModelField =
+                                    MtgLifeFragment.class.getDeclaredField("viewModel");
+                            viewModelField.setAccessible(true);
+                            MtgLifeViewModel viewModel =
+                                    (MtgLifeViewModel) viewModelField.get(fragment);
+                            org.junit.Assert.assertFalse(viewModel.isSetupCoachMarkDismissed());
+                        } catch (ReflectiveOperationException e) {
+                            throw new AssertionError(e);
+                        }
+                    });
+        }
+    }
+
+    @Test
+    public void testCoachMarkAccessibilityAndInteraction() {
+        try (FragmentScenario<MtgLifeFragment> scenario =
+                FragmentScenario.launchInContainer(MtgLifeFragment.class, null, R.style.AppTheme)) {
+            scenario.onFragment(
+                    fragment -> {
+                        View anchor = new View(fragment.requireContext());
+                        boolean[] anchorClicked = {false};
+                        anchor.setOnClickListener(v -> anchorClicked[0] = true);
+
+                        try {
+                            java.lang.reflect.Method showCoachMarkMethod =
+                                    MtgLifeFragment.class.getDeclaredMethod(
+                                            "showCoachMark", View.class);
+                            showCoachMarkMethod.setAccessible(true);
+                            showCoachMarkMethod.invoke(fragment, anchor);
+
+                            java.lang.reflect.Field coachMarkField =
+                                    MtgLifeFragment.class.getDeclaredField("coachMarkPopup");
+                            coachMarkField.setAccessible(true);
+                            android.widget.PopupWindow popup =
+                                    (android.widget.PopupWindow) coachMarkField.get(fragment);
+
+                            assertNotNull(popup);
+                            assertTrue(popup.isShowing());
+                            assertTrue(popup.isOutsideTouchable()); // Accessibility: can be
+                            // dismissed by touching outside
+
+                            View popupContentView = popup.getContentView();
+                            assertNotNull(popupContentView);
+                            assertNotNull(popupContentView.findViewById(R.id.coach_mark_pointer));
+
+                            // Simulate click on the coach mark
+                            popupContentView.performClick();
+
+                            // Verify anchor was clicked as a result
+                            assertTrue(anchorClicked[0]);
+
+                            // Verify popup was dismissed
+                            org.junit.Assert.assertFalse(popup.isShowing());
+
+                            // Verify ViewModel received the dismiss signal
+                            java.lang.reflect.Field viewModelField =
+                                    MtgLifeFragment.class.getDeclaredField("viewModel");
+                            viewModelField.setAccessible(true);
+                            MtgLifeViewModel viewModel =
+                                    (MtgLifeViewModel) viewModelField.get(fragment);
+                            assertTrue(viewModel.isSetupCoachMarkDismissed());
+
+                            // Verify reference is cleared via dismiss listener
+                            Shadows.shadowOf(Looper.getMainLooper()).idle();
+                            org.junit.Assert.assertNull(coachMarkField.get(fragment));
+
+                        } catch (ReflectiveOperationException e) {
+                            throw new AssertionError(e);
+                        }
+                    });
+        }
     }
 }

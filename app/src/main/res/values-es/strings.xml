@@ -113,4 +113,5 @@
     <string name="mtg_start_timer_desc">Iniciar temporizador para el jugador %1$d</string>
     <string name="mtg_player_timer_desc">Tiempo restante del jugador %1$d: %2$s</string>
     <string name="mtg_setup_choose_and_start">Elegir 1º y empezar</string>
+    <string name="mtg_setup_coach_mark">Configuración de partida, temporizador y selector de dedos</string>
 </resources>
