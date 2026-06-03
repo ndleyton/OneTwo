@@ -10,11 +10,10 @@ OneTwo: TableTop Tools is a lightweight, fully open-source Android toolkit for t
 
 ## Features
 
-*   **MTG Life Counter:** Supports 1 to 6 players, full Commander damage matrix tracking (with automatic 21-damage highlight), and sliding-window recent life total history.
-*   **Turn Timers:** Individual player turn timers with intuitive pass-action handling and optional toggles.
+*   **MTG Life Counter:** Supports 1 to 6 players, full Commander damage matrix tracking (with automatic 21-damage highlight), sliding-window recent life total history, and an integrated per-player turn timer for MTG and Commander games.
 *   **Intuitive Player Selector (Chooser):** An animated, multi-touch custom view (`TouchDisplayView`) that lets players place a finger on the screen to seamlessly determine who goes first or establish turn order.
 *   **Custom Dice Roller:** Fully configurable dice rolling engine supporting edge-case selections from 2 faces up to 99,999 faces.
-*   **Chess Timer:** Synced chess-style game clocks handling up to 15 players simultaneously.
+*   **Chess Timer:** A separate chess-style timer screen for board games, with synced game clocks handling up to 15 players simultaneously.
 *   **Universal Counter:** Persistent trackers utilizing Room DB to record scores, life totals, or match points across multiple sessions.
 
 ---
