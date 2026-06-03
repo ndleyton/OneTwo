@@ -262,7 +262,8 @@ public class MtgLifeFragment extends Fragment implements MenuProvider {
         }
 
         View contentDescriptionMatch =
-                findViewWithContentDescription(toolbar, MenuItemCompat.getContentDescription(newGameItem));
+                findViewWithContentDescription(
+                        toolbar, MenuItemCompat.getContentDescription(newGameItem));
         if (contentDescriptionMatch != null) {
             return contentDescriptionMatch;
         }
