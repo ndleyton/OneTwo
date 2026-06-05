@@ -789,6 +789,7 @@ public class MtgLifeViewModel extends ViewModel {
                                 getRotationForSeat(seatIndex, totalPlayers),
                                 getBackgroundColorResForSeat(seatIndex),
                                 getForegroundColorResForSeat(seatIndex),
+                                getAccentBackgroundColorResForSeat(seatIndex),
                                 recentLifeChange,
                                 recentLifeChangeTimestampMs,
                                 commanderDamageEnabled && totalPlayers > 1,
