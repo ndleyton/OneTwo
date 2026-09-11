@@ -62,6 +62,8 @@
     <string name="colon">:</string>
     <string name="content_desc_add_counter">カウンターを追加</string>
     <string name="content_desc_roll_dice">サイコロを振る</string>
+    <string name="content_desc_lock_die">サイコロをロック</string>
+    <string name="content_desc_unlock_die">サイコロのロックを解除</string>
     <string name="mtg_setup_turn_timer">ターンタイマー</string>
     <string name="mtg_setup_time">時間</string>
     <string name="mtg_pass_turn">パス</string>
