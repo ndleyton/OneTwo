@@ -13,6 +13,7 @@ public class DiceViewModel extends ViewModel {
     private static final String KEY_FACES = "dice_faces";
     private static final String KEY_VALUES = "dice_values";
     private static final String KEY_IDS = "dice_ids";
+    private static final String KEY_LOCKED = "dice_locked";
     private static final String KEY_NEXT_ID = "dice_next_id";
 
     private final DiceRepository diceRepository;
@@ -27,7 +28,7 @@ public class DiceViewModel extends ViewModel {
         ArrayList<Integer> savedFaces = savedStateHandle.get(KEY_FACES);
         ArrayList<Integer> savedValues = savedStateHandle.get(KEY_VALUES);
         ArrayList<Long> savedIds = savedStateHandle.get(KEY_IDS);
-        Long nextId = savedStateHandle.get(KEY_NEXT_ID);
+        ArrayList<Boolean> savedLocks = savedStateHandle.get(KEY_LOCKED);
 
         if (savedFaces == null) {
             savedFaces = new ArrayList<>(diceRepository.readDiceFaces());
@@ -46,7 +47,13 @@ public class DiceViewModel extends ViewModel {
             }
             savedStateHandle.set(KEY_NEXT_ID, currentId);
         }
-        updateState(savedFaces, savedValues, savedIds);
+        if (savedLocks == null || savedLocks.size() != savedFaces.size()) {
+            savedLocks = new ArrayList<>();
+            for (int i = 0; i < savedFaces.size(); i++) {
+                savedLocks.add(Boolean.FALSE);
+            }
+        }
+        updateState(savedFaces, savedValues, savedIds, savedLocks);
     }
 
     public LiveData<DiceUiState> getUiState() {
@@ -57,6 +64,7 @@ public class DiceViewModel extends ViewModel {
         ArrayList<Integer> dieFaces = getFaces();
         ArrayList<Integer> dieValues = getValues();
         ArrayList<Long> dieIds = getIds();
+        ArrayList<Boolean> dieLocks = getLocks();
         Long nextId = savedStateHandle.get(KEY_NEXT_ID);
         if (nextId == null) {
             nextId = 0L;
@@ -65,45 +73,94 @@ public class DiceViewModel extends ViewModel {
         dieFaces.add(Math.max(2, faces));
         dieValues.add(Math.max(2, faces));
         dieIds.add(nextId);
+        dieLocks.add(Boolean.FALSE);
 
         savedStateHandle.set(KEY_NEXT_ID, nextId + 1);
         persistFaces(dieFaces);
-        updateState(dieFaces, dieValues, dieIds);
+        updateState(dieFaces, dieValues, dieIds, dieLocks);
     }
 
     public void removeDie(int position) {
         ArrayList<Integer> dieFaces = getFaces();
         ArrayList<Integer> dieValues = getValues();
         ArrayList<Long> dieIds = getIds();
+        ArrayList<Boolean> dieLocks = getLocks();
         if (position < 0 || position >= dieFaces.size()) {
             return;
         }
         dieFaces.remove(position);
         dieValues.remove(position);
         dieIds.remove(position);
+        dieLocks.remove(position);
         persistFaces(dieFaces);
-        updateState(dieFaces, dieValues, dieIds);
+        updateState(dieFaces, dieValues, dieIds, dieLocks);
     }
 
     public void rollDie(int position) {
         ArrayList<Integer> dieFaces = getFaces();
         ArrayList<Integer> dieValues = getValues();
         ArrayList<Long> dieIds = getIds();
+        ArrayList<Boolean> dieLocks = getLocks();
         if (position < 0 || position >= dieFaces.size()) {
             return;
         }
+        if (isLocked(dieLocks, position)) {
+            return;
+        }
         dieValues.set(position, roll(dieFaces.get(position)));
-        updateState(dieFaces, dieValues, dieIds);
+        updateState(dieFaces, dieValues, dieIds, dieLocks);
     }
 
     public void rollAllDice() {
         ArrayList<Integer> dieFaces = getFaces();
         ArrayList<Integer> dieValues = getValues();
         ArrayList<Long> dieIds = getIds();
+        ArrayList<Boolean> dieLocks = getLocks();
         for (int i = 0; i < dieFaces.size(); i++) {
+            if (isLocked(dieLocks, i)) {
+                continue;
+            }
             dieValues.set(i, roll(dieFaces.get(i)));
         }
-        updateState(dieFaces, dieValues, dieIds);
+        updateState(dieFaces, dieValues, dieIds, dieLocks);
+    }
+
+    public void toggleLock(int position) {
+        ArrayList<Integer> dieFaces = getFaces();
+        ArrayList<Integer> dieValues = getValues();
+        ArrayList<Long> dieIds = getIds();
+        ArrayList<Boolean> dieLocks = getLocks();
+        if (position < 0 || position >= dieLocks.size()) {
+            return;
+        }
+        dieLocks.set(position, !isLocked(dieLocks, position));
+        updateState(dieFaces, dieValues, dieIds, dieLocks);
+    }
+
+    public void unlockAllDice() {
+        ArrayList<Integer> dieFaces = getFaces();
+        ArrayList<Integer> dieValues = getValues();
+        ArrayList<Long> dieIds = getIds();
+        ArrayList<Boolean> dieLocks = getLocks();
+        boolean changed = false;
+        for (int i = 0; i < dieLocks.size(); i++) {
+            if (isLocked(dieLocks, i)) {
+                dieLocks.set(i, Boolean.FALSE);
+                changed = true;
+            }
+        }
+        if (!changed) {
+            return;
+        }
+        updateState(dieFaces, dieValues, dieIds, dieLocks);
+    }
+
+    private boolean isLocked(List<Boolean> dieLocks, int position) {
+        if (position < 0 || position >= dieLocks.size()) {
+            return false;
+        }
+        Boolean locked = dieLocks.get(position);
+        return locked != null && locked;
     }
 
     private int roll(int faces) {
@@ -129,14 +186,28 @@ public class DiceViewModel extends ViewModel {
         return values == null ? new ArrayList<Long>() : new ArrayList<>(values);
     }
 
+    private ArrayList<Boolean> getLocks() {
+        ArrayList<Boolean> values = savedStateHandle.get(KEY_LOCKED);
+        return values == null ? new ArrayList<Boolean>() : new ArrayList<>(values);
+    }
+
     private void updateState(
-            ArrayList<Integer> dieFaces, ArrayList<Integer> dieValues, ArrayList<Long> dieIds) {
+            ArrayList<Integer> dieFaces,
+            ArrayList<Integer> dieValues,
+            ArrayList<Long> dieIds,
+            ArrayList<Boolean> dieLocks) {
         savedStateHandle.set(KEY_FACES, new ArrayList<>(dieFaces));
         savedStateHandle.set(KEY_VALUES, new ArrayList<>(dieValues));
         savedStateHandle.set(KEY_IDS, new ArrayList<>(dieIds));
+        savedStateHandle.set(KEY_LOCKED, new ArrayList<>(dieLocks));
         ArrayList<DieUiModel> dice = new ArrayList<>();
         for (int i = 0; i < dieFaces.size(); i++) {
-            dice.add(new DieUiModel(dieIds.get(i), dieFaces.get(i), dieValues.get(i)));
+            dice.add(
+                    new DieUiModel(
+                            dieIds.get(i),
+                            dieFaces.get(i),
+                            dieValues.get(i),
+                            isLocked(dieLocks, i)));
         }
         uiState.setValue(new DiceUiState(dice));
     }

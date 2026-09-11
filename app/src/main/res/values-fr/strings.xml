@@ -31,6 +31,7 @@
     <string name="edit">Éditer</string>
     <string name="roll">Lancer</string>
     <string name="roll_all">Tout lancer</string>
+    <string name="unlock_all">Débloquer tout</string>
     <string name="dice_total">Total</string>
     <string name="dice_empty_results">Ajoutez des dés pour commencer</string>
     <string name="dice_type_label" translatable="false">d%1$d</string>

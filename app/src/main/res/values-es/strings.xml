@@ -32,6 +32,7 @@
     <string name="edit">Editar</string>
     <string name="roll">Tirar</string>
     <string name="roll_all">Tirar todos</string>
+    <string name="unlock_all">Desbloquear todos</string>
     <string name="dice_total">Total</string>
     <string name="dice_empty_results">Agrega dados para comenzar</string>
     <string name="dice_type_label" translatable="false">d%1$d</string>

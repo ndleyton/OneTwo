@@ -33,6 +33,7 @@
     <string name="edit">Edit</string>
     <string name="roll">Roll</string>
     <string name="roll_all">Roll All</string>
+    <string name="unlock_all">Unlock All</string>
     <string name="dice_total">Total</string>
     <string name="dice_empty_results">Add dice to start rolling</string>
     <string name="dice_type_label" translatable="false">d%1$d</string>
@@ -90,6 +91,8 @@
     <string name="colon">:</string>
     <string name="content_desc_add_counter">Add Counter</string>
     <string name="content_desc_roll_dice">Roll Dice</string>
+    <string name="content_desc_lock_die">Lock die</string>
+    <string name="content_desc_unlock_die">Unlock die</string>
 
     <string name="menu_mtg_life">Life Counter</string>
     <string name="mtg_setup_title">New Game</string>

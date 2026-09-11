@@ -34,6 +34,8 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
     private DiceLayoutBinding binding;
     private DiceAdapter adapter;
     private DiceViewModel viewModel;
+    private boolean hasLockedDice;
+    private boolean hasRollableDice;
 
     @Nullable @Override
     public View onCreateView(
@@ -97,6 +99,7 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
                             public void onChanged(DiceUiState state) {
                                 adapter.submitList(state.getDice());
                                 renderResultSummary(state);
+                                updateLockActionState(state);
                             }
                         });
 
@@ -121,8 +124,27 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
     }
 
     @Override
+    public void onPrepareMenu(@NonNull Menu menu) {
+        MenuItem unlockAll = menu.findItem(R.id.action_unlock_all);
+        if (unlockAll != null) {
+            unlockAll.setVisible(hasLockedDice);
+        }
+        MenuItem rollAll = menu.findItem(R.id.action_roll_all);
+        if (rollAll != null) {
+            rollAll.setEnabled(hasRollableDice);
+        }
+    }
+
+    @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+        if (menuItem.getItemId() == R.id.action_unlock_all) {
+            viewModel.unlockAllDice();
+            return true;
+        }
         if (menuItem.getItemId() == R.id.action_roll_all) {
+            if (!hasRollableDice) {
+                return true;
+            }
             vibrate(new long[] {0, 15, 10, 15, 10, 15, 10, 15});
             animateSummaryCard();
             adapter.animateAllVisibleItems(
@@ -178,6 +200,25 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
     @Override
     public void onRemoveDie(int position) {
         viewModel.removeDie(position);
+    }
+
+    @Override
+    public void onToggleLock(int position) {
+        if (binding == null) {
+            return;
+        }
+        vibrate(30L);
+        viewModel.toggleLock(position);
+    }
+
+    private void updateLockActionState(DiceUiState state) {
+        boolean lockedChanged = hasLockedDice != state.hasLockedDice();
+        boolean rollableChanged = hasRollableDice != state.hasRollableDice();
+        hasLockedDice = state.hasLockedDice();
+        hasRollableDice = state.hasRollableDice();
+        if (lockedChanged || rollableChanged) {
+            requireActivity().invalidateMenu();
+        }
     }
 
     public static String normalizeFacesInput(String input) {
@@ -274,6 +315,13 @@ public class DiceFragment extends Fragment implements DiceAdapter.Listener, Menu
                                             false);
             chip.setText(getString(R.string.dice_result_chip, die.getFaces(), die.getValue()));
             binding.chipGroupDiceResults.addView(chip);
+        }
+    }
+
+    private void vibrate(long milliseconds) {
+        Vibrator vibrator = (Vibrator) requireContext().getSystemService(Context.VIBRATOR_SERVICE);
+        if (vibrator != null) {
+            vibrator.vibrate(milliseconds);
         }
     }
 

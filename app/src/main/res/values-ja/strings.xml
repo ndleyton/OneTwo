@@ -31,6 +31,7 @@
     <string name="edit">編集</string>
     <string name="roll">転がす</string>
     <string name="roll_all">すべて転がす</string>
+    <string name="unlock_all">すべてのロックを解除</string>
     <string name="dice_total">合計</string>
     <string name="dice_empty_results">サイコロを追加して始めます</string>
     <string name="dice_type_label" translatable="false">d%1$d</string>
