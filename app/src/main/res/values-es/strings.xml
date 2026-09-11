@@ -85,6 +85,8 @@
     <string name="colon">:</string>
     <string name="content_desc_add_counter">Agregar contador</string>
     <string name="content_desc_roll_dice">Lanzar dados</string>
+    <string name="content_desc_lock_die">Bloquear dado</string>
+    <string name="content_desc_unlock_die">Desbloquear dado</string>
     <string name="menu_mtg_life">Contador de Vidas</string>
     <string name="mtg_setup_title">Nueva Partida</string>
     <string name="mtg_setup_players">Jugadores</string>

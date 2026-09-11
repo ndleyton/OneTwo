@@ -3,22 +3,22 @@
 buildscript {
     ext {
         agpVersion = '9.2.1'
-        spotlessVersion = '7.2.1'
+        spotlessVersion = '8.10.2'
         roomVersion = '2.6.1'
-        lifecycleVersion = '2.7.0'
-        navVersion = '2.7.7'
+        lifecycleVersion = '2.8.7'
+        navVersion = '2.9.0'
         preferenceVersion = '1.2.1'
-        appcompatVersion = '1.6.1'
+        appcompatVersion = '1.7.0'
         cardviewVersion = '1.0.0'
-        constraintLayoutVersion = '2.1.4'
-        materialVersion = '1.12.0'
+        constraintLayoutVersion = '2.2.2'
+        materialVersion = '1.13.0'
 
         junitVersion = '4.13.2'
-        espressoVersion = '3.5.1'
-        testCoreVersion = '1.5.0'
+        espressoVersion = '3.6.1'
+        testCoreVersion = '1.6.1'
         archCoreTestingVersion = '2.2.0'
-        robolectricVersion = '4.16.1'
-        fragmentTestingVersion = '1.6.2'
+        robolectricVersion = '4.17'
+        fragmentTestingVersion = '1.8.6'
     }
     repositories {
         google()

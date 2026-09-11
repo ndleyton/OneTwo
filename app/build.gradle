@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'checkstyle'
 
 android {
-    compileSdk 35
+    compileSdk 36
     buildFeatures {
         viewBinding true
     }
@@ -13,7 +13,7 @@ android {
     defaultConfig {
         applicationId "com.nicue.onetwo"
         minSdkVersion 21
-        targetSdkVersion 35
+        targetSdkVersion 36
         versionCode 41
         versionName "2.1.4"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
