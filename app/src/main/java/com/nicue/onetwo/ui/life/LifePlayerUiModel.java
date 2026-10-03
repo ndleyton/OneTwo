@@ -8,6 +8,7 @@ public class LifePlayerUiModel {
     private final int rotationDegrees;
     private final int backgroundColorRes;
     private final int foregroundColorRes;
+    private final int accentBackgroundColorRes;
     private final int recentLifeChange;
     private final long recentLifeChangeTimestampMs;
     private final boolean commanderDamageVisible;
@@ -25,6 +26,7 @@ public class LifePlayerUiModel {
             int rotationDegrees,
             int backgroundColorRes,
             int foregroundColorRes,
+            int accentBackgroundColorRes,
             int recentLifeChange,
             long recentLifeChangeTimestampMs,
             boolean commanderDamageVisible,
@@ -40,6 +42,7 @@ public class LifePlayerUiModel {
         this.rotationDegrees = rotationDegrees;
         this.backgroundColorRes = backgroundColorRes;
         this.foregroundColorRes = foregroundColorRes;
+        this.accentBackgroundColorRes = accentBackgroundColorRes;
         this.recentLifeChange = recentLifeChange;
         this.recentLifeChangeTimestampMs = recentLifeChangeTimestampMs;
         this.commanderDamageVisible = commanderDamageVisible;
@@ -70,6 +73,10 @@ public class LifePlayerUiModel {
 
     public int getForegroundColorRes() {
         return foregroundColorRes;
+    }
+
+    public int getAccentBackgroundColorRes() {
+        return accentBackgroundColorRes;
     }
 
     public int getRecentLifeChange() {

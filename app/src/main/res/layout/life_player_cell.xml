@@ -5,6 +5,46 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:id="@+id/player_color_indicator_start"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_margin="0dp"
+        android:src="@drawable/ic_corner_bracket"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/player_color_indicator_end"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_margin="0dp"
+        android:src="@drawable/ic_corner_bracket"
+        android:scaleX="-1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/player_color_indicator_bottom_start"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_margin="0dp"
+        android:src="@drawable/ic_corner_bracket"
+        android:scaleY="-1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/player_color_indicator_bottom_end"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_margin="0dp"
+        android:src="@drawable/ic_corner_bracket"
+        android:scaleX="-1"
+        android:scaleY="-1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/inner_player_layout"
         android:layout_width="0dp"
