@@ -48,6 +48,8 @@
     <string name="always_on_title">画面をスリープさせない</string>
     <string name="misc_header">その他</string>
     <string name="always_on_summary">画面をスリープさせない</string>
+    <string name="timer_distinct_colors_title">タイマーの色</string>
+    <string name="timer_distinct_colors_summary">タイマーごとに異なる色を使います</string>
     <string name="chooser_order_title">選択順</string>
     <string name="chooser_order_summary">指を置いた順に選択します</string>
     <string name="life_counter_haptic_feedback_title">ライフカウンターの触覚フィードバック</string>

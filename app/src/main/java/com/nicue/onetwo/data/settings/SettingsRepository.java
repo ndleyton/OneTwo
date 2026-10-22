@@ -35,6 +35,14 @@ public class SettingsRepository {
         dataSource.setChooserOrderEnabled(enabled);
     }
 
+    public boolean isTimerDistinctColorsEnabled() {
+        return dataSource.isTimerDistinctColorsEnabled();
+    }
+
+    public void setTimerDistinctColorsEnabled(boolean enabled) {
+        dataSource.setTimerDistinctColorsEnabled(enabled);
+    }
+
     public boolean isLifeCounterHapticFeedbackEnabled() {
         return dataSource.isLifeCounterHapticFeedbackEnabled();
     }

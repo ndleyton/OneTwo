@@ -26,6 +26,12 @@
             app:summary="@string/chooser_order_summary"
             app:title="@string/chooser_order_title" />
 
+        <SwitchPreferenceCompat
+            app:key="timer_distinct_colors"
+            app:defaultValue="false"
+            app:summary="@string/timer_distinct_colors_summary"
+            app:title="@string/timer_distinct_colors_title" />
+
     </PreferenceCategory>
 
 

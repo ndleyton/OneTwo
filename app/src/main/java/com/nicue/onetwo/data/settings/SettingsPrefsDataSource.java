@@ -8,6 +8,7 @@ public class SettingsPrefsDataSource {
     private static final String KEY_ALWAYS_ON = "always_on";
     private static final String KEY_DARK_MODE = "dark_mode";
     private static final String KEY_CHOOSER_ORDER = "chooser_order";
+    private static final String KEY_TIMER_DISTINCT_COLORS = "timer_distinct_colors";
     private static final String KEY_LIFE_COUNTER_HAPTIC_FEEDBACK = "life_counter_haptic_feedback";
     private static final String KEY_MTG_SETUP_COACH_MARK_DISMISSED =
             "mtg_setup_coach_mark_dismissed";
@@ -39,6 +40,14 @@ public class SettingsPrefsDataSource {
 
     public void setChooserOrderEnabled(boolean enabled) {
         sharedPreferences.edit().putBoolean(KEY_CHOOSER_ORDER, enabled).apply();
+    }
+
+    public boolean isTimerDistinctColorsEnabled() {
+        return sharedPreferences.getBoolean(KEY_TIMER_DISTINCT_COLORS, false);
+    }
+
+    public void setTimerDistinctColorsEnabled(boolean enabled) {
+        sharedPreferences.edit().putBoolean(KEY_TIMER_DISTINCT_COLORS, enabled).apply();
     }
 
     public boolean isLifeCounterHapticFeedbackEnabled() {
