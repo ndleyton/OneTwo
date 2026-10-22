@@ -182,7 +182,9 @@ public class TimerFragment extends Fragment implements MenuProvider {
             int textColor = resolveTextColor(timer, state.isPaused());
             boolean running = timer.isActive() && timer.isEnabled();
             if (distinctColors && !timer.isFinished()) {
-                bgColor = ContextCompat.getColor(requireContext(), TIMER_COLORS[i % TIMER_COLORS.length]);
+                bgColor =
+                        ContextCompat.getColor(
+                                requireContext(), TIMER_COLORS[i % TIMER_COLORS.length]);
                 textColor = ContextCompat.getColor(requireContext(), R.color.timer_idle_foreground);
             }
             itemBinding.chrono.setBackgroundTintList(ColorStateList.valueOf(bgColor));
