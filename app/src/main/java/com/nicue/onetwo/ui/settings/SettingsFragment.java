@@ -29,6 +29,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         configureAlwaysOnPreference();
         configureDarkModePreference();
         configureChooserOrderPreference();
+        configureTimerDistinctColorsPreference();
         configureLifeCounterHapticFeedbackPreference();
     }
 
@@ -86,6 +87,24 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                             @NonNull Preference preference, Object newValue) {
                         boolean enabled = (Boolean) newValue;
                         settingsRepository.setChooserOrderEnabled(enabled);
+                        return true;
+                    }
+                });
+    }
+
+    private void configureTimerDistinctColorsPreference() {
+        SwitchPreferenceCompat preference = findPreference("timer_distinct_colors");
+        if (preference == null) {
+            return;
+        }
+        preference.setPersistent(false);
+        preference.setChecked(settingsRepository.isTimerDistinctColorsEnabled());
+        preference.setOnPreferenceChangeListener(
+                new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(
+                            @NonNull Preference preference, Object newValue) {
+                        settingsRepository.setTimerDistinctColorsEnabled((Boolean) newValue);
                         return true;
                     }
                 });

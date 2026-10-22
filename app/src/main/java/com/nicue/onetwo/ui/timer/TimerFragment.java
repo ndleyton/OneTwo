@@ -47,6 +47,15 @@ public class TimerFragment extends Fragment implements MenuProvider {
     private static final int CLOCK_PRESET_25_0 = 4;
     private static final int CLOCK_PRESET_CUSTOM = 5;
 
+    private static final int[] TIMER_COLORS = {
+        R.color.diceColor0,
+        R.color.diceColor1,
+        R.color.diceColor3,
+        R.color.diceColor2,
+        R.color.diceColor6,
+        R.color.diceColor7
+    };
+
     private TimerLayoutBinding binding;
     private final List<ListItemTimerBinding> timerBindings = new ArrayList<>();
     private TimerViewModel viewModel;
@@ -158,6 +167,11 @@ public class TimerFragment extends Fragment implements MenuProvider {
         if (timerBindings.size() != timers.size()) {
             rebuildTimerViews(timers.size());
         }
+        boolean distinctColors =
+                ((OneTwoApplication) requireActivity().getApplication())
+                        .getAppContainer()
+                        .getSettingsRepository()
+                        .isTimerDistinctColorsEnabled();
         for (int i = 0; i < timers.size(); i++) {
             TimerItemUiModel timer = timers.get(i);
             ListItemTimerBinding itemBinding = timerBindings.get(i);
@@ -166,13 +180,24 @@ public class TimerFragment extends Fragment implements MenuProvider {
             itemBinding.chrono.setClickable(timer.isEnabled());
             int bgColor = resolveButtonColor(timer, state.isPaused());
             int textColor = resolveTextColor(timer, state.isPaused());
+            boolean running = timer.isActive() && timer.isEnabled();
+            if (distinctColors && !timer.isFinished()) {
+                bgColor =
+                        ContextCompat.getColor(
+                                requireContext(), TIMER_COLORS[i % TIMER_COLORS.length]);
+                textColor = ContextCompat.getColor(requireContext(), R.color.timer_idle_foreground);
+            }
             itemBinding.chrono.setBackgroundTintList(ColorStateList.valueOf(bgColor));
             itemBinding.chrono.setTextColor(textColor);
             itemBinding.cvTimer.setCardBackgroundColor(ColorStateList.valueOf(bgColor));
             itemBinding.cvTimer.setCardElevation(timer.isActive() && !state.isPaused() ? 12f : 0f);
 
             // Dim if active but paused
-            itemBinding.cvTimer.setAlpha(timer.isActive() && state.isPaused() ? 0.7f : 1.0f);
+            // In distinct-color mode the color no longer shows who is running, so dim idle timers.
+            itemBinding.cvTimer.setAlpha(
+                    timer.isActive() && state.isPaused()
+                            ? 0.7f
+                            : distinctColors && !running && !timer.isFinished() ? 0.6f : 1.0f);
 
             itemBinding.getRoot().setRotation(i == 0 && timers.size() == 2 ? 180f : 0f);
         }

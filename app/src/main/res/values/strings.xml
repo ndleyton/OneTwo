@@ -76,6 +76,8 @@
     <string name="always_on_summary">Keep screen on while using</string>
     <string name="dark_mode_title" translatable="false">Dark Mode</string>
     <string name="dark_mode_summary" translatable="false">Use dark mode theme</string>
+    <string name="timer_distinct_colors_title">Timer colors</string>
+    <string name="timer_distinct_colors_summary">Give each timer its own color</string>
     <string name="chooser_order_title">Chooser order</string>
     <string name="chooser_order_summary">Choose fingers in placement order</string>
     <string name="life_counter_haptic_feedback_title">Life counter haptic feedback</string>
