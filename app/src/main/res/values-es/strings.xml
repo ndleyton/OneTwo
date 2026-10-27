@@ -71,6 +71,8 @@
     <string name="always_on_title">Mantener pantalla encendida</string>
     <string name="misc_header">Misc</string>
     <string name="always_on_summary">Mantener pantalla encendida</string>
+    <string name="timer_distinct_colors_title">Colores del temporizador</string>
+    <string name="timer_distinct_colors_summary">Dar a cada temporizador su propio color</string>
     <string name="chooser_order_title">Orden del selector</string>
     <string name="chooser_order_summary">Elegir dedos por orden de colocación</string>
     <string name="life_counter_haptic_feedback_title">Vibración del contador de vidas</string>
