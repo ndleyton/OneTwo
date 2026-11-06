@@ -9,6 +9,7 @@ import androidx.lifecycle.SavedStateHandle;
 import com.nicue.onetwo.LiveDataTestUtil;
 import com.nicue.onetwo.core.TimerScheduler;
 import com.nicue.onetwo.data.timer.TimerStateStore;
+import java.util.ArrayList;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,6 +66,28 @@ public class TimerViewModelTest {
         assertEquals(9_000L, state.getTimers().get(0).getRemainingTimeMs());
         assertEquals(2_000L, state.getConfiguredIncrementMs());
         assertTrue(state.getTimers().get(1).isActive());
+    }
+
+    @Test
+    public void handleTick_updatesUiWithoutPersistingUntilPauseOrAdvance() throws Exception {
+        FakeTimerScheduler scheduler = new FakeTimerScheduler();
+        SavedStateHandle savedStateHandle = new SavedStateHandle();
+        TimerViewModel viewModel =
+                new TimerViewModel(savedStateHandle, new TimerStateStore(), scheduler);
+
+        viewModel.editDuration(10_000L);
+        viewModel.togglePlayPause();
+
+        scheduler.advanceBy(3_000L);
+
+        TimerUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertEquals(7_000L, state.getTimers().get(0).getRemainingTimeMs());
+        ArrayList<Long> savedDuringTick = savedStateHandle.get("timer_remaining_times");
+        assertEquals(10_000L, savedDuringTick.get(0).longValue());
+
+        viewModel.togglePlayPause();
+        ArrayList<Long> savedAfterPause = savedStateHandle.get("timer_remaining_times");
+        assertEquals(7_000L, savedAfterPause.get(0).longValue());
     }
 
     private static class FakeTimerScheduler implements TimerScheduler {

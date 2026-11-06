@@ -599,6 +599,31 @@ public class MtgLifeViewModelTest {
     }
 
     @Test
+    public void testTickingDoesNotPersistToSavedStateUntilPauseOrPass() throws Exception {
+        FakeTimerScheduler fakeScheduler = new FakeTimerScheduler(nowProvider);
+        SavedStateHandle savedStateHandle = new SavedStateHandle();
+        viewModel =
+                new MtgLifeViewModel(
+                        savedStateHandle, settingsRepository, nowProvider, fakeScheduler);
+
+        viewModel.setTurnTimerDurationMs(300000L);
+        viewModel.validateAndStartGame("2", "40", true, true);
+        viewModel.passTurn(0);
+
+        nowProvider.advanceBy(5000L);
+        fakeScheduler.triggerTick();
+
+        MtgLifeUiState state = LiveDataTestUtil.getValue(viewModel.getUiState());
+        assertEquals("4:55", state.getPlayers().get(1).getTimerDisplay());
+        List<Long> savedDuringTick = savedStateHandle.get("turnTimerRemainingTimes");
+        assertEquals(300000L, savedDuringTick.get(1).longValue());
+
+        viewModel.pauseForBackground();
+        List<Long> savedAfterPause = savedStateHandle.get("turnTimerRemainingTimes");
+        assertEquals(295000L, savedAfterPause.get(1).longValue());
+    }
+
+    @Test
     public void testTimerExpirationFlow() throws Exception {
         FakeTimerScheduler fakeScheduler = new FakeTimerScheduler(nowProvider);
         viewModel =

@@ -354,7 +354,6 @@ public class MtgLifeViewModel extends ViewModel {
             finishTurnTimer();
             return;
         }
-        persistTurnTimerState();
         updateUiState();
     }
 
