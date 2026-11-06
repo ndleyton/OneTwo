@@ -167,8 +167,8 @@ public class TimerViewModel extends ViewModel {
             timerScheduler.stop();
             Integer currentValue = finishEvents.getValue();
             finishEvents.setValue(currentValue == null ? 1 : currentValue + 1);
+            persistState();
         }
-        persistState();
         emitState();
     }
 
